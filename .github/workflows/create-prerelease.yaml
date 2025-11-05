@@ -1,0 +1,49 @@
+name: Create Prerelease
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  prerelease:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: 17
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.m2
+            ~/.sonar/cache
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml', '**/*.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2-
+
+      - run: mvn -f com.rosa.angelo.progetto.ast/pom.xml dependency:go-offline
+
+      - run: xvfb-run mvn -f com.rosa.angelo.progetto.ast/pom.xml verify -Pintegration-tests org.pitest:pitest-maven:mutationCoverage
+
+      - name: Get version from pom.xml
+        id: get_version
+        run: |
+          VERSION=$(mvn -f com.rosa.angelo.progetto.ast/pom.xml help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create prerelease
+        uses: ncipollo/release-action@v1
+        with:
+          tag: "${{ steps.get_version.outputs.version }}-pre-${{ github.run_number }}"
+          name: "Pre-release ${{ steps.get_version.outputs.version }}-pre-${{ github.run_number }}"
+          prerelease: true
+          commit: ${{ github.sha }}
+          artifacts: "com.rosa.angelo.progetto.ast/target/*.jar"
+
