@@ -1,0 +1,55 @@
+networks:
+  angelo-rosa-network:
+    driver: bridge
+
+services:
+  mongodb:
+    image: mongo:4.4.3
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    networks:
+      - angelo-rosa-network
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.runCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  mariadb:
+    image: mariadb:10.9
+    container_name: mariadb
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MARIADB_DATABASE: testdb
+      MARIADB_USER: testuser
+      MARIADB_PASSWORD: password
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - angelo-rosa-network
+
+  java-app:
+    build:
+      context: .
+      dockerfile: com.rosa.angelo.progetto.ast/Dockerfile
+      args:
+        DISPLAY: ${DISPLAY} # Pass display variable from terminal
+    environment:
+      - DISPLAY=${DISPLAY} # Pass display variable from terminal
+    container_name: java-app
+    depends_on:
+        mongodb:
+          condition: service_healthy
+        mariadb:
+          condition: service_healthy
+    networks:
+      - angelo-rosa-network
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix # X11 forwarding
