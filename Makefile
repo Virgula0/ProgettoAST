@@ -21,12 +21,12 @@ run-all:
 .PHONY: run-all
 
 package:
-	mvn clean package -f $(POM_PATH)
+	mvn clean package dependency:go-offline -f $(POM_PATH)
 .PHONY: package
 
 docker-build:
 	xhost +local:docker
-	docker compose up --build 
+	docker compose up --build
 .PHONY: docker-build
 
 docker-stop:
@@ -50,6 +50,6 @@ sonarcube:
 		-Dsonar.token=$$SONAR_TOKEN 
 .PHONY: sonarcube
 
-compile-and-setup: package docker-build
+build-and-run: docker-build
 test: run-all
 run-sonarcube: sonarcube-up sonarcube
