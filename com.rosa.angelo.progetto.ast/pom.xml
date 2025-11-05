@@ -31,7 +31,7 @@
 		<log4j.version>2.24.3</log4j.version>
 		<maven.site.version>3.9.1</maven.site.version>
 		<coveralls.version>4.3.0</coveralls.version>
-		<mongodb.version>3.12.7</mongodb.version>
+		<mongodb.version>3.12.8</mongodb.version>
 		<pit.version>1.21.0</pit.version>
 		<maven.compiler.version>3.11.0</maven.compiler.version>
 		<qos.logback.version>1.2.13</qos.logback.version>
