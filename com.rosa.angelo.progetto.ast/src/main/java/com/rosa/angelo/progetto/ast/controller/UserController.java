@@ -1,6 +1,7 @@
 package com.rosa.angelo.progetto.ast.controller;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import com.rosa.angelo.progetto.ast.model.User;
 import com.rosa.angelo.progetto.ast.repository.UserRepository;
@@ -27,17 +28,11 @@ public class UserController {
 			return;
 		}
 
-		User checkUser = userRepo.findUserById(user.getId());
+		User found = Optional.ofNullable(userRepo.findUserById(user.getId()))
+				.or(() -> Optional.ofNullable(userRepo.findUserByUsername(user.getUsername()))).orElse(null);
 
-		if (checkUser != null) {
-			loginView.showError("Already existing user ", checkUser);
-			return;
-		}
-		
-		User findusername = userRepo.findUserByUsername(user.getUsername());
-		
-		if (findusername != null) {
-			loginView.showError("Already existing user ", findusername);
+		if (found != null) {
+			loginView.showError("Already existing user ", found);
 			return;
 		}
 
