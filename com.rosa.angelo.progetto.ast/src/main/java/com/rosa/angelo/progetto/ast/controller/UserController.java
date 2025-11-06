@@ -22,7 +22,7 @@ public class UserController {
 		User checkUser = userRepo.findUserById(user.getId());
 		
 		if (checkUser != null) {
-			loginView.showError("Already existing user ", user);
+			loginView.showError("Already existing user ", checkUser);
 			return;
 		}
 		
