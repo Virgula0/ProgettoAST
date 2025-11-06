@@ -5,24 +5,24 @@ import com.rosa.angelo.progetto.ast.repository.UserRepository;
 import com.rosa.angelo.progetto.ast.view.LoginView;
 
 public class UserController {
-	private LoginView view;
+	private LoginView loginView;
 	private UserRepository userRepo; 
 	
 	public UserController(LoginView view, UserRepository userRepo) {
-		this.view = view;
+		this.loginView = view;
 		this.userRepo = userRepo;
 	}
 
 	public void newUser(User user) {
 		if (user == null) {
-			view.showError("Invalid null user passed", null);
+			loginView.showError("Invalid null user passed", null);
 			return;
 		}
 		
 		User checkUser = userRepo.findUserById(user.getId());
 		
 		if (checkUser != null) {
-			view.showError("Already existing user ", user);
+			loginView.showError("Already existing user ", user);
 			return;
 		}
 		
@@ -31,11 +31,11 @@ public class UserController {
 
 	public void login(String username, String password) {
 		if (userRepo.findUserByUsernameAndPassword(username, password) == null){
-			view.showError("Invalid credentials");
+			loginView.showError("Invalid credentials");
 			return;
 		}
 		
-		view.switchPanel();
+		loginView.switchPanel();
 	}
 	
 }
