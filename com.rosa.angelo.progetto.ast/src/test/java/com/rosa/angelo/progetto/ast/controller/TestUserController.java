@@ -1,6 +1,5 @@
 package com.rosa.angelo.progetto.ast.controller;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.After;
@@ -79,6 +78,7 @@ public class TestUserController {
 		
 		userController.login(username, password);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
+		verify(loginView, times(1)).showError("Invalid credentials");
 		verify(loginView, times(0)).switchPanel();
 	}
 
