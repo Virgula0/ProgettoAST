@@ -24,37 +24,79 @@ public class TestUserController {
 
 	private AutoCloseable closeable;
 
+	private String VALID_TOKEN = System.getProperty("SIGNUP_TOKEN", "validToken");
+	private String INVALID_TOKEN = "notValid";
+
 	@Before
 	public void setup() {
 		closeable = MockitoAnnotations.openMocks(this);
+		when(userRepository.getRegistrationToken()).thenReturn(VALID_TOKEN);
 	}
 
 	@After
 	public void releaseMocks() throws Exception {
 		closeable.close();
 	}
+	
+	@Test
+	public void testNewUserInvalidRegistrationToken() {
+		User user = new User("test", "test", 1);
+		userController.newUser(user,INVALID_TOKEN);
+		
+		verify(userRepository, times(1)).getRegistrationToken();
+		verify(userRepository, times(0)).save(user);
+		verify(loginView).showError("Invalid registration token");
+	}
+	
+	@Test
+	public void testNewUserWithNullToken() {
+		User user = new User("test", "test", 1);
+		userController.newUser(user,null);
+		
+		verify(userRepository, times(1)).getRegistrationToken();
+		verify(userRepository, times(0)).save(user);
+		verify(loginView).showError("Invalid registration token");
+	}
+	
+	@Test
+	public void testNewUserWithEmptyString() {
+		User user = new User("test", "test", 1);
+		userController.newUser(user,"");
+		
+		verify(userRepository, times(1)).getRegistrationToken();
+		verify(userRepository, times(0)).save(user);
+		verify(loginView).showError("Invalid registration token");
+	}
 
 	@Test
-	public void testNewUserWhenUserDoesNotAlreadyExist() {
+	public void testNewUserWhenUserDoesNotAlreadyExistAndTokenIsCorrect() {
 		User user = new User("test", "test", 1);
-		userController.newUser(user);
+		userController.newUser(user,VALID_TOKEN);
+		
+		verify(loginView, times(0)).showError(anyString());
+		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository).save(user);
 	}
 
 	@Test
-	public void testInvalidNewNullUser() {
-		userController.newUser(null);
+	public void testInvalidNewNullUserButValidToken() {
+		userController.newUser(null,VALID_TOKEN);
+		
+		verify(userRepository, times(1)).getRegistrationToken();
 		verify(loginView).showError("Invalid null user passed", null);
 		verifyNoMoreInteractions(ignoreStubs(userRepository));
 	}
 
 	@Test
-	public void testNewUserWhenUserDoesAlreadyExist() {
+	public void testNewUserWhenUserDoesAlreadyExistAndValidToken() {
 		User existingUser = new User("test", "password1", 1);
 		User userToAdd = new User("test", "passwordDifferent", 1);
+		
 		when(userRepository.findUserById(1)).thenReturn(existingUser);
-		userController.newUser(userToAdd);
-		verify(loginView).showError("Already existing user ", userToAdd);
+		userController.newUser(userToAdd,VALID_TOKEN);
+		
+		verify(userRepository, times(1)).getRegistrationToken();
+		verify(loginView).showError("Already existing user ", existingUser);
 		verifyNoMoreInteractions(ignoreStubs(userRepository));
 	}
 

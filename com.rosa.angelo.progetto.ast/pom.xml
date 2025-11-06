@@ -64,7 +64,7 @@
 		<mariadb.dbname>testdb</mariadb.dbname>
 		<mariadb.user>testuser</mariadb.user>
 		<mariadb.password>password</mariadb.password>
-
+		
 		<!-- sonar exclusions -->
 		<sonar.issue.ignore.multicriteria>e11, e12, e13, e14</sonar.issue.ignore.multicriteria>
 

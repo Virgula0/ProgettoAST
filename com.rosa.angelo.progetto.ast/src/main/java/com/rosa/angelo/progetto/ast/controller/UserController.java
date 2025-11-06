@@ -1,5 +1,7 @@
 package com.rosa.angelo.progetto.ast.controller;
 
+import java.util.Objects;
+
 import com.rosa.angelo.progetto.ast.model.User;
 import com.rosa.angelo.progetto.ast.repository.UserRepository;
 import com.rosa.angelo.progetto.ast.view.LoginView;
@@ -13,7 +15,13 @@ public class UserController {
 		this.userRepo = userRepo;
 	}
 
-	public void newUser(User user) {
+	public void newUser(User user, String token) {
+		
+		if (!Objects.equals(token, userRepo.getRegistrationToken())) {
+			loginView.showError("Invalid registration token");
+			return;
+		}
+		
 		if (user == null) {
 			loginView.showError("Invalid null user passed", null);
 			return;
