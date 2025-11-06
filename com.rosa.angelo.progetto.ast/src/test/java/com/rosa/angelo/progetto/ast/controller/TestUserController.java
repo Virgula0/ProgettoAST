@@ -67,21 +67,21 @@ public class TestUserController {
 		when(userRepository.findUserByUsernameAndPassword(username, password))
 				.thenReturn(new User(username, password, 1));
 
-		boolean result = userController.login(username, password);
+		userController.login(username, password);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
-		assertThat(result).isTrue();
+		verify(loginView, times(1)).switchPanel();
 	}
 
 	@Test
-	public void loginNotSuceedsWhenCredentialsUserDoesNotExists() {
+	public void loginNotSuceedsWhenUserDoesNotExists() {
 		String username = "test";
 		String password = "password";
-		boolean result = userController.login(username, password);
+		
+		userController.login(username, password);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
-		assertThat(result).isFalse();
+		verify(loginView, times(0)).switchPanel();
 	}
 
-	// documentation test, already tested with previous ones
 	@Test
 	public void loginNotSuceedsWhenCredentialsAreWrong() {
 		String username = "test";
@@ -91,8 +91,23 @@ public class TestUserController {
 
 		String wrongPassword = "wrongPassword";
 		String wrongUsername = "wrongUsername";
-		boolean result = userController.login(wrongUsername, wrongPassword);
+		userController.login(wrongUsername, wrongPassword);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(wrongUsername, wrongPassword);
-		assertThat(result).isFalse();
+		verify(loginView, times(0)).switchPanel();
+		verify(loginView).showError("Invalid credentials");
+	}
+	
+	@Test
+	public void loginSucceedsCheckViewSwitch() {
+		String username = "test";
+		String password = "password";
+		// mock
+		when(userRepository.findUserByUsernameAndPassword(username, password))
+				.thenReturn(new User(username, password, 1));
+
+		userController.login(username, password);
+		InOrder inOrder = inOrder(userRepository, loginView);
+		inOrder.verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
+		inOrder.verify(loginView, times(1)).switchPanel();
 	}
 }

@@ -29,8 +29,13 @@ public class UserController {
 		userRepo.save(user);
 	}
 
-	public boolean login(String username, String password) {
-		return userRepo.findUserByUsernameAndPassword(username, password) != null;
+	public void login(String username, String password) {
+		if (userRepo.findUserByUsernameAndPassword(username, password) == null){
+			view.showError("Invalid credentials");
+			return;
+		}
+		
+		view.switchPanel();
 	}
 	
 }
