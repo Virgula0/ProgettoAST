@@ -75,7 +75,12 @@ public class TestUserController {
 		User user = new User("test", VALID_PASSWORD, 1);
 		userController.newUser(user, VALID_TOKEN);
 
+		verify(userRepository, times(1)).findUserById(user.getId());
+		verify(userRepository, times(1)).findUserByUsername(user.getUsername());
+
 		verify(loginView, times(0)).showError(anyString());
+		verify(loginView, times(0)).showError(anyString(), any());
+
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository).save(user);
 	}
@@ -97,12 +102,13 @@ public class TestUserController {
 		when(userRepository.findUserById(1)).thenReturn(existingUser);
 		userController.newUser(userToAdd, VALID_TOKEN);
 
+		verify(userRepository, times(1)).findUserById(userToAdd.getId());
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(loginView).showError("Already existing user ", existingUser);
 		verifyNoMoreInteractions(ignoreStubs(userRepository));
 	}
-	
-	@Test 
+
+	@Test
 	public void testNewUserWithUsernameLessThanEigthChars() {
 		String sevenChar = "1234567";
 		User userToAdd = new User("test", sevenChar, 1);
@@ -116,8 +122,8 @@ public class TestUserController {
 		verify(loginView).showError("Username must be greater or equal than 8 chars ", userToAdd);
 		verifyNoMoreInteractions(ignoreStubs(userRepository));
 	}
-	
-	@Test 
+
+	@Test
 	public void testNewUserWithUsernameWithExactlyEigthCharsMustSuceed() {
 		String sevenChar = "12345678";
 		User userToAdd = new User("test", sevenChar, 1);
@@ -126,23 +132,26 @@ public class TestUserController {
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(1)).findUserById(userToAdd.getId());
+		verify(userRepository, times(1)).findUserByUsername(userToAdd.getUsername());
 
 		verify(loginView, times(0)).showError(anyString());
+		verify(loginView, times(0)).showError(anyString(), any());
+
 		verify(userRepository).save(userToAdd);
 	}
-	
+
 	@Test
 	public void testNewUserWithDifferentIdButSameUsernameShouldFail() {
 		User existingUser = new User("test", VALID_PASSWORD, 1);
 		User userToAdd = new User("test", "passwordDifferent", 2);
 
-		when(userRepository.findUserById(1)).thenReturn(existingUser);
 		when(userRepository.findUserByUsername("test")).thenReturn(existingUser);
 
 		userController.newUser(userToAdd, VALID_TOKEN);
 
+		verify(userRepository, times(1)).findUserByUsername(userToAdd.getUsername());
 		verify(userRepository, times(1)).getRegistrationToken();
-		verify(userRepository, times(1)).findUserById(2);
+		verify(userRepository, times(1)).findUserById(userToAdd.getId());
 
 		verify(loginView).showError("Already existing user ", existingUser);
 		verifyNoMoreInteractions(ignoreStubs(userRepository));
@@ -150,11 +159,7 @@ public class TestUserController {
 
 	@Test
 	public void loginWhitNullUsername() {
-		String username = "test";
 		String password = VALID_PASSWORD;
-		// mock
-		when(userRepository.findUserByUsernameAndPassword(username, password))
-				.thenReturn(new User(username, password, 1));
 
 		userController.login(null, password);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(null, password);
@@ -165,10 +170,6 @@ public class TestUserController {
 	@Test
 	public void loginWhitNullPassword() {
 		String username = "test";
-		String password = VALID_PASSWORD;
-		// mock
-		when(userRepository.findUserByUsernameAndPassword(username, password))
-				.thenReturn(new User(username, password, 1));
 
 		userController.login(username, null);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, null);
@@ -179,12 +180,6 @@ public class TestUserController {
 	// docs
 	@Test
 	public void loginWhitEmptyCredentials() {
-		String username = "test";
-		String password = VALID_PASSWORD;
-		// mock
-		when(userRepository.findUserByUsernameAndPassword(username, password))
-				.thenReturn(new User(username, password, 1));
-
 		userController.login("", "");
 		verify(userRepository, times(1)).findUserByUsernameAndPassword("", "");
 		verify(loginView, times(0)).switchPanel();
@@ -202,6 +197,8 @@ public class TestUserController {
 		userController.login(username, password);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
 		verify(loginView, times(1)).switchPanel();
+		verify(loginView, times(0)).showError(anyString());
+		verify(loginView, times(0)).showError(anyString(), any());
 	}
 
 	@Test
@@ -213,6 +210,7 @@ public class TestUserController {
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
 		verify(loginView, times(1)).showError("Invalid credentials");
 		verify(loginView, times(0)).switchPanel();
+
 	}
 
 	@Test
