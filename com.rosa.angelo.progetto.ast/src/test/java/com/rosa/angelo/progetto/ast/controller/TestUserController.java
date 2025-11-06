@@ -13,6 +13,8 @@ import com.rosa.angelo.progetto.ast.view.LoginView;
 
 public class TestUserController {
 
+	private static final String VALID_PASSWORD = "greaterThanEigth";
+
 	@Mock
 	private UserRepository userRepository;
 
@@ -40,7 +42,7 @@ public class TestUserController {
 
 	@Test
 	public void testNewUserInvalidRegistrationToken() {
-		User user = new User("test", "test", 1);
+		User user = new User("test", VALID_PASSWORD, 1);
 		userController.newUser(user, INVALID_TOKEN);
 
 		verify(userRepository, times(1)).getRegistrationToken();
@@ -50,7 +52,7 @@ public class TestUserController {
 
 	@Test
 	public void testNewUserWithNullToken() {
-		User user = new User("test", "test", 1);
+		User user = new User("test", VALID_PASSWORD, 1);
 		userController.newUser(user, null);
 
 		verify(userRepository, times(1)).getRegistrationToken();
@@ -60,7 +62,7 @@ public class TestUserController {
 
 	@Test
 	public void testNewUserWithEmptyString() {
-		User user = new User("test", "test", 1);
+		User user = new User("test", VALID_PASSWORD, 1);
 		userController.newUser(user, "");
 
 		verify(userRepository, times(1)).getRegistrationToken();
@@ -70,7 +72,7 @@ public class TestUserController {
 
 	@Test
 	public void testNewUserWhenUserDoesNotAlreadyExistAndTokenIsCorrect() {
-		User user = new User("test", "test", 1);
+		User user = new User("test", VALID_PASSWORD, 1);
 		userController.newUser(user, VALID_TOKEN);
 
 		verify(loginView, times(0)).showError(anyString());
@@ -89,7 +91,7 @@ public class TestUserController {
 
 	@Test
 	public void testNewUserWhenUserDoesAlreadyExistAndValidToken() {
-		User existingUser = new User("test", "password1", 1);
+		User existingUser = new User("test", VALID_PASSWORD, 1);
 		User userToAdd = new User("test", "passwordDifferent", 1);
 
 		when(userRepository.findUserById(1)).thenReturn(existingUser);
@@ -99,11 +101,40 @@ public class TestUserController {
 		verify(loginView).showError("Already existing user ", existingUser);
 		verifyNoMoreInteractions(ignoreStubs(userRepository));
 	}
+	
+	@Test 
+	public void testNewUserWithUsernameLessThanEigthChars() {
+		String sevenChar = "1234567";
+		User userToAdd = new User("test", sevenChar, 1);
+
+		userController.newUser(userToAdd, VALID_TOKEN);
+
+		verify(userRepository, times(1)).getRegistrationToken();
+		verify(userRepository, times(1)).findUserById(userToAdd.getId());
+
+		verify(loginView).showError("Username must be greater or equal than 8 chars ", userToAdd);
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+	}
+	
+	@Test 
+	public void testNewUserWithUsernameWithExactlyEigthCharsMustSuceed() {
+		String sevenChar = "12345678";
+		User userToAdd = new User("test", sevenChar, 1);
+
+		userController.newUser(userToAdd, VALID_TOKEN);
+
+		verify(userRepository, times(1)).getRegistrationToken();
+		verify(userRepository, times(1)).findUserById(userToAdd.getId());
+
+		verify(loginView, times(0)).showError(anyString());
+		verify(userRepository).save(userToAdd);
+	}
+
 
 	@Test
 	public void loginWhitNullUsername() {
 		String username = "test";
-		String password = "password";
+		String password = VALID_PASSWORD;
 		// mock
 		when(userRepository.findUserByUsernameAndPassword(username, password))
 				.thenReturn(new User(username, password, 1));
@@ -117,7 +148,7 @@ public class TestUserController {
 	@Test
 	public void loginWhitNullPassword() {
 		String username = "test";
-		String password = "password";
+		String password = VALID_PASSWORD;
 		// mock
 		when(userRepository.findUserByUsernameAndPassword(username, password))
 				.thenReturn(new User(username, password, 1));
@@ -132,7 +163,7 @@ public class TestUserController {
 	@Test
 	public void loginWhitEmptyCredentials() {
 		String username = "test";
-		String password = "password";
+		String password = VALID_PASSWORD;
 		// mock
 		when(userRepository.findUserByUsernameAndPassword(username, password))
 				.thenReturn(new User(username, password, 1));
@@ -146,7 +177,7 @@ public class TestUserController {
 	@Test
 	public void loginSuceedsWhenCredentialsAreCorrectAndUserExists() {
 		String username = "test";
-		String password = "password";
+		String password = VALID_PASSWORD;
 		// mock
 		when(userRepository.findUserByUsernameAndPassword(username, password))
 				.thenReturn(new User(username, password, 1));
@@ -159,7 +190,7 @@ public class TestUserController {
 	@Test
 	public void loginNotSuceedsWhenUserDoesNotExists() {
 		String username = "test";
-		String password = "password";
+		String password = VALID_PASSWORD;
 
 		userController.login(username, password);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
@@ -170,7 +201,7 @@ public class TestUserController {
 	@Test
 	public void loginNotSuceedsWhenCredentialsAreWrong() {
 		String username = "test";
-		String password = "password";
+		String password = VALID_PASSWORD;
 		when(userRepository.findUserByUsernameAndPassword(username, password))
 				.thenReturn(new User(username, password, 1));
 
@@ -185,7 +216,7 @@ public class TestUserController {
 	@Test
 	public void loginSucceedsCheckViewSwitch() {
 		String username = "test";
-		String password = "password";
+		String password = VALID_PASSWORD;
 		// mock
 		when(userRepository.findUserByUsernameAndPassword(username, password))
 				.thenReturn(new User(username, password, 1));
