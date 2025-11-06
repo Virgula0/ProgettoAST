@@ -90,7 +90,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWhenUserDoesAlreadyExistAndValidToken() {
+	public void testNewUserWithSameIdAlreadyExistAndValidToken() {
 		User existingUser = new User("test", VALID_PASSWORD, 1);
 		User userToAdd = new User("test", "passwordDifferent", 1);
 
@@ -111,6 +111,7 @@ public class TestUserController {
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(1)).findUserById(userToAdd.getId());
+		verify(userRepository, times(1)).findUserByUsername(userToAdd.getUsername());
 
 		verify(loginView).showError("Username must be greater or equal than 8 chars ", userToAdd);
 		verifyNoMoreInteractions(ignoreStubs(userRepository));
@@ -129,7 +130,23 @@ public class TestUserController {
 		verify(loginView, times(0)).showError(anyString());
 		verify(userRepository).save(userToAdd);
 	}
+	
+	@Test
+	public void testNewUserWithDifferentIdButSameUsernameShouldFail() {
+		User existingUser = new User("test", VALID_PASSWORD, 1);
+		User userToAdd = new User("test", "passwordDifferent", 2);
 
+		when(userRepository.findUserById(1)).thenReturn(existingUser);
+		when(userRepository.findUserByUsername("test")).thenReturn(existingUser);
+
+		userController.newUser(userToAdd, VALID_TOKEN);
+
+		verify(userRepository, times(1)).getRegistrationToken();
+		verify(userRepository, times(1)).findUserById(2);
+
+		verify(loginView).showError("Already existing user ", existingUser);
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+	}
 
 	@Test
 	public void loginWhitNullUsername() {

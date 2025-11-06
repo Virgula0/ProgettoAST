@@ -33,6 +33,13 @@ public class UserController {
 			loginView.showError("Already existing user ", checkUser);
 			return;
 		}
+		
+		User findusername = userRepo.findUserByUsername(user.getUsername());
+		
+		if (findusername != null) {
+			loginView.showError("Already existing user ", findusername);
+			return;
+		}
 
 		if (user.getPassword().length() < 8) {
 			loginView.showError("Username must be greater or equal than 8 chars ", user);

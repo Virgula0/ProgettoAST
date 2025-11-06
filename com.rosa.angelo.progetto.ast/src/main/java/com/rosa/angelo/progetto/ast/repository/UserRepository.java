@@ -7,4 +7,5 @@ public interface UserRepository {
 	String getRegistrationToken();
 	User findUserById(int id);
 	User findUserByUsernameAndPassword(String username, String password);
+	User findUserByUsername(String username);
 }
