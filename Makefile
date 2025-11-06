@@ -47,7 +47,7 @@ sonarcube:
 	mvn clean verify \
 		-Pjacoco sonar:sonar -Pintegration-tests -f $(POM_PATH) \
 		-Dsonar.host.url=http://localhost:9000 \
-		-Dsonar.token=$$SONAR_TOKEN 
+		-Dsonar.token=$$SONAR_TOKEN -X
 .PHONY: sonarcube
 
 build-and-run: docker-build
