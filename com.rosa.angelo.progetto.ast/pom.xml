@@ -49,7 +49,7 @@
 
 		<!-- Jacoco exclusions -->
 		<jacoco.exclusions>
-			com/rosa/angelo/progetto/ast/main/*,com/rosa/angelo/progetto/ast/main/*
+			com/rosa/angelo/progetto/ast/main/*,com/rosa/angelo/progetto/ast/model/*
 		</jacoco.exclusions>
 
 		<!-- ENV VARS -->
