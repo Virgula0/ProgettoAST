@@ -65,8 +65,7 @@ public class TestUserMongoDBRepository {
 		User user = new User(TEST_USERNAME, TEST_PASSWORD, 1);
 		userRepository.save(user);
 
-		// getUserCollection is a package private method not a repository method
-		assertThat(userRepository.getUserCollection().find(eq("id", 1))
+		assertThat(userCollection.find(eq("id", 1))
 				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
 				.into(new ArrayList<>())).containsExactly(new User(TEST_USERNAME, TEST_PASSWORD, 1));
 	}
@@ -76,7 +75,7 @@ public class TestUserMongoDBRepository {
 		User user = null;
 		userRepository.save(user);
 
-		assertThat(userRepository.getUserCollection().find()
+		assertThat(userCollection.find()
 				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
 				.into(new ArrayList<>())).isEmpty();
 	}
@@ -89,19 +88,19 @@ public class TestUserMongoDBRepository {
 
 		userRepository.save(userWithUsernameNull);
 
-		assertThat(userRepository.getUserCollection().find()
+		assertThat(userCollection.find()
 				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
 				.into(new ArrayList<>())).isEmpty();
 
 		userRepository.save(userWithPasswordNull);
 
-		assertThat(userRepository.getUserCollection().find()
+		assertThat(userCollection.find()
 				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
 				.into(new ArrayList<>())).isEmpty();
 
 		userRepository.save(bothNull);
 
-		assertThat(userRepository.getUserCollection().find()
+		assertThat(userCollection.find()
 				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
 				.into(new ArrayList<>())).isEmpty();
 	}
@@ -188,7 +187,7 @@ public class TestUserMongoDBRepository {
 		assertThat(user.getPassword()).isEqualTo(password2);
 		assertThat(userRepository.findUserByUsername("")).isNull();
 	}
-	
+
 	@Test
 	public void testFindUserByUsernameWithNull() {
 		String username = "user1";

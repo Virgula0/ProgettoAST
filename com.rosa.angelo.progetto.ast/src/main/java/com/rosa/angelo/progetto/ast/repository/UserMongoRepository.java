@@ -1,6 +1,5 @@
 package com.rosa.angelo.progetto.ast.repository;
 
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
 
@@ -76,9 +75,5 @@ public class UserMongoRepository implements UserRepository {
 				.filter(x -> Objects.equals(x.getUsername(), username))
 				.findFirst()
 				.orElse(null);
-	}
-
-	MongoCollection<Document> getUserCollection() {
-		return userCollection;
 	}
 }
