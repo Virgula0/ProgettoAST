@@ -1,11 +1,21 @@
 package com.rosa.angelo.progetto.ast.controller;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.ignoreStubs;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.InOrder;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.rosa.angelo.progetto.ast.model.User;
 import com.rosa.angelo.progetto.ast.repository.UserRepository;
