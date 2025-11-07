@@ -20,8 +20,8 @@ public class UserMongoRepository implements UserRepository {
 	public static final String USERNAME_KEY = "username";
 	public static final String PASSWORD_KEY = "password";
 
-	public UserMongoRepository(MongoClient client, String databaseName, String collecitonName) {
-		userCollection = client.getDatabase(databaseName).getCollection(collecitonName);
+	public UserMongoRepository(MongoClient client, String databaseName, String collectionName) {
+		userCollection = client.getDatabase(databaseName).getCollection(collectionName);
 	}
 
 	public UserMongoRepository(MongoClient client) {
@@ -30,8 +30,8 @@ public class UserMongoRepository implements UserRepository {
 
 	@Override
 	public void save(User user) {
-		// TODO Auto-generated method stub
-
+		userCollection.insertOne(new Document().append(ID_KEY, user.getId()).append(USERNAME_KEY, user.getUsername())
+				.append(PASSWORD_KEY, user.getPassword()));
 	}
 
 	@Override
@@ -58,4 +58,7 @@ public class UserMongoRepository implements UserRepository {
 		return null;
 	}
 
+	MongoCollection<Document> getUserCollection() {
+		return userCollection;
+	}
 }

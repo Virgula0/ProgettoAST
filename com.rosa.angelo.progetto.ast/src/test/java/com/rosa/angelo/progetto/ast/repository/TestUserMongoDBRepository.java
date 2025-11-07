@@ -1,5 +1,9 @@
 package com.rosa.angelo.progetto.ast.repository;
 
+import static org.assertj.core.api.Assertions.*;
+
+import java.util.ArrayList;
+
 import org.bson.Document;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -12,6 +16,9 @@ import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.rosa.angelo.progetto.ast.model.User;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class TestUserMongoDBRepository {
 
@@ -25,6 +32,9 @@ public class TestUserMongoDBRepository {
 
 	private UserMongoRepository userRepository;
 	private MongoCollection<Document> userCollection;
+
+	private static final String TEST_USERNAME = "TEST_USERNAME";
+	private static final String TEST_PASSWORD = "TEST_PASSWORD";
 
 	@BeforeClass
 	public static void beforeClass() {
@@ -45,15 +55,15 @@ public class TestUserMongoDBRepository {
 		client.close();
 	}
 
-	private void addTestStudentToDatabase(int id, String username, String password) {
-		userCollection.insertOne(new Document()
-				.append(UserMongoRepository.ID_KEY, id)
-				.append(UserMongoRepository.USERNAME_KEY, username)
-				.append(UserMongoRepository.PASSWORD_KEY, password));
-	}
-
 	@Test
-	public void test() {
+	public void testSaveANewUserSuccesfully() {
+		User user = new User(TEST_USERNAME, TEST_PASSWORD, 1);
+		userRepository.save(user);
 
+		// getUserCollection is a package private method not a repository method
+		assertThat(userRepository.getUserCollection().find(eq("id", 1))
+				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
+				.into(new ArrayList<>()))
+				.containsExactly(new User(TEST_USERNAME, TEST_PASSWORD, 1));
 	}
 }
