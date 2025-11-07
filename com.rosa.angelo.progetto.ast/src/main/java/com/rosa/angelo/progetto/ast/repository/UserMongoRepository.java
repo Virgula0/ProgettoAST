@@ -65,7 +65,8 @@ public class UserMongoRepository implements UserRepository {
 	@Override
 	public User findUserByUsernameAndPassword(String username, String password) {
 		for (Document doc : userCollection.find()) {
-			if (username.equals(doc.getString(USERNAME_KEY)) && password.equals(doc.getString(PASSWORD_KEY))) {
+			if (Objects.equals(username, doc.getString(USERNAME_KEY))
+					&& Objects.equals(password, doc.getString(PASSWORD_KEY))) {
 				return documentToUser(doc);
 			}
 		}
