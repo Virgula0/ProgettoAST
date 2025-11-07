@@ -52,7 +52,7 @@
 			com/rosa/angelo/progetto/ast/main/*,com/rosa/angelo/progetto/ast/model/*
 		</jacoco.exclusions>
 
-		<!-- ENV VARS -->
+		<!-- ENV VARS for integration tests -->
 		<mongo.image>mongo</mongo.image>
 		<mongo.version>4.4.3</mongo.version>
 		<mongo.port>27017</mongo.port>
@@ -169,6 +169,7 @@
 			<artifactId>mongo-java-driver</artifactId>
 			<version>${mongodb.version}</version>
 		</dependency>
+		<!-- needed driver for mariadb -->
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
@@ -177,6 +178,12 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers</artifactId>
+			<version>${testcontainers.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>mariadb</artifactId>
 			<version>${testcontainers.version}</version>
 			<scope>test</scope>
 		</dependency>
