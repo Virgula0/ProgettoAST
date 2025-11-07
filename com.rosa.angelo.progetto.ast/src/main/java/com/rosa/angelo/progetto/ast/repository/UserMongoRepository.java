@@ -71,12 +71,11 @@ public class UserMongoRepository implements UserRepository {
 
 	@Override
 	public User findUserByUsername(String username) {
-		for (Document doc : userCollection.find()) {
-			if (Objects.equals(username,doc.getString(USERNAME_KEY))) {
-				return documentToUser(doc);
-			}
-		}
-		return null;
+		return StreamSupport.stream(userCollection.find().spliterator(), false)
+				.map(d -> documentToUser(d))
+				.filter(x -> Objects.equals(x.getUsername(), username))
+				.findFirst()
+				.orElse(null);
 	}
 
 	MongoCollection<Document> getUserCollection() {
