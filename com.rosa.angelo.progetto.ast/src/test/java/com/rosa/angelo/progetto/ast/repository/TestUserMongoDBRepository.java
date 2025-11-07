@@ -158,7 +158,7 @@ public class TestUserMongoDBRepository {
 		assertThat(userRepository.findUserByUsernameAndPassword("wrongUsername", "wrongPassword")).isNull();
 
 	}
-	
+
 	@Test
 	public void testfindUserByUsernameAndPasswordWithFuzzedNulls() {
 		String username = "user1";
@@ -167,10 +167,34 @@ public class TestUserMongoDBRepository {
 		String username2 = "user2";
 		String password2 = "password2";
 		addTestUserToDatabase(2, username2, password2);
-		
+
 		assertThat(userRepository.findUserByUsernameAndPassword(null, password2)).isNull();
 		assertThat(userRepository.findUserByUsernameAndPassword(username2, null)).isNull();
 		assertThat(userRepository.findUserByUsernameAndPassword(null, null)).isNull();
 	}
 
+	@Test
+	public void testFindUserByUsernameOnExistingUser() {
+		String username = "user1";
+		String password = "password1";
+		addTestUserToDatabase(1, username, password);
+		String username2 = "user2";
+		String password2 = "password2";
+		addTestUserToDatabase(2, username2, password2);
+
+		User user = userRepository.findUserByUsername(username2);
+
+		assertThat(user).isEqualTo(new User(username2, password2, 2));
+		assertThat(user.getPassword()).isEqualTo(password2);
+		assertThat(userRepository.findUserByUsername("")).isNull();
+	}
+	
+	@Test
+	public void testFindUserByUsernameWithNull() {
+		String username = "user1";
+		String password = "password1";
+		addTestUserToDatabase(1, username, password);
+
+		assertThat(userRepository.findUserByUsername(null)).isNull();
+	}
 }

@@ -71,7 +71,11 @@ public class UserMongoRepository implements UserRepository {
 
 	@Override
 	public User findUserByUsername(String username) {
-		// TODO Auto-generated method stub
+		for (Document doc : userCollection.find()) {
+			if (Objects.equals(username,doc.getString(USERNAME_KEY))) {
+				return documentToUser(doc);
+			}
+		}
 		return null;
 	}
 
