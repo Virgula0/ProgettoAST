@@ -57,23 +57,20 @@ public class UserMongoRepository implements UserRepository {
 
 	@Override
 	public User findUserById(int id) {
-		return StreamSupport.stream(userCollection.find().spliterator(), false).map(d -> documentToUser(d))
+		return StreamSupport.stream(userCollection.find().spliterator(), false).map(this::documentToUser)
 				.filter(x -> Objects.equals(x.getId(), id)).findFirst().orElse(null);
 	}
 
 	@Override
 	public User findUserByUsernameAndPassword(String username, String password) {
-		return StreamSupport.stream(userCollection.find().spliterator(), false).map(d -> documentToUser(d))
+		return StreamSupport.stream(userCollection.find().spliterator(), false).map(this::documentToUser)
 				.filter(x -> Objects.equals(x.getUsername(), username) && Objects.equals(password, x.getPassword()))
 				.findFirst().orElse(null);
 	}
 
 	@Override
 	public User findUserByUsername(String username) {
-		return StreamSupport.stream(userCollection.find().spliterator(), false)
-				.map(d -> documentToUser(d))
-				.filter(x -> Objects.equals(x.getUsername(), username))
-				.findFirst()
-				.orElse(null);
+		return StreamSupport.stream(userCollection.find().spliterator(), false).map(this::documentToUser)
+				.filter(x -> Objects.equals(x.getUsername(), username)).findFirst().orElse(null);
 	}
 }

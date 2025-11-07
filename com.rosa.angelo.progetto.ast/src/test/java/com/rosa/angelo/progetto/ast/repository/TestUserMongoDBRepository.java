@@ -1,6 +1,7 @@
 package com.rosa.angelo.progetto.ast.repository;
 
-import static org.assertj.core.api.Assertions.*;
+import static com.mongodb.client.model.Filters.eq;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 
@@ -17,8 +18,6 @@ import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.rosa.angelo.progetto.ast.model.User;
-
-import static com.mongodb.client.model.Filters.eq;
 
 public class TestUserMongoDBRepository {
 
@@ -124,7 +123,7 @@ public class TestUserMongoDBRepository {
 	public void testFindUserByIdWhenUserDoesNotExistsAndCollectionIsEmpty() {
 		User user = userRepository.findUserById(1);
 
-		assertThat(user).isEqualTo(null);
+		assertThat(user).isNull();
 	}
 
 	@Test
