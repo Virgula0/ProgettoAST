@@ -1,5 +1,7 @@
 package com.rosa.angelo.progetto.ast.repository;
 
+import java.util.Iterator;
+
 import org.bson.Document;
 
 import com.mongodb.MongoClient;
@@ -47,10 +49,18 @@ public class UserMongoRepository implements UserRepository {
 		 */
 		return REGISTRATION_TOKEN;
 	}
+	
+	private User documentToUser(String username, String password, int id) {
+		return new User(username, password, id);
+	}
 
 	@Override
 	public User findUserById(int id) {
-		// TODO Auto-generated method stub
+		for (Document doc : userCollection.find()) {
+			if (doc.getInteger(ID_KEY)	== id) {
+				return documentToUser(doc.getString(USERNAME_KEY), doc.getString(PASSWORD_KEY),doc.getInteger(ID_KEY));
+			}
+		}
 		return null;
 	}
 

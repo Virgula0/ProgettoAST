@@ -44,15 +44,22 @@ public class TestUserMongoDBRepository {
 
 	@Before
 	public void setup() {
-		userRepository = new UserMongoRepository(client);
 		// make sure we always start with a clean database
 		database.drop();
+		userRepository = new UserMongoRepository(client);
 		userCollection = database.getCollection(UserMongoRepository.USER_COLLECTION_NAME);
 	}
 
 	@AfterClass
 	public static void afterClass() {
 		client.close();
+	}
+
+	private void addTestUserToDatabase(int id, String username, String password) {
+		userCollection.insertOne(new Document()
+				.append("id", id)
+				.append("username", username)
+				.append("name", password));
 	}
 
 	@Test
@@ -63,55 +70,64 @@ public class TestUserMongoDBRepository {
 		// getUserCollection is a package private method not a repository method
 		assertThat(userRepository.getUserCollection().find(eq("id", 1))
 				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
-				.into(new ArrayList<>()))
-				.containsExactly(new User(TEST_USERNAME, TEST_PASSWORD, 1));
+				.into(new ArrayList<>())).containsExactly(new User(TEST_USERNAME, TEST_PASSWORD, 1));
 	}
-	
+
 	@Test
 	public void testSaveANewUserIsNull() {
 		User user = null;
 		userRepository.save(user);
 
-		assertThat(userRepository.getUserCollection()
-				.find()
+		assertThat(userRepository.getUserCollection().find()
 				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
-				.into(new ArrayList<>()))
-				.isEmpty();
+				.into(new ArrayList<>())).isEmpty();
 	}
-	
-	@Test 
+
+	@Test
 	public void testSaveFieldsOfUserAreNullExceptForID() {
 		User userWithUsernameNull = new User(null, TEST_PASSWORD, 1);
 		User userWithPasswordNull = new User(TEST_USERNAME, null, 1);
 		User bothNull = new User(null, null, 1);
-		
+
 		userRepository.save(userWithUsernameNull);
-		
-		assertThat(userRepository.getUserCollection()
-				.find()
+
+		assertThat(userRepository.getUserCollection().find()
 				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
-				.into(new ArrayList<>()))
-				.isEmpty();
+				.into(new ArrayList<>())).isEmpty();
 
 		userRepository.save(userWithPasswordNull);
-		
-		assertThat(userRepository.getUserCollection()
-				.find()
+
+		assertThat(userRepository.getUserCollection().find()
 				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
-				.into(new ArrayList<>()))
-				.isEmpty();
+				.into(new ArrayList<>())).isEmpty();
 
 		userRepository.save(bothNull);
-		
-		assertThat(userRepository.getUserCollection()
-				.find()
+
+		assertThat(userRepository.getUserCollection().find()
 				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
-				.into(new ArrayList<>()))
-				.isEmpty();
+				.into(new ArrayList<>())).isEmpty();
 	}
-	
-	@Test 
+
+	@Test
 	public void testRegistrationToken() {
 		assertThat(userRepository.getRegistrationToken()).isEqualTo("validToken");
 	}
+	
+	@Test
+	public void testFindUserByIdWhenUserExists() {
+		addTestUserToDatabase(1, TEST_USERNAME, TEST_PASSWORD);
+		addTestUserToDatabase(2, TEST_USERNAME, TEST_PASSWORD);
+
+		User user = userRepository.findUserById(2);
+		
+		assertThat(user).isEqualTo(new User(TEST_USERNAME, TEST_PASSWORD, 2));
+	}
+	
+	@Test
+	public void testFindUserByIdWhenUserDoesNotExistsAndCollectionIsEmpty() {		
+		User user = userRepository.findUserById(1);
+		
+		assertThat(user).isEqualTo(null);
+	}
+
 }
