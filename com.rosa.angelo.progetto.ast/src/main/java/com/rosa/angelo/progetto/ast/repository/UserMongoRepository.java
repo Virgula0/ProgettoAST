@@ -53,7 +53,6 @@ public class UserMongoRepository implements UserRepository {
 	}
 
 	private User documentToUser(Document doc) {
-		// String username, String password, int id
 		return new User(doc.getString(USERNAME_KEY), doc.getString(PASSWORD_KEY), doc.getInteger(ID_KEY));
 	}
 
@@ -65,7 +64,11 @@ public class UserMongoRepository implements UserRepository {
 
 	@Override
 	public User findUserByUsernameAndPassword(String username, String password) {
-		// TODO Auto-generated method stub
+		for (Document doc : userCollection.find()) {
+			if (username.equals(doc.getString(USERNAME_KEY)) && password.equals(doc.getString(PASSWORD_KEY))) {
+				return documentToUser(doc);
+			}
+		}
 		return null;
 	}
 
