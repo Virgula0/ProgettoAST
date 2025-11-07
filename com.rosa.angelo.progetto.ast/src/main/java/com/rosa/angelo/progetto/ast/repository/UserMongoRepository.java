@@ -30,7 +30,7 @@ public class UserMongoRepository implements UserRepository {
 
 	@Override
 	public void save(User user) {
-		if (user == null) {
+		if (user == null || user.getUsername() == null || user.getPassword() == null) {
 			return;
 		}
 		userCollection.insertOne(new Document().append(ID_KEY, user.getId()).append(USERNAME_KEY, user.getUsername())

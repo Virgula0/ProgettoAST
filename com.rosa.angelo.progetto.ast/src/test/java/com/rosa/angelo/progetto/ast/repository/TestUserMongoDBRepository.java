@@ -78,4 +78,35 @@ public class TestUserMongoDBRepository {
 				.into(new ArrayList<>()))
 				.isEmpty();
 	}
+	
+	@Test 
+	public void testFieldsOfUserAreNullExceptForID() {
+		User userWithUsernameNull = new User(null, TEST_PASSWORD, 1);
+		User userWithPasswordNull = new User(TEST_USERNAME, null, 1);
+		User bothNull = new User(null, null, 1);
+		
+		userRepository.save(userWithUsernameNull);
+		
+		assertThat(userRepository.getUserCollection()
+				.find()
+				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
+				.into(new ArrayList<>()))
+				.isEmpty();
+
+		userRepository.save(userWithPasswordNull);
+		
+		assertThat(userRepository.getUserCollection()
+				.find()
+				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
+				.into(new ArrayList<>()))
+				.isEmpty();
+
+		userRepository.save(bothNull);
+		
+		assertThat(userRepository.getUserCollection()
+				.find()
+				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
+				.into(new ArrayList<>()))
+				.isEmpty();
+	}
 }
