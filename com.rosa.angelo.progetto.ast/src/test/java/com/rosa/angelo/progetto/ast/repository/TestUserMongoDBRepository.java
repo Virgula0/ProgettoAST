@@ -66,4 +66,16 @@ public class TestUserMongoDBRepository {
 				.into(new ArrayList<>()))
 				.containsExactly(new User(TEST_USERNAME, TEST_PASSWORD, 1));
 	}
+	
+	@Test
+	public void testSaveANewUserIsNull() {
+		User user = null;
+		userRepository.save(user);
+
+		assertThat(userRepository.getUserCollection()
+				.find()
+				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
+				.into(new ArrayList<>()))
+				.isEmpty();
+	}
 }
