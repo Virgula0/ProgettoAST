@@ -80,7 +80,7 @@ public class TestUserMongoDBRepository {
 	}
 	
 	@Test 
-	public void testFieldsOfUserAreNullExceptForID() {
+	public void testSaveFieldsOfUserAreNullExceptForID() {
 		User userWithUsernameNull = new User(null, TEST_PASSWORD, 1);
 		User userWithPasswordNull = new User(TEST_USERNAME, null, 1);
 		User bothNull = new User(null, null, 1);
@@ -108,5 +108,10 @@ public class TestUserMongoDBRepository {
 				.map(doc -> new User(doc.getString("username"), doc.getString("password"), doc.getInteger("id")))
 				.into(new ArrayList<>()))
 				.isEmpty();
+	}
+	
+	@Test 
+	public void testRegistrationToken() {
+		assertThat(userRepository.getRegistrationToken()).isEqualTo("validToken");
 	}
 }
