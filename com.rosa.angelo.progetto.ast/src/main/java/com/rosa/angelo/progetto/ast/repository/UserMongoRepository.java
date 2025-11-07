@@ -1,6 +1,8 @@
 package com.rosa.angelo.progetto.ast.repository;
 
 import java.util.Iterator;
+import java.util.Objects;
+import java.util.stream.StreamSupport;
 
 import org.bson.Document;
 
@@ -44,24 +46,21 @@ public class UserMongoRepository implements UserRepository {
 	@Override
 	public String getRegistrationToken() {
 		/*
-		 * This is just a simplification for the purpose of the project
-		 * Registration tokens should be single disposable after each registration
+		 * This is just a simplification for the purpose of the project Registration
+		 * tokens should be single disposable after each registration
 		 */
 		return REGISTRATION_TOKEN;
 	}
-	
-	private User documentToUser(String username, String password, int id) {
-		return new User(username, password, id);
+
+	private User documentToUser(Document doc) {
+		// String username, String password, int id
+		return new User(doc.getString(USERNAME_KEY), doc.getString(PASSWORD_KEY), doc.getInteger(ID_KEY));
 	}
 
 	@Override
 	public User findUserById(int id) {
-		for (Document doc : userCollection.find()) {
-			if (doc.getInteger(ID_KEY)	== id) {
-				return documentToUser(doc.getString(USERNAME_KEY), doc.getString(PASSWORD_KEY),doc.getInteger(ID_KEY));
-			}
-		}
-		return null;
+		return StreamSupport.stream(userCollection.find().spliterator(), false).map(d -> documentToUser(d))
+				.filter(x -> Objects.equals(x.getId(), id)).findFirst().orElse(null);
 	}
 
 	@Override
