@@ -143,7 +143,7 @@ public class TestUserMongoDBRepository {
 	}
 
 	@Test
-	public void testfindUserByUsernameAndPasswordWhenOrUsernameOrPasswordIsWrong() {
+	public void testfindUserByUsernameAndPasswordWhenUsernameOrPasswordIsWrong() {
 		String username = "user1";
 		String password = "password1";
 		addTestUserToDatabase(1, username, password);
@@ -194,5 +194,11 @@ public class TestUserMongoDBRepository {
 		addTestUserToDatabase(1, username, password);
 
 		assertThat(userRepository.findUserByUsername(null)).isNull();
+	}
+	
+	// docs
+	@Test
+	public void testFindUserByNonExistingUsername() {
+		assertThat(userRepository.findUserByUsername("nonExistent")).isNull();
 	}
 }
