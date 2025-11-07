@@ -33,8 +33,11 @@ public class UserMariaDBRepository implements UserRepository {
 
 	@Override
 	public String getRegistrationToken() {
-		// TODO Auto-generated method stub
-		return null;
+		/*
+		 * This is just a simplification for the purpose of the project Registration
+		 * tokens should be single disposable after each registration
+		 */
+		return REGISTRATION_TOKEN;
 	}
 
 	@Override

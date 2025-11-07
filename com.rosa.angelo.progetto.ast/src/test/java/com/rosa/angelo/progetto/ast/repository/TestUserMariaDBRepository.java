@@ -1,5 +1,7 @@
 package com.rosa.angelo.progetto.ast.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -22,7 +24,7 @@ public class TestUserMariaDBRepository {
 			.withDatabaseName(UserMariaDBRepository.AST_DB_NAME).withUsername(UserMariaDBRepository.DB_USERNAME)
 			.withPassword(UserMariaDBRepository.DB_PASSWORD).withExposedPorts(UserMariaDBRepository.PORT);
 
-	private static UserMariaDBRepository userRepo;
+	private static UserMariaDBRepository userRepository;
 	private static Connection connection;
 
 	private void cleanupAndCreate() throws SQLException {
@@ -48,7 +50,7 @@ public class TestUserMariaDBRepository {
 
 	@Before
 	public void setup() throws SQLException {
-		userRepo = new UserMariaDBRepository(connection);
+		userRepository = new UserMariaDBRepository(connection);
 		cleanupAndCreate();
 	}
 
@@ -64,7 +66,7 @@ public class TestUserMariaDBRepository {
 	}
 
 	@Test
-	public void test() {
-
+	public void testRegistrationToken() {
+		assertThat(userRepository.getRegistrationToken()).isEqualTo("validToken");
 	}
 }
