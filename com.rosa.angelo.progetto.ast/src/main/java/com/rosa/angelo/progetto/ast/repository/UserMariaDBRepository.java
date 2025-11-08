@@ -82,8 +82,17 @@ public class UserMariaDBRepository implements UserRepository {
 	}
 
 	@Override
-	public User findUserByUsernameAndPassword(String username, String password) {
-		// TODO Auto-generated method stub
+	public User findUserByUsernameAndPassword(String username, String password) throws SQLException {
+		String query = "SELECT * from %s WHERE username = ? AND password = ?";
+		String statement = String.format(query, USER_TABLE_NAME);
+		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+			stmt.setString(1, username);
+			stmt.setString(2, password);
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				return databaseToUser(rs);
+			}
+		}
 		return null;
 	}
 }

@@ -14,7 +14,7 @@ public interface UserRepository {
 
 	User findUserById(int id) throws SQLException;
 
-	User findUserByUsernameAndPassword(String username, String password);
+	User findUserByUsernameAndPassword(String username, String password) throws SQLException;
 
 	User findUserByUsername(String username) throws SQLException;
 }

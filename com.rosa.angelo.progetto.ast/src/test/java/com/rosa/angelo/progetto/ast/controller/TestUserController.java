@@ -149,7 +149,7 @@ public class TestUserController {
 		verify(userRepository, times(1)).save(userToAdd);
 		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
 	}
-	
+
 	@Test
 	public void testControllerSQLExceptionShowsErrorOnFindUserByID() throws SQLException {
 		User userToCheck = new User("test", VALID_PASSWORD, 1);
@@ -163,7 +163,7 @@ public class TestUserController {
 		verify(userRepository, times(1)).findUserById(userToCheck.getId());
 		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
 	}
-	
+
 	@Test
 	public void testControllerSQLExceptionShowsErrorOnFindUserByUsername() throws SQLException {
 		User userToCheck = new User("test", VALID_PASSWORD, 1);
@@ -179,6 +179,20 @@ public class TestUserController {
 		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
 	}
 
+	@Test
+	public void testControllerSQLExceptionShowsErrorOnFindUserByUsernameAndPassword() throws SQLException {
+		User userToCheck = new User("test", VALID_PASSWORD, 1);
+		String exceptionMessage = "Database connection failed";
+
+		doThrow(new SQLException(exceptionMessage)).when(userRepository)
+				.findUserByUsernameAndPassword(userToCheck.getUsername(), userToCheck.getPassword());
+
+		userController.login(userToCheck.getUsername(), userToCheck.getPassword());
+
+		verify(userRepository, times(1)).findUserByUsernameAndPassword(userToCheck.getUsername(),
+				userToCheck.getPassword());
+		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
 
 	@Test
 	public void testNewUserWithUsernameWithExactlyEigthCharsMustSuceed() throws SQLException {
@@ -215,7 +229,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginWhitNullUsername() {
+	public void loginWhitNullUsername() throws SQLException {
 		String password = VALID_PASSWORD;
 
 		userController.login(null, password);
@@ -225,7 +239,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginWhitNullPassword() {
+	public void loginWhitNullPassword() throws SQLException {
 		String username = "test";
 
 		userController.login(username, null);
@@ -236,7 +250,7 @@ public class TestUserController {
 
 	// docs
 	@Test
-	public void loginWhitEmptyCredentials() {
+	public void loginWhitEmptyCredentials() throws SQLException {
 		userController.login("", "");
 		verify(userRepository, times(1)).findUserByUsernameAndPassword("", "");
 		verify(loginView, times(0)).switchPanel();
@@ -244,7 +258,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginSuceedsWhenCredentialsAreCorrectAndUserExists() {
+	public void loginSuceedsWhenCredentialsAreCorrectAndUserExists() throws SQLException {
 		String username = "test";
 		String password = VALID_PASSWORD;
 		// mock
@@ -259,7 +273,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginNotSuceedsWhenUserDoesNotExists() {
+	public void loginNotSuceedsWhenUserDoesNotExists() throws SQLException {
 		String username = "test";
 		String password = VALID_PASSWORD;
 
@@ -271,7 +285,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginNotSuceedsWhenCredentialsAreWrong() {
+	public void loginNotSuceedsWhenCredentialsAreWrong() throws SQLException {
 		String username = "test";
 		String password = VALID_PASSWORD;
 		when(userRepository.findUserByUsernameAndPassword(username, password))
@@ -286,7 +300,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginSucceedsCheckViewSwitch() {
+	public void loginSucceedsCheckViewSwitch() throws SQLException {
 		String username = "test";
 		String password = VALID_PASSWORD;
 		// mock

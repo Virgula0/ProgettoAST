@@ -63,8 +63,14 @@ public class UserController {
 	}
 
 	public void login(String username, String password) {
-		if (userRepo.findUserByUsernameAndPassword(username, password) == null) {
-			loginView.showError("Invalid credentials");
+
+		try {
+			if (userRepo.findUserByUsernameAndPassword(username, password) == null) {
+				loginView.showError("Invalid credentials");
+				return;
+			}
+		} catch (SQLException ex) {
+			handleSQLException(ex);
 			return;
 		}
 

@@ -180,4 +180,49 @@ public class TestUserMariaDBRepository {
 	public void testFindUserByNonExistingUsername() throws SQLException {
 		assertThat(userRepository.findUserByUsername("nonExistent")).isNull();
 	}
+	
+	@Test
+	public void testfindUserByUsernameAndPasswordOnExistingUser() throws SQLException {
+		String username = "user1";
+		String password = "password1";
+		addTestUserToDatabase(1, username, password);
+		String username2 = "user2";
+		String password2 = "password2";
+		addTestUserToDatabase(2, username2, password2);
+
+		User user = userRepository.findUserByUsernameAndPassword(username2, password2);
+
+		assertThat(user).isEqualTo(new User(username2, password2, 2));
+		assertThat(user.getPassword()).isEqualTo(password2);
+		assertThat(userRepository.findUserByUsernameAndPassword("", "")).isNull();
+	}
+	
+	@Test
+	public void testfindUserByUsernameAndPasswordWhenUsernameOrPasswordIsWrong() throws SQLException {
+		String username = "user1";
+		String password = "password1";
+		addTestUserToDatabase(1, username, password);
+		String username2 = "user2";
+		String password2 = "password2";
+		addTestUserToDatabase(2, username2, password2);
+
+		assertThat(userRepository.findUserByUsernameAndPassword("wrongusername", password2)).isNull();
+		assertThat(userRepository.findUserByUsernameAndPassword(username2, "wrongPassword")).isNull();
+		assertThat(userRepository.findUserByUsernameAndPassword("wrongUsername", "wrongPassword")).isNull();
+
+	}
+
+	@Test
+	public void testfindUserByUsernameAndPasswordWithFuzzedNulls() throws SQLException {
+		String username = "user1";
+		String password = "password1";
+		addTestUserToDatabase(1, username, password);
+		String username2 = "user2";
+		String password2 = "password2";
+		addTestUserToDatabase(2, username2, password2);
+
+		assertThat(userRepository.findUserByUsernameAndPassword(null, password2)).isNull();
+		assertThat(userRepository.findUserByUsernameAndPassword(username2, null)).isNull();
+		assertThat(userRepository.findUserByUsernameAndPassword(null, null)).isNull();
+	}
 }
