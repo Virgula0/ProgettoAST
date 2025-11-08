@@ -10,8 +10,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.sql.SQLException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.rosa.angelo.progetto.ast.model.User;
+import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;
 import com.rosa.angelo.progetto.ast.repository.UserRepository;
 import com.rosa.angelo.progetto.ast.view.LoginView;
 
@@ -54,7 +53,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserInvalidRegistrationToken() throws SQLException {
+	public void testNewUserInvalidRegistrationToken() throws GenericRepositoryException {
 		User user = new User("test", VALID_PASSWORD, 1);
 
 		userController.newUser(user, INVALID_TOKEN);
@@ -65,7 +64,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithNullToken() throws SQLException {
+	public void testNewUserWithNullToken() throws GenericRepositoryException {
 		User user = new User("test", VALID_PASSWORD, 1);
 
 		userController.newUser(user, null);
@@ -76,7 +75,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithEmptyTokenString() throws SQLException {
+	public void testNewUserWithEmptyTokenString() throws GenericRepositoryException {
 		User user = new User("test", VALID_PASSWORD, 1);
 		userController.newUser(user, "");
 
@@ -86,7 +85,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWhenUserDoesNotAlreadyExistAndTokenIsCorrect() throws SQLException {
+	public void testNewUserWhenUserDoesNotAlreadyExistAndTokenIsCorrect() throws GenericRepositoryException {
 		User user = new User("test", VALID_PASSWORD, 1);
 
 		userController.newUser(user, VALID_TOKEN);
@@ -111,7 +110,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithSameIdAlreadyExistAndValidToken() throws SQLException {
+	public void testNewUserWithSameIdAlreadyExistAndValidToken() throws GenericRepositoryException {
 		User existingUser = new User("test", VALID_PASSWORD, 1);
 		User userToAdd = new User("test", "passwordDifferent", 1);
 
@@ -125,7 +124,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithUsernameLessThanEigthChars() throws SQLException {
+	public void testNewUserWithUsernameLessThanEigthChars() throws GenericRepositoryException {
 		String sevenChar = "1234567";
 		User userToAdd = new User("test", sevenChar, 1);
 
@@ -140,11 +139,11 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testControllerSQLExceptionShowsErrorOnSave() throws SQLException {
+	public void testControllerGenericRepositoryExceptionShowsErrorOnSave() throws GenericRepositoryException {
 		User userToAdd = new User("test", VALID_PASSWORD, 1);
 		String exceptionMessage = "Database connection failed";
 
-		doThrow(new SQLException(exceptionMessage)).when(userRepository).save(userToAdd);
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(userRepository).save(userToAdd);
 
 		userController.newUser(userToAdd, VALID_TOKEN);
 
@@ -156,11 +155,11 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testControllerSQLExceptionShowsErrorOnFindUserByID() throws SQLException {
+	public void testControllerGenericRepositoryExceptionShowsErrorOnFindUserByID() throws GenericRepositoryException {
 		User userToCheck = new User("test", VALID_PASSWORD, 1);
 		String exceptionMessage = "Database connection failed";
 
-		doThrow(new SQLException(exceptionMessage)).when(userRepository).findUserById(1);
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(userRepository).findUserById(1);
 
 		userController.newUser(userToCheck, VALID_TOKEN);
 
@@ -170,11 +169,13 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testControllerSQLExceptionShowsErrorOnFindUserByUsername() throws SQLException {
+	public void testControllerGenericRepositoryExceptionShowsErrorOnFindUserByUsername()
+			throws GenericRepositoryException {
 		User userToCheck = new User("test", VALID_PASSWORD, 1);
 		String exceptionMessage = "Database connection failed";
 
-		doThrow(new SQLException(exceptionMessage)).when(userRepository).findUserByUsername(userToCheck.getUsername());
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(userRepository)
+				.findUserByUsername(userToCheck.getUsername());
 
 		userController.newUser(userToCheck, VALID_TOKEN);
 
@@ -185,11 +186,12 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testControllerSQLExceptionShowsErrorOnFindUserByUsernameAndPassword() throws SQLException {
+	public void testControllerGenericRepositoryExceptionShowsErrorOnFindUserByUsernameAndPassword()
+			throws GenericRepositoryException {
 		User userToCheck = new User("test", VALID_PASSWORD, 1);
 		String exceptionMessage = "Database connection failed";
 
-		doThrow(new SQLException(exceptionMessage)).when(userRepository)
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(userRepository)
 				.findUserByUsernameAndPassword(userToCheck.getUsername(), userToCheck.getPassword());
 
 		userController.login(userToCheck.getUsername(), userToCheck.getPassword());
@@ -200,7 +202,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithUsernameWithExactlyEigthCharsMustSuceed() throws SQLException {
+	public void testNewUserWithUsernameWithExactlyEigthCharsMustSuceed() throws GenericRepositoryException {
 		String sevenChar = "12345678";
 		User userToAdd = new User("test", sevenChar, 1);
 
@@ -217,7 +219,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithDifferentIdButSameUsernameShouldFail() throws SQLException {
+	public void testNewUserWithDifferentIdButSameUsernameShouldFail() throws GenericRepositoryException {
 		User existingUser = new User("test", VALID_PASSWORD, 1);
 		User userToAdd = new User("test", "passwordDifferent", 2);
 
@@ -234,7 +236,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginWhitNullUsername() throws SQLException {
+	public void loginWhitNullUsername() throws GenericRepositoryException {
 		String password = VALID_PASSWORD;
 
 		userController.login(null, password);
@@ -244,7 +246,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginWhitNullPassword() throws SQLException {
+	public void loginWhitNullPassword() throws GenericRepositoryException {
 		String username = "test";
 
 		userController.login(username, null);
@@ -255,7 +257,7 @@ public class TestUserController {
 
 	// docs
 	@Test
-	public void loginWhitEmptyCredentials() throws SQLException {
+	public void loginWhitEmptyCredentials() throws GenericRepositoryException {
 		userController.login("", "");
 		verify(userRepository, times(1)).findUserByUsernameAndPassword("", "");
 		verify(loginView, times(0)).switchPanel();
@@ -263,7 +265,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginSuceedsWhenCredentialsAreCorrectAndUserExists() throws SQLException {
+	public void loginSuceedsWhenCredentialsAreCorrectAndUserExists() throws GenericRepositoryException {
 		String username = "test";
 		String password = VALID_PASSWORD;
 		// mock
@@ -278,7 +280,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginNotSuceedsWhenUserDoesNotExists() throws SQLException {
+	public void loginNotSuceedsWhenUserDoesNotExists() throws GenericRepositoryException {
 		String username = "test";
 		String password = VALID_PASSWORD;
 
@@ -290,7 +292,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginNotSuceedsWhenCredentialsAreWrong() throws SQLException {
+	public void loginNotSuceedsWhenCredentialsAreWrong() throws GenericRepositoryException {
 		String username = "test";
 		String password = VALID_PASSWORD;
 		when(userRepository.findUserByUsernameAndPassword(username, password))
@@ -305,7 +307,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginSucceedsCheckViewSwitch() throws SQLException {
+	public void loginSucceedsCheckViewSwitch() throws GenericRepositoryException {
 		String username = "test";
 		String password = VALID_PASSWORD;
 		// mock

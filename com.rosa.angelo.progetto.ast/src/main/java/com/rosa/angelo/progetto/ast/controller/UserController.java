@@ -1,9 +1,9 @@
 package com.rosa.angelo.progetto.ast.controller;
 
-import java.sql.SQLException;
 import java.util.Objects;
 
 import com.rosa.angelo.progetto.ast.model.User;
+import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;
 import com.rosa.angelo.progetto.ast.repository.UserRepository;
 import com.rosa.angelo.progetto.ast.view.LoginView;
 
@@ -36,8 +36,8 @@ public class UserController {
 				found = userRepo.findUserByUsername(user.getUsername());
 			}
 
-		} catch (SQLException ex) {
-			handleSQLException(ex);
+		} catch (GenericRepositoryException ex) {
+			hadleRepoException(ex);
 			return;
 		}
 
@@ -52,12 +52,12 @@ public class UserController {
 		}
 		try {
 			userRepo.save(user);
-		} catch (SQLException ex) {
-			handleSQLException(ex);
+		} catch (GenericRepositoryException ex) {
+			hadleRepoException(ex);
 		}
 	}
 
-	private void handleSQLException(SQLException ex) {
+	private void hadleRepoException(GenericRepositoryException ex) {
 		loginView.showError("Exception occurred in repository: " + ex.getMessage());
 	}
 
@@ -68,8 +68,8 @@ public class UserController {
 				loginView.showError("Invalid credentials");
 				return;
 			}
-		} catch (SQLException ex) {
-			handleSQLException(ex);
+		} catch (GenericRepositoryException ex) {
+			hadleRepoException(ex);
 			return;
 		}
 

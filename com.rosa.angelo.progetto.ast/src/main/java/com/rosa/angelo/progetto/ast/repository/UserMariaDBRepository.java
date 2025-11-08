@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import com.rosa.angelo.progetto.ast.model.User;
 
 public class UserMariaDBRepository implements UserRepository {
-	
+
 	public static final String ID_KEY = "id";
 	public static final String USERNAME_KEY = "username";
 	public static final String PWD_DB_KEY = "password";
@@ -28,18 +28,44 @@ public class UserMariaDBRepository implements UserRepository {
 		this.connection = connection;
 	}
 
+	private String saveQuery = "INSERT INTO %s (username,password,id) VALUES (?,?,?)";
+	private String userByIdQuery = "SELECT * from %s WHERE id = ?";
+	private String userByUsernameQuery = "SELECT * from %s WHERE username = ?";
+	private String userByUsernameAndPasswordQuery = "SELECT * from %s WHERE username = ? AND password = ?";
+
+	void injectSaveQuery(String toInject) {
+		this.saveQuery = toInject;
+	}
+
+	void injectUserByIDQuery(String toInject) {
+		this.userByIdQuery = toInject;
+	}
+
+	void injectuserByUsernameQuery(String toInject) {
+		this.userByUsernameQuery = toInject;
+	}
+
+	void injectuserByUsernameAndPasswordQuery(String toInject) {
+		this.userByUsernameAndPasswordQuery = toInject;
+	}
+
+	private GenericRepositoryException handleDBException(SQLException ex) {
+		return new GenericRepositoryException(ex.getMessage());
+	}
+
 	@Override
-	public void save(User user) throws SQLException {
+	public void save(User user) throws GenericRepositoryException {
 		if (user == null || user.getUsername() == null || user.getPassword() == null) {
 			return;
 		}
-		String query = "INSERT INTO %s (username,password,id) VALUES (?,?,?)";
-		String statement = String.format(query, USER_TABLE_NAME);
+		String statement = String.format(saveQuery, USER_TABLE_NAME);
 		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
 			stmt.setString(1, user.getUsername());
 			stmt.setString(2, user.getPassword());
 			stmt.setInt(3, user.getId());
 			stmt.executeUpdate();
+		} catch (SQLException ex) {
+			throw (handleDBException(ex));
 		}
 	}
 
@@ -53,15 +79,16 @@ public class UserMariaDBRepository implements UserRepository {
 	}
 
 	@Override
-	public User findUserById(int id) throws SQLException {
-		String query = "SELECT * from %s WHERE id = ?";
-		String statement = String.format(query, USER_TABLE_NAME);
+	public User findUserById(int id) throws GenericRepositoryException {
+		String statement = String.format(userByIdQuery, USER_TABLE_NAME);
 		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
 			stmt.setInt(1, id);
 			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
 				return databaseToUser(rs);
 			}
+		} catch (SQLException ex) {
+			throw (handleDBException(ex));
 		}
 		return null;
 	}
@@ -71,23 +98,23 @@ public class UserMariaDBRepository implements UserRepository {
 	}
 
 	@Override
-	public User findUserByUsername(String username) throws SQLException {
-		String query = "SELECT * from %s WHERE username = ?";
-		String statement = String.format(query, USER_TABLE_NAME);
+	public User findUserByUsername(String username) throws GenericRepositoryException {
+		String statement = String.format(userByUsernameQuery, USER_TABLE_NAME);
 		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
 			stmt.setString(1, username);
 			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
 				return databaseToUser(rs);
 			}
+		} catch (SQLException ex) {
+			throw (handleDBException(ex));
 		}
 		return null;
 	}
 
 	@Override
-	public User findUserByUsernameAndPassword(String username, String password) throws SQLException {
-		String query = "SELECT * from %s WHERE username = ? AND password = ?";
-		String statement = String.format(query, USER_TABLE_NAME);
+	public User findUserByUsernameAndPassword(String username, String password) throws GenericRepositoryException {
+		String statement = String.format(userByUsernameAndPasswordQuery, USER_TABLE_NAME);
 		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
 			stmt.setString(1, username);
 			stmt.setString(2, password);
@@ -95,6 +122,8 @@ public class UserMariaDBRepository implements UserRepository {
 			if (rs.next()) {
 				return databaseToUser(rs);
 			}
+		} catch (SQLException ex) {
+			throw (handleDBException(ex));
 		}
 		return null;
 	}

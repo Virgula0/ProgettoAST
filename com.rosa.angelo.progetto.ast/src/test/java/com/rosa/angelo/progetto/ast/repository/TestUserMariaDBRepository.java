@@ -1,6 +1,7 @@
 package com.rosa.angelo.progetto.ast.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -36,14 +37,18 @@ public class TestUserMariaDBRepository {
 	private static final String TEST_USERNAME = "TEST_USERNAME";
 	private static final String TEST_PASSWORD = "TEST_PASSWORD";
 
-	private void cleanupAndCreate() throws SQLException {
-		try (Statement stmt = connection.createStatement()) {
-			stmt.execute("DROP DATABASE IF EXISTS " + UserMariaDBRepository.AST_DB_NAME);
-			stmt.execute("CREATE DATABASE " + UserMariaDBRepository.AST_DB_NAME);
-			stmt.execute("USE " + UserMariaDBRepository.AST_DB_NAME);
+	private void cleanupAndCreate() {
+		try {
+			try (Statement stmt = connection.createStatement()) {
+				stmt.execute("DROP DATABASE IF EXISTS " + UserMariaDBRepository.AST_DB_NAME);
+				stmt.execute("CREATE DATABASE " + UserMariaDBRepository.AST_DB_NAME);
+				stmt.execute("USE " + UserMariaDBRepository.AST_DB_NAME);
 
-			stmt.execute("CREATE TABLE " + UserMariaDBRepository.USER_TABLE_NAME
-					+ " (id INT PRIMARY KEY,username VARCHAR(255),password VARCHAR(255))");
+				stmt.execute("CREATE TABLE " + UserMariaDBRepository.USER_TABLE_NAME
+						+ " (id INT PRIMARY KEY,username VARCHAR(255),password VARCHAR(255))");
+			}
+		} catch (SQLException ex) {
+			new GenericRepositoryException(ex.getMessage());
 		}
 	}
 
@@ -58,13 +63,13 @@ public class TestUserMariaDBRepository {
 	}
 
 	@Before
-	public void setup() throws SQLException {
+	public void setup() {
 		userRepository = new UserMariaDBRepository(connection);
 		cleanupAndCreate();
 	}
 
 	@After
-	public void after() throws SQLException {
+	public void after() {
 		cleanupAndCreate();
 	}
 
@@ -79,31 +84,39 @@ public class TestUserMariaDBRepository {
 		assertThat(userRepository.getRegistrationToken()).isEqualTo("validToken");
 	}
 
-	private List<User> getAllUsers() throws SQLException {
+	private List<User> getAllUsers() {
 		String query = "SELECT * from users";
 		List<User> users = new ArrayList<>();
-		try (PreparedStatement stmt = connection.prepareStatement(query)) {
-			ResultSet rs = stmt.executeQuery();
-			while (rs.next()) {
-				users.add(new User(rs.getString("username"), rs.getString("password"), rs.getInt("id")));
+		try {
+			try (PreparedStatement stmt = connection.prepareStatement(query)) {
+				ResultSet rs = stmt.executeQuery();
+				while (rs.next()) {
+					users.add(new User(rs.getString("username"), rs.getString("password"), rs.getInt("id")));
+				}
 			}
+		} catch (SQLException ex) {
+			new GenericRepositoryException(ex.getMessage());
 		}
 		return users;
 	}
 
-	private void addTestUserToDatabase(int id, String username, String password) throws SQLException {
+	private void addTestUserToDatabase(int id, String username, String password) {
 		String query = "INSERT INTO %s (username,password,id) VALUES (?,?,?)";
 		String statement = String.format(query, UserMariaDBRepository.USER_TABLE_NAME);
-		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
-			stmt.setString(1, username);
-			stmt.setString(2, password);
-			stmt.setInt(3, id);
-			stmt.executeUpdate();
+		try {
+			try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+				stmt.setString(1, username);
+				stmt.setString(2, password);
+				stmt.setInt(3, id);
+				stmt.executeUpdate();
+			}
+		} catch (SQLException ex) {
+			new GenericRepositoryException(ex.getMessage());
 		}
 	}
 
 	@Test
-	public void testSaveANewUserSuccesfully() throws SQLException {
+	public void testSaveANewUserSuccesfully() throws GenericRepositoryException {
 		User user = new User(TEST_USERNAME, TEST_PASSWORD, 1);
 		userRepository.save(user);
 
@@ -111,7 +124,7 @@ public class TestUserMariaDBRepository {
 	}
 
 	@Test
-	public void testSaveANewUserIsNull() throws SQLException {
+	public void testSaveANewUserIsNull() throws GenericRepositoryException {
 		User user = null;
 		userRepository.save(user);
 
@@ -119,7 +132,7 @@ public class TestUserMariaDBRepository {
 	}
 
 	@Test
-	public void testSaveFieldsOfUserAreNullExceptForID() throws SQLException {
+	public void testSaveFieldsOfUserAreNullExceptForID() throws GenericRepositoryException {
 		User userWithUsernameNull = new User(null, TEST_PASSWORD, 1);
 		User userWithPasswordNull = new User(TEST_USERNAME, null, 1);
 		User bothNull = new User(null, null, 1);
@@ -138,7 +151,7 @@ public class TestUserMariaDBRepository {
 	}
 
 	@Test
-	public void testFindUserByIdWhenUserExists() throws SQLException {
+	public void testFindUserByIdWhenUserExists() throws GenericRepositoryException {
 		addTestUserToDatabase(1, TEST_USERNAME, TEST_PASSWORD);
 		addTestUserToDatabase(2, TEST_USERNAME, TEST_PASSWORD);
 
@@ -148,14 +161,14 @@ public class TestUserMariaDBRepository {
 	}
 
 	@Test
-	public void testFindUserByIdWhenUserDoesNotExistsAndCollectionIsEmpty() throws SQLException {
+	public void testFindUserByIdWhenUserDoesNotExistsAndCollectionIsEmpty() throws GenericRepositoryException {
 		User user = userRepository.findUserById(1);
 
 		assertThat(user).isNull();
 	}
 
 	@Test
-	public void testFindUserByUsernameOnExistingUser() throws SQLException {
+	public void testFindUserByUsernameOnExistingUser() throws GenericRepositoryException {
 		String username = "user1";
 		String password = "password1";
 		addTestUserToDatabase(1, username, password);
@@ -171,7 +184,7 @@ public class TestUserMariaDBRepository {
 	}
 
 	@Test
-	public void testFindUserByUsernameWithNull() throws SQLException {
+	public void testFindUserByUsernameWithNull() throws GenericRepositoryException {
 		String username = "user1";
 		String password = "password1";
 		addTestUserToDatabase(1, username, password);
@@ -181,12 +194,12 @@ public class TestUserMariaDBRepository {
 
 	// docs
 	@Test
-	public void testFindUserByNonExistingUsername() throws SQLException {
+	public void testFindUserByNonExistingUsername() throws GenericRepositoryException {
 		assertThat(userRepository.findUserByUsername("nonExistent")).isNull();
 	}
 
 	@Test
-	public void testfindUserByUsernameAndPasswordOnExistingUser() throws SQLException {
+	public void testfindUserByUsernameAndPasswordOnExistingUser() throws GenericRepositoryException {
 		String username = "user1";
 		String password = "password1";
 		addTestUserToDatabase(1, username, password);
@@ -202,7 +215,7 @@ public class TestUserMariaDBRepository {
 	}
 
 	@Test
-	public void testfindUserByUsernameAndPasswordWhenUsernameOrPasswordIsWrong() throws SQLException {
+	public void testfindUserByUsernameAndPasswordWhenUsernameOrPasswordIsWrong() throws GenericRepositoryException {
 		String username = "user1";
 		String password = "password1";
 		addTestUserToDatabase(1, username, password);
@@ -217,7 +230,7 @@ public class TestUserMariaDBRepository {
 	}
 
 	@Test
-	public void testfindUserByUsernameAndPasswordWithFuzzedNulls() throws SQLException {
+	public void testfindUserByUsernameAndPasswordWithFuzzedNulls() throws GenericRepositoryException {
 		String username = "user1";
 		String password = "password1";
 		addTestUserToDatabase(1, username, password);
@@ -228,5 +241,37 @@ public class TestUserMariaDBRepository {
 		assertThat(userRepository.findUserByUsernameAndPassword(null, password2)).isNull();
 		assertThat(userRepository.findUserByUsernameAndPassword(username2, null)).isNull();
 		assertThat(userRepository.findUserByUsernameAndPassword(null, null)).isNull();
+	}
+
+	@Test
+	public void testWhenSQLExceptionisthrownBySaveMethod() {
+		userRepository.injectSaveQuery("bad query");
+
+		assertThatThrownBy(() -> userRepository.save(new User("test", "test", 1)))
+				.isInstanceOf(GenericRepositoryException.class).extracting("message").asString().isNotEmpty();
+	}
+
+	@Test
+	public void testWhenSQLExceptionisthrownByFindByID() {
+		userRepository.injectUserByIDQuery("bad query");
+
+		assertThatThrownBy(() -> userRepository.findUserById(1)).isInstanceOf(GenericRepositoryException.class)
+				.extracting("message").asString().isNotEmpty();
+	}
+
+	@Test
+	public void testWhenSQLExceptionisthrownByUserByUsername() {
+		userRepository.injectuserByUsernameQuery("bad query");
+
+		assertThatThrownBy(() -> userRepository.findUserByUsername("test"))
+				.isInstanceOf(GenericRepositoryException.class).extracting("message").asString().isNotEmpty();
+	}
+
+	@Test
+	public void testWhenSQLExceptionisthrownByUserByUsernameAndPassword() {
+		userRepository.injectuserByUsernameAndPasswordQuery("bad query");
+
+		assertThatThrownBy(() -> userRepository.findUserByUsernameAndPassword("test", "test"))
+				.isInstanceOf(GenericRepositoryException.class).extracting("message").asString().isNotEmpty();
 	}
 }
