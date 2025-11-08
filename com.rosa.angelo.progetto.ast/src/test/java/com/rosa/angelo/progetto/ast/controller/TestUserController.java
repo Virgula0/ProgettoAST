@@ -151,18 +151,34 @@ public class TestUserController {
 	}
 	
 	@Test
-	public void testControllerSQLExceptionShowsErrorOnFindUserBydID() throws SQLException {
-		User userToAdd = new User("test", VALID_PASSWORD, 1);
+	public void testControllerSQLExceptionShowsErrorOnFindUserByID() throws SQLException {
+		User userToCheck = new User("test", VALID_PASSWORD, 1);
 		String exceptionMessage = "Database connection failed";
 
 		doThrow(new SQLException(exceptionMessage)).when(userRepository).findUserById(1);
 
-		userController.newUser(userToAdd, VALID_TOKEN);
+		userController.newUser(userToCheck, VALID_TOKEN);
 
 		verify(userRepository, times(1)).getRegistrationToken();
-		verify(userRepository, times(1)).findUserById(userToAdd.getId());
+		verify(userRepository, times(1)).findUserById(userToCheck.getId());
 		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
 	}
+	
+	@Test
+	public void testControllerSQLExceptionShowsErrorOnFindUserByUsername() throws SQLException {
+		User userToCheck = new User("test", VALID_PASSWORD, 1);
+		String exceptionMessage = "Database connection failed";
+
+		doThrow(new SQLException(exceptionMessage)).when(userRepository).findUserByUsername(userToCheck.getUsername());
+
+		userController.newUser(userToCheck, VALID_TOKEN);
+
+		verify(userRepository, times(1)).getRegistrationToken();
+		verify(userRepository, times(1)).findUserById(userToCheck.getId());
+		verify(userRepository, times(1)).findUserByUsername(userToCheck.getUsername());
+		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
+
 
 	@Test
 	public void testNewUserWithUsernameWithExactlyEigthCharsMustSuceed() throws SQLException {

@@ -149,8 +149,35 @@ public class TestUserMariaDBRepository {
 
 		assertThat(user).isNull();
 	}
+	
+	@Test
+	public void testFindUserByUsernameOnExistingUser() throws SQLException {
+		String username = "user1";
+		String password = "password1";
+		addTestUserToDatabase(1, username, password);
+		String username2 = "user2";
+		String password2 = "password2";
+		addTestUserToDatabase(2, username2, password2);
 
+		User user = userRepository.findUserByUsername(username2);
 
+		assertThat(user).isEqualTo(new User(username2, password2, 2));
+		assertThat(user.getPassword()).isEqualTo(password2);
+		assertThat(userRepository.findUserByUsername("")).isNull();
+	}
+	
+	@Test
+	public void testFindUserByUsernameWithNull() throws SQLException {
+		String username = "user1";
+		String password = "password1";
+		addTestUserToDatabase(1, username, password);
 
+		assertThat(userRepository.findUserByUsername(null)).isNull();
+	}
 
+	// docs
+	@Test
+	public void testFindUserByNonExistingUsername() throws SQLException {
+		assertThat(userRepository.findUserByUsername("nonExistent")).isNull();
+	}
 }

@@ -28,11 +28,15 @@ public class UserController {
 			loginView.showError("Invalid null user passed", null);
 			return;
 		}
-		
+
 		User found = null;
 		try {
-			found = Optional.ofNullable(userRepo.findUserById(user.getId()))
-					.or(() -> Optional.ofNullable(userRepo.findUserByUsername(user.getUsername()))).orElse(null);
+			found = userRepo.findUserById(user.getId());
+
+			if (found == null) {
+				found = userRepo.findUserByUsername(user.getUsername());
+			}
+
 		} catch (SQLException ex) {
 			handleSQLException(ex);
 			return;
