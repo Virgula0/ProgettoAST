@@ -94,5 +94,33 @@ public class TestUserMariaDBRepository {
 
 		assertThat(getAllUsers()).containsExactly(new User(TEST_USERNAME, TEST_PASSWORD, 1));
 	}
+	
+	@Test
+	public void testSaveANewUserIsNull() throws SQLException {
+		User user = null;
+		userRepository.save(user);
+
+		assertThat(getAllUsers()).isEmpty();
+	}
+	
+	@Test
+	public void testSaveFieldsOfUserAreNullExceptForID() throws SQLException {
+		User userWithUsernameNull = new User(null, TEST_PASSWORD, 1);
+		User userWithPasswordNull = new User(TEST_USERNAME, null, 1);
+		User bothNull = new User(null, null, 1);
+
+		userRepository.save(userWithUsernameNull);
+
+		assertThat(getAllUsers()).isEmpty();
+
+		userRepository.save(userWithPasswordNull);
+
+		assertThat(getAllUsers()).isEmpty();
+
+		userRepository.save(bothNull);
+
+		assertThat(getAllUsers()).isEmpty();
+	}
+
 
 }

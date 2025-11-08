@@ -27,6 +27,9 @@ public class UserMariaDBRepository implements UserRepository {
 
 	@Override
 	public void save(User user) throws SQLException {
+		if (user == null || user.getUsername() == null || user.getPassword() == null) {
+			return;
+		}
 		String query = "INSERT INTO %s (username,password,id) VALUES (?,?,?)";
 		String statement = String.format(query, USER_TABLE_NAME);
 		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
