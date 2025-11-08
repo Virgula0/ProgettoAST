@@ -28,9 +28,15 @@ public class UserController {
 			loginView.showError("Invalid null user passed", null);
 			return;
 		}
-
-		User found = Optional.ofNullable(userRepo.findUserById(user.getId()))
-				.or(() -> Optional.ofNullable(userRepo.findUserByUsername(user.getUsername()))).orElse(null);
+		
+		User found = null;
+		try {
+			found = Optional.ofNullable(userRepo.findUserById(user.getId()))
+					.or(() -> Optional.ofNullable(userRepo.findUserByUsername(user.getUsername()))).orElse(null);
+		} catch (SQLException ex) {
+			handleSQLException(ex);
+			return;
+		}
 
 		if (found != null) {
 			loginView.showError("Already existing user ", found);
@@ -44,8 +50,12 @@ public class UserController {
 		try {
 			userRepo.save(user);
 		} catch (SQLException ex) {
-			loginView.showError("Exception occurred in repository: " + ex.getMessage());
+			handleSQLException(ex);
 		}
+	}
+
+	private void handleSQLException(SQLException ex) {
+		loginView.showError("Exception occurred in repository: " + ex.getMessage());
 	}
 
 	public void login(String username, String password) {

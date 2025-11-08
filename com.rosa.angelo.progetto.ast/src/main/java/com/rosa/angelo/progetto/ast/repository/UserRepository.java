@@ -12,7 +12,7 @@ public interface UserRepository {
 
 	String getRegistrationToken();
 
-	User findUserById(int id);
+	User findUserById(int id) throws SQLException;
 
 	User findUserByUsernameAndPassword(String username, String password);
 

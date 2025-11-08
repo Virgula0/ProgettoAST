@@ -52,7 +52,7 @@ public class TestUserController {
 	public void testNewUserInvalidRegistrationToken() throws SQLException {
 		User user = new User("test", VALID_PASSWORD, 1);
 
-		assertThatCode(() -> userController.newUser(user, INVALID_TOKEN)).doesNotThrowAnyException();
+		userController.newUser(user, INVALID_TOKEN);
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(0)).save(user);
@@ -63,7 +63,7 @@ public class TestUserController {
 	public void testNewUserWithNullToken() throws SQLException {
 		User user = new User("test", VALID_PASSWORD, 1);
 
-		assertThatCode(() -> userController.newUser(user, null)).doesNotThrowAnyException();
+		userController.newUser(user, null);
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(0)).save(user);
@@ -71,10 +71,9 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithEmptyString() throws SQLException {
+	public void testNewUserWithEmptyTokenString() throws SQLException {
 		User user = new User("test", VALID_PASSWORD, 1);
-
-		assertThatCode(() -> userController.newUser(user, "")).doesNotThrowAnyException();
+		userController.newUser(user, "");
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(0)).save(user);
@@ -85,7 +84,7 @@ public class TestUserController {
 	public void testNewUserWhenUserDoesNotAlreadyExistAndTokenIsCorrect() throws SQLException {
 		User user = new User("test", VALID_PASSWORD, 1);
 
-		assertThatCode(() -> userController.newUser(user, VALID_TOKEN)).doesNotThrowAnyException();
+		userController.newUser(user, VALID_TOKEN);
 
 		verify(userRepository, times(1)).findUserById(user.getId());
 		verify(userRepository, times(1)).findUserByUsername(user.getUsername());
@@ -99,7 +98,7 @@ public class TestUserController {
 
 	@Test
 	public void testInvalidNewNullUserButValidToken() {
-		assertThatCode(() -> userController.newUser(null, VALID_TOKEN)).doesNotThrowAnyException();
+		userController.newUser(null, VALID_TOKEN);
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(loginView).showError("Invalid null user passed", null);
@@ -107,12 +106,12 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithSameIdAlreadyExistAndValidToken() {
+	public void testNewUserWithSameIdAlreadyExistAndValidToken() throws SQLException {
 		User existingUser = new User("test", VALID_PASSWORD, 1);
 		User userToAdd = new User("test", "passwordDifferent", 1);
 
 		when(userRepository.findUserById(1)).thenReturn(existingUser);
-		assertThatCode(() -> userController.newUser(userToAdd, VALID_TOKEN)).doesNotThrowAnyException();
+		userController.newUser(userToAdd, VALID_TOKEN);
 
 		verify(userRepository, times(1)).findUserById(userToAdd.getId());
 		verify(userRepository, times(1)).getRegistrationToken();
@@ -121,11 +120,11 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithUsernameLessThanEigthChars() {
+	public void testNewUserWithUsernameLessThanEigthChars() throws SQLException {
 		String sevenChar = "1234567";
 		User userToAdd = new User("test", sevenChar, 1);
 
-		assertThatCode(() -> userController.newUser(userToAdd, VALID_TOKEN)).doesNotThrowAnyException();
+		userController.newUser(userToAdd, VALID_TOKEN);
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(1)).findUserById(userToAdd.getId());
@@ -136,19 +135,32 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testControllerSQLExceptionShowsError() throws SQLException {
+	public void testControllerSQLExceptionShowsErrorOnSave() throws SQLException {
 		User userToAdd = new User("test", VALID_PASSWORD, 1);
 		String exceptionMessage = "Database connection failed";
 
 		doThrow(new SQLException(exceptionMessage)).when(userRepository).save(userToAdd);
 
-		// it will not thrown an expection but showError will be checked
-		assertThatCode(() -> userController.newUser(userToAdd, VALID_TOKEN)).doesNotThrowAnyException();
+		userController.newUser(userToAdd, VALID_TOKEN);
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(1)).findUserById(userToAdd.getId());
 		verify(userRepository, times(1)).findUserByUsername(userToAdd.getUsername());
 		verify(userRepository, times(1)).save(userToAdd);
+		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
+	
+	@Test
+	public void testControllerSQLExceptionShowsErrorOnFindUserBydID() throws SQLException {
+		User userToAdd = new User("test", VALID_PASSWORD, 1);
+		String exceptionMessage = "Database connection failed";
+
+		doThrow(new SQLException(exceptionMessage)).when(userRepository).findUserById(1);
+
+		userController.newUser(userToAdd, VALID_TOKEN);
+
+		verify(userRepository, times(1)).getRegistrationToken();
+		verify(userRepository, times(1)).findUserById(userToAdd.getId());
 		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
 	}
 
@@ -157,7 +169,7 @@ public class TestUserController {
 		String sevenChar = "12345678";
 		User userToAdd = new User("test", sevenChar, 1);
 
-		assertThatCode(() -> userController.newUser(userToAdd, VALID_TOKEN)).doesNotThrowAnyException();
+		userController.newUser(userToAdd, VALID_TOKEN);
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(1)).findUserById(userToAdd.getId());
@@ -170,13 +182,13 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithDifferentIdButSameUsernameShouldFail() {
+	public void testNewUserWithDifferentIdButSameUsernameShouldFail() throws SQLException {
 		User existingUser = new User("test", VALID_PASSWORD, 1);
 		User userToAdd = new User("test", "passwordDifferent", 2);
 
 		when(userRepository.findUserByUsername("test")).thenReturn(existingUser);
 
-		assertThatCode(() -> userController.newUser(userToAdd, VALID_TOKEN)).doesNotThrowAnyException();
+		userController.newUser(userToAdd, VALID_TOKEN);
 
 		verify(userRepository, times(1)).findUserByUsername(userToAdd.getUsername());
 		verify(userRepository, times(1)).getRegistrationToken();

@@ -86,6 +86,17 @@ public class TestUserMariaDBRepository {
 		}
 		return users;
 	}
+	
+	private void addTestUserToDatabase(int id , String username, String password) throws SQLException {
+		String query = "INSERT INTO %s (username,password,id) VALUES (?,?,?)";
+		String statement = String.format(query, UserMariaDBRepository.USER_TABLE_NAME);
+		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+			stmt.setString(1, username);
+			stmt.setString(2, password);
+			stmt.setInt(3, id);
+			stmt.executeUpdate();
+		}
+	}
 
 	@Test
 	public void testSaveANewUserSuccesfully() throws SQLException {
@@ -121,6 +132,25 @@ public class TestUserMariaDBRepository {
 
 		assertThat(getAllUsers()).isEmpty();
 	}
+	
+	@Test
+	public void testFindUserByIdWhenUserExists() throws SQLException {
+		addTestUserToDatabase(1, TEST_USERNAME, TEST_PASSWORD);
+		addTestUserToDatabase(2, TEST_USERNAME, TEST_PASSWORD);
+
+		User user = userRepository.findUserById(2);
+
+		assertThat(user).isEqualTo(new User(TEST_USERNAME, TEST_PASSWORD, 2));
+	}
+	
+	@Test
+	public void testFindUserByIdWhenUserDoesNotExistsAndCollectionIsEmpty() throws SQLException {
+		User user = userRepository.findUserById(1);
+
+		assertThat(user).isNull();
+	}
+
+
 
 
 }

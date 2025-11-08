@@ -50,9 +50,21 @@ public class UserMariaDBRepository implements UserRepository {
 	}
 
 	@Override
-	public User findUserById(int id) {
-		// TODO Auto-generated method stub
+	public User findUserById(int id) throws SQLException {
+		String query = "SELECT * from %s WHERE id = ?";
+		String statement = String.format(query, USER_TABLE_NAME);
+		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+			stmt.setInt(1, id);
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				return databaseToUser(rs);
+			}
+		}
 		return null;
+	}
+
+	private User databaseToUser(ResultSet rs) throws SQLException {
+		return new User(rs.getString("username"), rs.getString("password"), rs.getInt("id"));
 	}
 
 	@Override
