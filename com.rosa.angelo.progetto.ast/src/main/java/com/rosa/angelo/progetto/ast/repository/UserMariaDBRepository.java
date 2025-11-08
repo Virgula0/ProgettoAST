@@ -1,6 +1,6 @@
 package com.rosa.angelo.progetto.ast.repository;
 
-import java.sql.Connection;
+import java.sql.*;
 
 import com.rosa.angelo.progetto.ast.model.User;
 
@@ -26,9 +26,15 @@ public class UserMariaDBRepository implements UserRepository {
 	}
 
 	@Override
-	public void save(User user) {
-		// TODO Auto-generated method stub
-
+	public void save(User user) throws SQLException {
+		String query = "INSERT INTO %s (username,password,id) VALUES (?,?,?)";
+		String statement = String.format(query, USER_TABLE_NAME);
+		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+			stmt.setString(1, user.getUsername());
+			stmt.setString(2, user.getPassword());
+			stmt.setInt(3, user.getId());
+			stmt.executeUpdate();
+		}
 	}
 
 	@Override

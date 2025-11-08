@@ -1,11 +1,11 @@
 package com.rosa.angelo.progetto.ast.repository;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.StreamSupport;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -14,6 +14,8 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.testcontainers.containers.MariaDBContainer;
+
+import com.rosa.angelo.progetto.ast.model.User;
 
 public class TestUserMariaDBRepository {
 
@@ -27,6 +29,9 @@ public class TestUserMariaDBRepository {
 	private static UserMariaDBRepository userRepository;
 	private static Connection connection;
 
+	private static final String TEST_USERNAME = "TEST_USERNAME";
+	private static final String TEST_PASSWORD = "TEST_PASSWORD";
+
 	private void cleanupAndCreate() throws SQLException {
 		try (Statement stmt = connection.createStatement()) {
 			stmt.execute("DROP DATABASE IF EXISTS " + UserMariaDBRepository.AST_DB_NAME);
@@ -34,7 +39,7 @@ public class TestUserMariaDBRepository {
 			stmt.execute("USE " + UserMariaDBRepository.AST_DB_NAME);
 
 			stmt.execute("CREATE TABLE " + UserMariaDBRepository.USER_TABLE_NAME
-					+ " (id INT PRIMARY KEY AUTO_INCREMENT,username VARCHAR(255),password VARCHAR(255))");
+					+ " (id INT PRIMARY KEY,username VARCHAR(255),password VARCHAR(255))");
 		}
 	}
 
@@ -69,4 +74,25 @@ public class TestUserMariaDBRepository {
 	public void testRegistrationToken() {
 		assertThat(userRepository.getRegistrationToken()).isEqualTo("validToken");
 	}
+
+	private List<User> getAllUsers() throws SQLException {
+		String query = "SELECT * from users";
+		List<User> users = new ArrayList<>();
+		try (PreparedStatement stmt = connection.prepareStatement(query)) {
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				users.add(new User(rs.getString("username"), rs.getString("password"), rs.getInt("id")));
+			}
+		}
+		return users;
+	}
+
+	@Test
+	public void testSaveANewUserSuccesfully() throws SQLException {
+		User user = new User(TEST_USERNAME, TEST_PASSWORD, 1);
+		userRepository.save(user);
+
+		assertThat(getAllUsers()).containsExactly(new User(TEST_USERNAME, TEST_PASSWORD, 1));
+	}
+
 }

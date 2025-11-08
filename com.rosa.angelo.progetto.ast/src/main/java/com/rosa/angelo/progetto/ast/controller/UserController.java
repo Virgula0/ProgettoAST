@@ -1,5 +1,6 @@
 package com.rosa.angelo.progetto.ast.controller;
 
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -40,8 +41,11 @@ public class UserController {
 			loginView.showError("Username must be greater or equal than 8 chars ", user);
 			return;
 		}
-
-		userRepo.save(user);
+		try {
+			userRepo.save(user);
+		} catch (SQLException ex) {
+			loginView.showError("Exception occurred in repository: " + ex.getMessage());
+		}
 	}
 
 	public void login(String username, String password) {

@@ -1,13 +1,11 @@
 package com.rosa.angelo.progetto.ast.controller;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.ignoreStubs;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
+import java.sql.SQLException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -51,9 +49,10 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserInvalidRegistrationToken() {
+	public void testNewUserInvalidRegistrationToken() throws SQLException {
 		User user = new User("test", VALID_PASSWORD, 1);
-		userController.newUser(user, INVALID_TOKEN);
+
+		assertThatCode(() -> userController.newUser(user, INVALID_TOKEN)).doesNotThrowAnyException();
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(0)).save(user);
@@ -61,9 +60,10 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithNullToken() {
+	public void testNewUserWithNullToken() throws SQLException {
 		User user = new User("test", VALID_PASSWORD, 1);
-		userController.newUser(user, null);
+
+		assertThatCode(() -> userController.newUser(user, null)).doesNotThrowAnyException();
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(0)).save(user);
@@ -71,9 +71,10 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithEmptyString() {
+	public void testNewUserWithEmptyString() throws SQLException {
 		User user = new User("test", VALID_PASSWORD, 1);
-		userController.newUser(user, "");
+
+		assertThatCode(() -> userController.newUser(user, "")).doesNotThrowAnyException();
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(0)).save(user);
@@ -81,9 +82,10 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWhenUserDoesNotAlreadyExistAndTokenIsCorrect() {
+	public void testNewUserWhenUserDoesNotAlreadyExistAndTokenIsCorrect() throws SQLException {
 		User user = new User("test", VALID_PASSWORD, 1);
-		userController.newUser(user, VALID_TOKEN);
+
+		assertThatCode(() -> userController.newUser(user, VALID_TOKEN)).doesNotThrowAnyException();
 
 		verify(userRepository, times(1)).findUserById(user.getId());
 		verify(userRepository, times(1)).findUserByUsername(user.getUsername());
@@ -97,7 +99,7 @@ public class TestUserController {
 
 	@Test
 	public void testInvalidNewNullUserButValidToken() {
-		userController.newUser(null, VALID_TOKEN);
+		assertThatCode(() -> userController.newUser(null, VALID_TOKEN)).doesNotThrowAnyException();
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(loginView).showError("Invalid null user passed", null);
@@ -110,7 +112,7 @@ public class TestUserController {
 		User userToAdd = new User("test", "passwordDifferent", 1);
 
 		when(userRepository.findUserById(1)).thenReturn(existingUser);
-		userController.newUser(userToAdd, VALID_TOKEN);
+		assertThatCode(() -> userController.newUser(userToAdd, VALID_TOKEN)).doesNotThrowAnyException();
 
 		verify(userRepository, times(1)).findUserById(userToAdd.getId());
 		verify(userRepository, times(1)).getRegistrationToken();
@@ -123,7 +125,7 @@ public class TestUserController {
 		String sevenChar = "1234567";
 		User userToAdd = new User("test", sevenChar, 1);
 
-		userController.newUser(userToAdd, VALID_TOKEN);
+		assertThatCode(() -> userController.newUser(userToAdd, VALID_TOKEN)).doesNotThrowAnyException();
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(1)).findUserById(userToAdd.getId());
@@ -134,11 +136,28 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithUsernameWithExactlyEigthCharsMustSuceed() {
+	public void testControllerSQLExceptionShowsError() throws SQLException {
+		User userToAdd = new User("test", VALID_PASSWORD, 1);
+		String exceptionMessage = "Database connection failed";
+
+		doThrow(new SQLException(exceptionMessage)).when(userRepository).save(userToAdd);
+
+		// it will not thrown an expection but showError will be checked
+		assertThatCode(() -> userController.newUser(userToAdd, VALID_TOKEN)).doesNotThrowAnyException();
+
+		verify(userRepository, times(1)).getRegistrationToken();
+		verify(userRepository, times(1)).findUserById(userToAdd.getId());
+		verify(userRepository, times(1)).findUserByUsername(userToAdd.getUsername());
+		verify(userRepository, times(1)).save(userToAdd);
+		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
+
+	@Test
+	public void testNewUserWithUsernameWithExactlyEigthCharsMustSuceed() throws SQLException {
 		String sevenChar = "12345678";
 		User userToAdd = new User("test", sevenChar, 1);
 
-		userController.newUser(userToAdd, VALID_TOKEN);
+		assertThatCode(() -> userController.newUser(userToAdd, VALID_TOKEN)).doesNotThrowAnyException();
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(1)).findUserById(userToAdd.getId());
@@ -157,7 +176,7 @@ public class TestUserController {
 
 		when(userRepository.findUserByUsername("test")).thenReturn(existingUser);
 
-		userController.newUser(userToAdd, VALID_TOKEN);
+		assertThatCode(() -> userController.newUser(userToAdd, VALID_TOKEN)).doesNotThrowAnyException();
 
 		verify(userRepository, times(1)).findUserByUsername(userToAdd.getUsername());
 		verify(userRepository, times(1)).getRegistrationToken();
