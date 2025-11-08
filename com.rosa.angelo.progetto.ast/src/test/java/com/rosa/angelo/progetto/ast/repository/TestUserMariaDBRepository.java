@@ -1,11 +1,15 @@
 package com.rosa.angelo.progetto.ast.repository;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.StreamSupport;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -86,8 +90,8 @@ public class TestUserMariaDBRepository {
 		}
 		return users;
 	}
-	
-	private void addTestUserToDatabase(int id , String username, String password) throws SQLException {
+
+	private void addTestUserToDatabase(int id, String username, String password) throws SQLException {
 		String query = "INSERT INTO %s (username,password,id) VALUES (?,?,?)";
 		String statement = String.format(query, UserMariaDBRepository.USER_TABLE_NAME);
 		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
@@ -105,7 +109,7 @@ public class TestUserMariaDBRepository {
 
 		assertThat(getAllUsers()).containsExactly(new User(TEST_USERNAME, TEST_PASSWORD, 1));
 	}
-	
+
 	@Test
 	public void testSaveANewUserIsNull() throws SQLException {
 		User user = null;
@@ -113,7 +117,7 @@ public class TestUserMariaDBRepository {
 
 		assertThat(getAllUsers()).isEmpty();
 	}
-	
+
 	@Test
 	public void testSaveFieldsOfUserAreNullExceptForID() throws SQLException {
 		User userWithUsernameNull = new User(null, TEST_PASSWORD, 1);
@@ -132,7 +136,7 @@ public class TestUserMariaDBRepository {
 
 		assertThat(getAllUsers()).isEmpty();
 	}
-	
+
 	@Test
 	public void testFindUserByIdWhenUserExists() throws SQLException {
 		addTestUserToDatabase(1, TEST_USERNAME, TEST_PASSWORD);
@@ -142,14 +146,14 @@ public class TestUserMariaDBRepository {
 
 		assertThat(user).isEqualTo(new User(TEST_USERNAME, TEST_PASSWORD, 2));
 	}
-	
+
 	@Test
 	public void testFindUserByIdWhenUserDoesNotExistsAndCollectionIsEmpty() throws SQLException {
 		User user = userRepository.findUserById(1);
 
 		assertThat(user).isNull();
 	}
-	
+
 	@Test
 	public void testFindUserByUsernameOnExistingUser() throws SQLException {
 		String username = "user1";
@@ -165,7 +169,7 @@ public class TestUserMariaDBRepository {
 		assertThat(user.getPassword()).isEqualTo(password2);
 		assertThat(userRepository.findUserByUsername("")).isNull();
 	}
-	
+
 	@Test
 	public void testFindUserByUsernameWithNull() throws SQLException {
 		String username = "user1";
@@ -180,7 +184,7 @@ public class TestUserMariaDBRepository {
 	public void testFindUserByNonExistingUsername() throws SQLException {
 		assertThat(userRepository.findUserByUsername("nonExistent")).isNull();
 	}
-	
+
 	@Test
 	public void testfindUserByUsernameAndPasswordOnExistingUser() throws SQLException {
 		String username = "user1";
@@ -196,7 +200,7 @@ public class TestUserMariaDBRepository {
 		assertThat(user.getPassword()).isEqualTo(password2);
 		assertThat(userRepository.findUserByUsernameAndPassword("", "")).isNull();
 	}
-	
+
 	@Test
 	public void testfindUserByUsernameAndPasswordWhenUsernameOrPasswordIsWrong() throws SQLException {
 		String username = "user1";

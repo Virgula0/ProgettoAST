@@ -1,10 +1,17 @@
 package com.rosa.angelo.progetto.ast.repository;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import com.rosa.angelo.progetto.ast.model.User;
 
 public class UserMariaDBRepository implements UserRepository {
+	
+	public static final String ID_KEY = "id";
+	public static final String USERNAME_KEY = "username";
+	public static final String PWD_DB_KEY = "password";
 
 	public static final String IMAGE = System.getProperty("mariadb.image", "mariadb");
 	public static final String VERSION = System.getProperty("mariadb.version", "10.9");
@@ -13,11 +20,7 @@ public class UserMariaDBRepository implements UserRepository {
 	public static final String AST_DB_NAME = System.getProperty("mariadb.dbname", "testdb");
 	public static final String USER_TABLE_NAME = "users";
 	public static final String DB_USERNAME = System.getProperty("mariadb.user", "testuser");
-	public static final String DB_PASSWORD = System.getProperty("mariadb.password", "password");
-
-	public static final String ID_KEY = "id";
-	public static final String USERNAME_KEY = "username";
-	public static final String PASSWORD_KEY = "password";
+	public static final String DB_PASSWORD = System.getProperty("mariadb.password", PWD_DB_KEY);
 
 	private Connection connection;
 
@@ -64,9 +67,9 @@ public class UserMariaDBRepository implements UserRepository {
 	}
 
 	private User databaseToUser(ResultSet rs) throws SQLException {
-		return new User(rs.getString("username"), rs.getString("password"), rs.getInt("id"));
+		return new User(rs.getString(USERNAME_KEY), rs.getString(PWD_DB_KEY), rs.getInt(ID_KEY));
 	}
-	
+
 	@Override
 	public User findUserByUsername(String username) throws SQLException {
 		String query = "SELECT * from %s WHERE username = ?";

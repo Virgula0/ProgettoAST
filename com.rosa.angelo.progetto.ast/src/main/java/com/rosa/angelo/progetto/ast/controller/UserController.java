@@ -2,7 +2,6 @@ package com.rosa.angelo.progetto.ast.controller;
 
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.Optional;
 
 import com.rosa.angelo.progetto.ast.model.User;
 import com.rosa.angelo.progetto.ast.repository.UserRepository;

@@ -66,7 +66,8 @@
 		<mariadb.password>password</mariadb.password>
 
 		<!-- sonar exclusions -->
-		<sonar.issue.ignore.multicriteria>e11a,e11b,e11c,e12,e13a,e13b,e13c,e14</sonar.issue.ignore.multicriteria>
+		<sonar.issue.ignore.multicriteria>
+			e11a,e11b,e11c,e12,e13a,e13b,e13c,e14,e15</sonar.issue.ignore.multicriteria>
 
 		<sonar.issue.ignore.multicriteria.e11a.ruleKey>java:S116</sonar.issue.ignore.multicriteria.e11a.ruleKey>
 		<sonar.issue.ignore.multicriteria.e11a.resourceKey>**/*View.java</sonar.issue.ignore.multicriteria.e11a.resourceKey>
@@ -101,6 +102,14 @@
 		<sonar.issue.ignore.multicriteria.e14.resourceKey>
 			**/*View.java
 		</sonar.issue.ignore.multicriteria.e14.resourceKey>
+
+		<!-- unfortunately sonar cube is not able to identify that TABLE_NAME ia
+		a constant so it complains about S2077 in mariadb repositories-->
+		<sonar.issue.ignore.multicriteria.e15.ruleKey>
+			java:S2077
+		</sonar.issue.ignore.multicriteria.e15.ruleKey>
+		<sonar.issue.ignore.multicriteria.e15.resourceKey>
+			**/*MariaDB*Repository.java</sonar.issue.ignore.multicriteria.e15.resourceKey>
 
 		<!-- sonar automatically excludes tests -->
 		<sonar.coverage.exclusions>
