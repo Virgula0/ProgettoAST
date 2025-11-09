@@ -65,7 +65,7 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 		window.label("registrationPasswordLabel").requireVisible();
 		window.textBox("registrationPasswordInputText").requireEnabled();
 
-		window.button(JButtonMatcher.withText("Register")).requireEnabled();
+		window.button(JButtonMatcher.withText("Register")).requireDisabled();
 
 		window.label("loginUsernameLabel").requireVisible();
 		window.textBox("loginUsernameInputText").requireEnabled();
@@ -73,7 +73,7 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 		window.label("loginPasswordLabel").requireEnabled();
 		window.textBox("loginPasswordInputText").requireEnabled();
 
-		window.button(JButtonMatcher.withText("Login")).requireEnabled();
+		window.button(JButtonMatcher.withText("Login")).requireDisabled();
 		
 		window.label("errorMessageLabel").requireText(" ");
 	}

@@ -130,6 +130,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView{
 		contentPane.add(registrationPasswordInputText, gbc_passwordField);
 		
 		JButton btnNewButton = new JButton("Register");
+		btnNewButton.setEnabled(false);
 		btnNewButton.setName("registerButton");
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
 		gbc_btnNewButton.gridwidth = 2;
@@ -184,6 +185,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView{
 		contentPane.add(loginPasswordInputText, gbc_passwordField_1);
 		
 		JButton btnNewButton_1 = new JButton("Login");
+		btnNewButton_1.setEnabled(false);
 		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
 		gbc_btnNewButton_1.gridwidth = 2;
 		gbc_btnNewButton_1.insets = new Insets(0, 0, 5, 0);
