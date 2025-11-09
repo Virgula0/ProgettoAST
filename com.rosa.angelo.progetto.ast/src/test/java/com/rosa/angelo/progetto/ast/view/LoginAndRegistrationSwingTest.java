@@ -2,6 +2,7 @@ package com.rosa.angelo.progetto.ast.view;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.assertj.swing.annotation.GUITest;
 import org.assertj.swing.core.matcher.JButtonMatcher;
 import org.assertj.swing.core.matcher.JLabelMatcher;
 import org.assertj.swing.edt.GuiActionRunner;
@@ -47,5 +48,33 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 	@Test
 	public void assertControllerIsTheRightOne() {
 		assertThat(loginView.getUserController()).isSameAs(userController).isEqualTo(userController);
+	}
+
+	@Test
+	@GUITest
+	public void testControlsInitialStates() {
+		window.label(JLabelMatcher.withText("Registration Form"));
+		window.label(JLabelMatcher.withText("Login Form"));
+
+		window.label(JLabelMatcher.withText("id"));
+		window.textBox("registrationIdInputText").requireEnabled();
+
+		window.label("registrationUsernameLabel").requireVisible();
+		window.textBox("registrationUsernameInputText").requireEnabled();
+
+		window.label("registrationPasswordLabel").requireVisible();
+		window.textBox("registrationPasswordInputText").requireEnabled();
+
+		window.button(JButtonMatcher.withText("Register")).requireEnabled();
+
+		window.label("loginUsernameLabel").requireVisible();
+		window.textBox("loginUsernameInputText").requireEnabled();
+
+		window.label("loginPasswordLabel").requireEnabled();
+		window.textBox("loginPasswordInputText").requireEnabled();
+
+		window.button(JButtonMatcher.withText("Login")).requireEnabled();
+		
+		window.label("errorMessageLabel").requireText(" ");
 	}
 }
