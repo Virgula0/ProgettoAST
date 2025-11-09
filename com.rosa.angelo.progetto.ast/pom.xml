@@ -112,9 +112,9 @@
 			**/*MariaDB*Repository.java</sonar.issue.ignore.multicriteria.e15.resourceKey>
 
 		<!-- sonar automatically excludes tests -->
-		<!-- 
-			Unfortunately there is a bug in sonarcube with try-with-resource 
-			mechanism which I was not able to fix, please visit to check it out 
+		<!--
+			Unfortunately there is a bug in sonarcube with try-with-resource
+			mechanism which I was not able to fix, please visit to check it out
 			(and notice that jacoco gives 100% of coverage)
 			https://sonarcloud.io/component_measures?metric=new_coverage&selected=Virgula0_ProgettoAST%3Asrc%2Fmain%2Fjava%2Fcom%2Frosa%2Fangelo%2Fprogetto%2Fast%2Frepository%2FUserMariaDBRepository.java&view=list&pullRequest=16&id=Virgula0_ProgettoAST
 		For this i remove MariaDB repos from sonar coverage -->

@@ -8,7 +8,7 @@ COPY . .
 
 RUN make package
 
-FROM eclipse-temurin:17-jdk-jammy 
+FROM eclipse-temurin:17-jdk-jammy
 # using this version instad of openjdk because some libraries are needed to be installed for running the GUI
 # the openjdk spec is deprecated and not supported
 
