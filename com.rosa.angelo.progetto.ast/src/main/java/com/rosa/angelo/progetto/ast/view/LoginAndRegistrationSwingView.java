@@ -73,7 +73,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		lblNewLabel.setName("registrationLabel");
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 		gbc_lblNewLabel.gridwidth = 2;
-		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
 		gbc_lblNewLabel.gridx = 0;
 		gbc_lblNewLabel.gridy = 1;
 		contentPane.add(lblNewLabel, gbc_lblNewLabel);
@@ -90,7 +90,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		registrationIdInputText = new JTextField();
 		registrationIdInputText.setName("registrationIdInputText");
 		GridBagConstraints gbc_registrationIDInputText = new GridBagConstraints();
-		gbc_registrationIDInputText.insets = new Insets(0, 0, 5, 5);
+		gbc_registrationIDInputText.insets = new Insets(0, 0, 5, 0);
 		gbc_registrationIDInputText.fill = GridBagConstraints.HORIZONTAL;
 		gbc_registrationIDInputText.gridx = 1;
 		gbc_registrationIDInputText.gridy = 3;
@@ -109,7 +109,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		registrationUsernameInputText = new JTextField();
 		registrationUsernameInputText.setName("registrationUsernameInputText");
 		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
-		gbc_textField_1.insets = new Insets(0, 0, 5, 5);
+		gbc_textField_1.insets = new Insets(0, 0, 5, 0);
 		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField_1.gridx = 1;
 		gbc_textField_1.gridy = 4;
@@ -128,7 +128,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		registrationPasswordInputText = new JPasswordField();
 		registrationPasswordInputText.setName("registrationPasswordInputText");
 		GridBagConstraints gbc_passwordField = new GridBagConstraints();
-		gbc_passwordField.insets = new Insets(0, 0, 5, 5);
+		gbc_passwordField.insets = new Insets(0, 0, 5, 0);
 		gbc_passwordField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_passwordField.gridx = 1;
 		gbc_passwordField.gridy = 5;
@@ -146,7 +146,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		registrationTokenInputText = new JTextField();
 		registrationTokenInputText.setName("registrationTokenInputText");
 		GridBagConstraints gbc_registrationTokenInputText = new GridBagConstraints();
-		gbc_registrationTokenInputText.insets = new Insets(0, 0, 5, 5);
+		gbc_registrationTokenInputText.insets = new Insets(0, 0, 5, 0);
 		gbc_registrationTokenInputText.fill = GridBagConstraints.HORIZONTAL;
 		gbc_registrationTokenInputText.gridx = 1;
 		gbc_registrationTokenInputText.gridy = 6;
@@ -157,7 +157,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		registerButton.setEnabled(false);
 		registerButton.setName("registerButton");
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
-		gbc_btnNewButton.gridwidth = 3;
+		gbc_btnNewButton.gridwidth = 2;
 		gbc_btnNewButton.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewButton.gridx = 0;
 		gbc_btnNewButton.gridy = 7;
@@ -167,7 +167,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		GridBagConstraints gbc_lblNewLabel_4 = new GridBagConstraints();
 		gbc_lblNewLabel_4.gridwidth = 2;
 		gbc_lblNewLabel_4.insets = new Insets(0, 0, 5, 0);
-		gbc_lblNewLabel_4.gridx = 1;
+		gbc_lblNewLabel_4.gridx = 0;
 		gbc_lblNewLabel_4.gridy = 9;
 		contentPane.add(lblNewLabel_4, gbc_lblNewLabel_4);
 
@@ -183,7 +183,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		loginUsernameInputText = new JTextField();
 		loginUsernameInputText.setName("loginUsernameInputText");
 		GridBagConstraints gbc_textField_2 = new GridBagConstraints();
-		gbc_textField_2.insets = new Insets(0, 0, 5, 5);
+		gbc_textField_2.insets = new Insets(0, 0, 5, 0);
 		gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField_2.gridx = 1;
 		gbc_textField_2.gridy = 11;
@@ -202,7 +202,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		loginPasswordInputText = new JPasswordField();
 		loginPasswordInputText.setName("loginPasswordInputText");
 		GridBagConstraints gbc_passwordField_1 = new GridBagConstraints();
-		gbc_passwordField_1.insets = new Insets(0, 0, 5, 5);
+		gbc_passwordField_1.insets = new Insets(0, 0, 5, 0);
 		gbc_passwordField_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_passwordField_1.gridx = 1;
 		gbc_passwordField_1.gridy = 12;
@@ -211,7 +211,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		loginButton = new JButton("Login");
 		loginButton.setEnabled(false);
 		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
-		gbc_btnNewButton_1.gridwidth = 3;
+		gbc_btnNewButton_1.gridwidth = 2;
 		gbc_btnNewButton_1.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewButton_1.gridx = 0;
 		gbc_btnNewButton_1.gridy = 13;
@@ -221,7 +221,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		lblNewLabel_7.setForeground(new Color(165, 29, 45));
 		lblNewLabel_7.setName("errorMessageLabel");
 		GridBagConstraints gbc_lblNewLabel_7 = new GridBagConstraints();
-		gbc_lblNewLabel_7.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel_7.insets = new Insets(0, 0, 5, 0);
 		gbc_lblNewLabel_7.gridwidth = 2;
 		gbc_lblNewLabel_7.gridx = 0;
 		gbc_lblNewLabel_7.gridy = 14;
@@ -231,7 +231,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 	}
 
 	private void eventsHandler() {
-		KeyAdapter keyAdapter = new KeyAdapter() {
+		KeyAdapter registerCheckerAdapter = new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				registerButton.setEnabled(!registrationIdInputText.getText().isBlank()
@@ -240,10 +240,20 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 						&& !registrationTokenInputText.getText().isBlank());
 			}
 		};
-		registrationIdInputText.addKeyListener(keyAdapter);
-		registrationUsernameInputText.addKeyListener(keyAdapter);
-		registrationPasswordInputText.addKeyListener(keyAdapter);
-		registrationTokenInputText.addKeyListener(keyAdapter);
+		registrationIdInputText.addKeyListener(registerCheckerAdapter);
+		registrationUsernameInputText.addKeyListener(registerCheckerAdapter);
+		registrationPasswordInputText.addKeyListener(registerCheckerAdapter);
+		registrationTokenInputText.addKeyListener(registerCheckerAdapter);
+
+		KeyAdapter loginCheckerAdapter = new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				loginButton.setEnabled(
+						!loginUsernameInputText.getText().isBlank() && loginPasswordInputText.getPassword().length > 0);
+			}
+		};
+		loginUsernameInputText.addKeyListener(loginCheckerAdapter);
+		loginPasswordInputText.addKeyListener(loginCheckerAdapter);
 	}
 
 	@Override
