@@ -52,7 +52,7 @@
 			com/rosa/angelo/progetto/ast/main/*,com/rosa/angelo/progetto/ast/model/*
 		</jacoco.exclusions>
 
-		<!-- ENV VARS -->
+		<!-- ENV VARS for integration tests -->
 		<mongo.image>mongo</mongo.image>
 		<mongo.version>4.4.3</mongo.version>
 		<mongo.port>27017</mongo.port>
@@ -66,7 +66,8 @@
 		<mariadb.password>password</mariadb.password>
 
 		<!-- sonar exclusions -->
-		<sonar.issue.ignore.multicriteria>e11a,e11b,e11c,e12,e13a,e13b,e13c,e14</sonar.issue.ignore.multicriteria>
+		<sonar.issue.ignore.multicriteria>
+			e11a,e11b,e11c,e12,e13a,e13b,e13c,e14,e15</sonar.issue.ignore.multicriteria>
 
 		<sonar.issue.ignore.multicriteria.e11a.ruleKey>java:S116</sonar.issue.ignore.multicriteria.e11a.ruleKey>
 		<sonar.issue.ignore.multicriteria.e11a.resourceKey>**/*View.java</sonar.issue.ignore.multicriteria.e11a.resourceKey>
@@ -102,10 +103,25 @@
 			**/*View.java
 		</sonar.issue.ignore.multicriteria.e14.resourceKey>
 
+		<!-- unfortunately sonar cube is not able to identify that TABLE_NAME ia
+		a constant so it complains about S2077 in mariadb repositories-->
+		<sonar.issue.ignore.multicriteria.e15.ruleKey>
+			java:S2077
+		</sonar.issue.ignore.multicriteria.e15.ruleKey>
+		<sonar.issue.ignore.multicriteria.e15.resourceKey>
+			**/*MariaDB*Repository.java</sonar.issue.ignore.multicriteria.e15.resourceKey>
+
 		<!-- sonar automatically excludes tests -->
+		<!-- 
+			Unfortunately there is a bug in sonarcube with try-with-resource 
+			mechanism which I was not able to fix, please visit to check it out 
+			(and notice that jacoco gives 100% of coverage)
+			https://sonarcloud.io/component_measures?metric=new_coverage&selected=Virgula0_ProgettoAST%3Asrc%2Fmain%2Fjava%2Fcom%2Frosa%2Fangelo%2Fprogetto%2Fast%2Frepository%2FUserMariaDBRepository.java&view=list&pullRequest=16&id=Virgula0_ProgettoAST
+		For this i remove MariaDB repos from sonar coverage -->
 		<sonar.coverage.exclusions>
 			**/model/*.*,
 			**/main/*.*,
+			**/repository/*MariaDBRepository*
 		</sonar.coverage.exclusions>
 
 		<sonar.junit.reportPaths>
@@ -169,6 +185,7 @@
 			<artifactId>mongo-java-driver</artifactId>
 			<version>${mongodb.version}</version>
 		</dependency>
+		<!-- needed driver for mariadb -->
 		<dependency>
 			<groupId>org.mariadb.jdbc</groupId>
 			<artifactId>mariadb-java-client</artifactId>
@@ -177,6 +194,12 @@
 		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>testcontainers</artifactId>
+			<version>${testcontainers.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>mariadb</artifactId>
 			<version>${testcontainers.version}</version>
 			<scope>test</scope>
 		</dependency>

@@ -1,9 +1,9 @@
 package com.rosa.angelo.progetto.ast.controller;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import com.rosa.angelo.progetto.ast.model.User;
+import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;
 import com.rosa.angelo.progetto.ast.repository.UserRepository;
 import com.rosa.angelo.progetto.ast.view.LoginView;
 
@@ -28,8 +28,18 @@ public class UserController {
 			return;
 		}
 
-		User found = Optional.ofNullable(userRepo.findUserById(user.getId()))
-				.or(() -> Optional.ofNullable(userRepo.findUserByUsername(user.getUsername()))).orElse(null);
+		User found = null;
+		try {
+			found = userRepo.findUserById(user.getId());
+
+			if (found == null) {
+				found = userRepo.findUserByUsername(user.getUsername());
+			}
+
+		} catch (GenericRepositoryException ex) {
+			hadleRepoException(ex);
+			return;
+		}
 
 		if (found != null) {
 			loginView.showError("Already existing user ", found);
@@ -40,13 +50,26 @@ public class UserController {
 			loginView.showError("Username must be greater or equal than 8 chars ", user);
 			return;
 		}
+		try {
+			userRepo.save(user);
+		} catch (GenericRepositoryException ex) {
+			hadleRepoException(ex);
+		}
+	}
 
-		userRepo.save(user);
+	private void hadleRepoException(GenericRepositoryException ex) {
+		loginView.showError("Exception occurred in repository: " + ex.getMessage());
 	}
 
 	public void login(String username, String password) {
-		if (userRepo.findUserByUsernameAndPassword(username, password) == null) {
-			loginView.showError("Invalid credentials");
+
+		try {
+			if (userRepo.findUserByUsernameAndPassword(username, password) == null) {
+				loginView.showError("Invalid credentials");
+				return;
+			}
+		} catch (GenericRepositoryException ex) {
+			hadleRepoException(ex);
 			return;
 		}
 

@@ -23,8 +23,6 @@ public class UserMongoRepository implements UserRepository {
 	public static final String USERNAME_KEY = "username";
 	public static final String PASSWORD_KEY = "password";
 
-	public static final String REGISTRATION_TOKEN = "validToken";
-
 	public UserMongoRepository(MongoClient client, String databaseName, String collectionName) {
 		userCollection = client.getDatabase(databaseName).getCollection(collectionName);
 	}

@@ -2,6 +2,7 @@ package com.rosa.angelo.progetto.ast.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.ignoreStubs;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.times;
@@ -18,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.rosa.angelo.progetto.ast.model.User;
+import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;
 import com.rosa.angelo.progetto.ast.repository.UserRepository;
 import com.rosa.angelo.progetto.ast.view.LoginView;
 
@@ -51,8 +53,9 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserInvalidRegistrationToken() {
+	public void testNewUserInvalidRegistrationToken() throws GenericRepositoryException {
 		User user = new User("test", VALID_PASSWORD, 1);
+
 		userController.newUser(user, INVALID_TOKEN);
 
 		verify(userRepository, times(1)).getRegistrationToken();
@@ -61,8 +64,9 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithNullToken() {
+	public void testNewUserWithNullToken() throws GenericRepositoryException {
 		User user = new User("test", VALID_PASSWORD, 1);
+
 		userController.newUser(user, null);
 
 		verify(userRepository, times(1)).getRegistrationToken();
@@ -71,7 +75,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithEmptyString() {
+	public void testNewUserWithEmptyTokenString() throws GenericRepositoryException {
 		User user = new User("test", VALID_PASSWORD, 1);
 		userController.newUser(user, "");
 
@@ -81,8 +85,9 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWhenUserDoesNotAlreadyExistAndTokenIsCorrect() {
+	public void testNewUserWhenUserDoesNotAlreadyExistAndTokenIsCorrect() throws GenericRepositoryException {
 		User user = new User("test", VALID_PASSWORD, 1);
+
 		userController.newUser(user, VALID_TOKEN);
 
 		verify(userRepository, times(1)).findUserById(user.getId());
@@ -105,7 +110,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithSameIdAlreadyExistAndValidToken() {
+	public void testNewUserWithSameIdAlreadyExistAndValidToken() throws GenericRepositoryException {
 		User existingUser = new User("test", VALID_PASSWORD, 1);
 		User userToAdd = new User("test", "passwordDifferent", 1);
 
@@ -119,7 +124,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithUsernameLessThanEigthChars() {
+	public void testNewUserWithUsernameLessThanEigthChars() throws GenericRepositoryException {
 		String sevenChar = "1234567";
 		User userToAdd = new User("test", sevenChar, 1);
 
@@ -134,7 +139,70 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithUsernameWithExactlyEigthCharsMustSuceed() {
+	public void testControllerGenericRepositoryExceptionShowsErrorOnSave() throws GenericRepositoryException {
+		User userToAdd = new User("test", VALID_PASSWORD, 1);
+		String exceptionMessage = "Database connection failed";
+
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(userRepository).save(userToAdd);
+
+		userController.newUser(userToAdd, VALID_TOKEN);
+
+		verify(userRepository, times(1)).getRegistrationToken();
+		verify(userRepository, times(1)).findUserById(userToAdd.getId());
+		verify(userRepository, times(1)).findUserByUsername(userToAdd.getUsername());
+		verify(userRepository, times(1)).save(userToAdd);
+		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
+
+	@Test
+	public void testControllerGenericRepositoryExceptionShowsErrorOnFindUserByID() throws GenericRepositoryException {
+		User userToCheck = new User("test", VALID_PASSWORD, 1);
+		String exceptionMessage = "Database connection failed";
+
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(userRepository).findUserById(1);
+
+		userController.newUser(userToCheck, VALID_TOKEN);
+
+		verify(userRepository, times(1)).getRegistrationToken();
+		verify(userRepository, times(1)).findUserById(userToCheck.getId());
+		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
+
+	@Test
+	public void testControllerGenericRepositoryExceptionShowsErrorOnFindUserByUsername()
+			throws GenericRepositoryException {
+		User userToCheck = new User("test", VALID_PASSWORD, 1);
+		String exceptionMessage = "Database connection failed";
+
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(userRepository)
+				.findUserByUsername(userToCheck.getUsername());
+
+		userController.newUser(userToCheck, VALID_TOKEN);
+
+		verify(userRepository, times(1)).getRegistrationToken();
+		verify(userRepository, times(1)).findUserById(userToCheck.getId());
+		verify(userRepository, times(1)).findUserByUsername(userToCheck.getUsername());
+		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
+
+	@Test
+	public void testControllerGenericRepositoryExceptionShowsErrorOnFindUserByUsernameAndPassword()
+			throws GenericRepositoryException {
+		User userToCheck = new User("test", VALID_PASSWORD, 1);
+		String exceptionMessage = "Database connection failed";
+
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(userRepository)
+				.findUserByUsernameAndPassword(userToCheck.getUsername(), userToCheck.getPassword());
+
+		userController.login(userToCheck.getUsername(), userToCheck.getPassword());
+
+		verify(userRepository, times(1)).findUserByUsernameAndPassword(userToCheck.getUsername(),
+				userToCheck.getPassword());
+		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
+
+	@Test
+	public void testNewUserWithUsernameWithExactlyEigthCharsMustSuceed() throws GenericRepositoryException {
 		String sevenChar = "12345678";
 		User userToAdd = new User("test", sevenChar, 1);
 
@@ -151,7 +219,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void testNewUserWithDifferentIdButSameUsernameShouldFail() {
+	public void testNewUserWithDifferentIdButSameUsernameShouldFail() throws GenericRepositoryException {
 		User existingUser = new User("test", VALID_PASSWORD, 1);
 		User userToAdd = new User("test", "passwordDifferent", 2);
 
@@ -168,7 +236,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginWhitNullUsername() {
+	public void loginWhitNullUsername() throws GenericRepositoryException {
 		String password = VALID_PASSWORD;
 
 		userController.login(null, password);
@@ -178,7 +246,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginWhitNullPassword() {
+	public void loginWhitNullPassword() throws GenericRepositoryException {
 		String username = "test";
 
 		userController.login(username, null);
@@ -189,7 +257,7 @@ public class TestUserController {
 
 	// docs
 	@Test
-	public void loginWhitEmptyCredentials() {
+	public void loginWhitEmptyCredentials() throws GenericRepositoryException {
 		userController.login("", "");
 		verify(userRepository, times(1)).findUserByUsernameAndPassword("", "");
 		verify(loginView, times(0)).switchPanel();
@@ -197,7 +265,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginSuceedsWhenCredentialsAreCorrectAndUserExists() {
+	public void loginSuceedsWhenCredentialsAreCorrectAndUserExists() throws GenericRepositoryException {
 		String username = "test";
 		String password = VALID_PASSWORD;
 		// mock
@@ -212,7 +280,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginNotSuceedsWhenUserDoesNotExists() {
+	public void loginNotSuceedsWhenUserDoesNotExists() throws GenericRepositoryException {
 		String username = "test";
 		String password = VALID_PASSWORD;
 
@@ -224,7 +292,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginNotSuceedsWhenCredentialsAreWrong() {
+	public void loginNotSuceedsWhenCredentialsAreWrong() throws GenericRepositoryException {
 		String username = "test";
 		String password = VALID_PASSWORD;
 		when(userRepository.findUserByUsernameAndPassword(username, password))
@@ -239,7 +307,7 @@ public class TestUserController {
 	}
 
 	@Test
-	public void loginSucceedsCheckViewSwitch() {
+	public void loginSucceedsCheckViewSwitch() throws GenericRepositoryException {
 		String username = "test";
 		String password = VALID_PASSWORD;
 		// mock

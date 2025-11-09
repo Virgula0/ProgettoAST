@@ -195,7 +195,7 @@ public class TestUserMongoDBRepository {
 
 		assertThat(userRepository.findUserByUsername(null)).isNull();
 	}
-	
+
 	// docs
 	@Test
 	public void testFindUserByNonExistingUsername() {
