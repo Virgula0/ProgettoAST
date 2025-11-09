@@ -1,4 +1,5 @@
 # ProgettoAST
+
 Automated Software Testing Project
 
 [![Coverage Status](https://coveralls.io/repos/github/Virgula0/ProgettoAST/badge.svg)](https://coveralls.io/github/Virgula0/ProgettoAST)
