@@ -234,9 +234,11 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		KeyAdapter registerCheckerAdapter = new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
+				char[] passwordChars = registrationPasswordInputText.getPassword();
+				String password = new String(passwordChars);
+
 				registerButton.setEnabled(!registrationIdInputText.getText().isBlank()
-						&& !registrationUsernameInputText.getText().isBlank()
-						&& registrationPasswordInputText.getPassword().length > 0
+						&& !registrationUsernameInputText.getText().isBlank() && !password.isBlank()
 						&& !registrationTokenInputText.getText().isBlank());
 			}
 		};
@@ -248,8 +250,10 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		KeyAdapter loginCheckerAdapter = new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
-				loginButton.setEnabled(
-						!loginUsernameInputText.getText().isBlank() && loginPasswordInputText.getPassword().length > 0);
+				char[] passwordChars = loginPasswordInputText.getPassword();
+				String password = new String(passwordChars);
+
+				loginButton.setEnabled(!loginUsernameInputText.getText().isBlank() && !password.isBlank());
 			}
 		};
 		loginUsernameInputText.addKeyListener(loginCheckerAdapter);

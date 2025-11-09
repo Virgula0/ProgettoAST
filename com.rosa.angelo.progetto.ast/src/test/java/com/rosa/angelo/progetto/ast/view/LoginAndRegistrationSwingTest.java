@@ -7,6 +7,7 @@ import org.assertj.swing.core.matcher.JButtonMatcher;
 import org.assertj.swing.core.matcher.JLabelMatcher;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
+import org.assertj.swing.fixture.JTextComponentFixture;
 import org.assertj.swing.junit.runner.GUITestRunner;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.junit.Test;
@@ -72,15 +73,15 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 
 		window.label("loginPasswordLabel").requireEnabled();
 		window.textBox("loginPasswordInputText").requireEnabled();
-		
+
 		window.label("registrationTokenLabel").requireEnabled();
 		window.textBox("registrationTokenInputText").requireEnabled();
 
 		window.button(JButtonMatcher.withText("Login")).requireDisabled();
-		
+
 		window.label("errorMessageLabel").requireText(" ");
 	}
-	
+
 	@Test
 	@GUITest
 	public void testWhenIdAdUsernameAndPasswordAndTokenAreNonEmptyThenRegisterButtonShouldBeEnabled() {
@@ -92,7 +93,7 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 		window.button(JButtonMatcher.withText("Register")).requireEnabled();
 		window.button(JButtonMatcher.withText("Login")).requireDisabled(); // not touched
 	}
-	
+
 	@Test
 	@GUITest
 	public void testWhenUsernameAndPasswordAreNonEmptyThenLoginButtonShouldBeEnabled() {
@@ -101,6 +102,75 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 
 		window.button(JButtonMatcher.withText("Login")).requireEnabled();
 		window.button(JButtonMatcher.withText("Register")).requireDisabled();
+	}
 
+	@Test
+	@GUITest
+	public void testWhenEitherIdOrUsernameOrPasswordOrTokenAreBlankThenRegisterButtonShouldBeDisabled() {
+		JTextComponentFixture idBox = window.textBox("registrationIdInputText");
+		JTextComponentFixture usernameBox = window.textBox("registrationUsernameInputText");
+		JTextComponentFixture passwordBox = window.textBox("registrationPasswordInputText");
+		JTextComponentFixture tokenBox = window.textBox("registrationTokenInputText");
+
+		idBox.enterText(" ");
+		usernameBox.enterText("1");
+		passwordBox.enterText("1");
+		tokenBox.enterText("1");
+
+		window.button(JButtonMatcher.withText("Register")).requireDisabled();
+
+		// reset
+		resetRegistrationInputs(idBox, usernameBox, passwordBox, tokenBox);
+
+		idBox.enterText("1");
+		usernameBox.enterText(" ");
+		passwordBox.enterText("1");
+		tokenBox.enterText("1");
+
+		window.button(JButtonMatcher.withText("Register")).requireDisabled();
+
+		resetRegistrationInputs(idBox, usernameBox, passwordBox, tokenBox);
+
+		idBox.enterText("1");
+		usernameBox.enterText("1");
+		passwordBox.enterText(" ");
+		tokenBox.enterText("1");
+
+		window.button(JButtonMatcher.withText("Register")).requireDisabled();
+		
+		resetRegistrationInputs(idBox, usernameBox, passwordBox, tokenBox);
+		
+		idBox.enterText("1");
+		usernameBox.enterText("1");
+		passwordBox.enterText("1");
+		tokenBox.enterText(" ");
+
+		window.button(JButtonMatcher.withText("Register")).requireDisabled();
+	}
+
+	private void resetRegistrationInputs(JTextComponentFixture idBox, JTextComponentFixture usernameBox,
+			JTextComponentFixture passwordBox, JTextComponentFixture tokenBox) {
+		idBox.setText("");
+		usernameBox.setText("");
+		passwordBox.setText("");
+		tokenBox.setText("");
+	}
+	
+	@Test
+	@GUITest
+	public void testWhenEitherUsernameOrPasswordAreBlankThenLoginButtonShouldBeDisabled() {
+		JTextComponentFixture usernameBox = window.textBox("loginUsernameInputText");
+		JTextComponentFixture passwordBox = window.textBox("loginPasswordInputText");
+
+		usernameBox.enterText("1");
+		passwordBox.enterText(" ");
+		window.button(JButtonMatcher.withText("Login")).requireDisabled();
+
+		usernameBox.setText("");
+		passwordBox.setText("");
+
+		usernameBox.enterText(" ");
+		passwordBox.enterText("test");
+		window.button(JButtonMatcher.withText("Login")).requireDisabled();
 	}
 }
