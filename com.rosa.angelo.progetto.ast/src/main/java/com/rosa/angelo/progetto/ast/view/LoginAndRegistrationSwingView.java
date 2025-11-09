@@ -11,14 +11,15 @@ import com.rosa.angelo.progetto.ast.model.User;
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
-import java.awt.GridLayout;
 import java.awt.Insets;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import java.awt.Color;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-public class LoginAndRegistrationSwingView extends JFrame implements LoginView{
+public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -28,6 +29,9 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView{
 	private JPasswordField registrationPasswordInputText;
 	private JTextField loginUsernameInputText;
 	private JPasswordField loginPasswordInputText;
+	private JButton registerButton;
+	private JButton loginButton;
+	private JTextField registrationTokenInputText;
 
 	/**
 	 * Launch the application.
@@ -58,21 +62,22 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView{
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.columnWidths = new int[]{0, 387};
-		gbl_contentPane.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_contentPane.columnWeights = new double[]{0.0, 1.0};
-		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_contentPane.columnWidths = new int[] { 0, 387 };
+		gbl_contentPane.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gbl_contentPane.columnWeights = new double[] { 0.0, 1.0 };
+		gbl_contentPane.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+				0.0, 0.0, 0.0, Double.MIN_VALUE };
 		contentPane.setLayout(gbl_contentPane);
-		
+
 		JLabel lblNewLabel = new JLabel("Registration Form");
 		lblNewLabel.setName("registrationLabel");
 		GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
 		gbc_lblNewLabel.gridwidth = 2;
-		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
+		gbc_lblNewLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel.gridx = 0;
 		gbc_lblNewLabel.gridy = 1;
 		contentPane.add(lblNewLabel, gbc_lblNewLabel);
-		
+
 		JLabel lblNewLabel_1 = new JLabel("id");
 		lblNewLabel_1.setName("registrationIdLabel");
 		GridBagConstraints gbc_lblNewLabel_1 = new GridBagConstraints();
@@ -81,17 +86,17 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView{
 		gbc_lblNewLabel_1.gridx = 0;
 		gbc_lblNewLabel_1.gridy = 3;
 		contentPane.add(lblNewLabel_1, gbc_lblNewLabel_1);
-		
+
 		registrationIdInputText = new JTextField();
 		registrationIdInputText.setName("registrationIdInputText");
-		GridBagConstraints gbc_textField = new GridBagConstraints();
-		gbc_textField.insets = new Insets(0, 0, 5, 0);
-		gbc_textField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_textField.gridx = 1;
-		gbc_textField.gridy = 3;
-		contentPane.add(registrationIdInputText, gbc_textField);
+		GridBagConstraints gbc_registrationIDInputText = new GridBagConstraints();
+		gbc_registrationIDInputText.insets = new Insets(0, 0, 5, 5);
+		gbc_registrationIDInputText.fill = GridBagConstraints.HORIZONTAL;
+		gbc_registrationIDInputText.gridx = 1;
+		gbc_registrationIDInputText.gridy = 3;
+		contentPane.add(registrationIdInputText, gbc_registrationIDInputText);
 		registrationIdInputText.setColumns(10);
-		
+
 		JLabel lblNewLabel_2 = new JLabel("Username");
 		lblNewLabel_2.setName("registrationUsernameLabel");
 		GridBagConstraints gbc_lblNewLabel_2 = new GridBagConstraints();
@@ -100,17 +105,17 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView{
 		gbc_lblNewLabel_2.gridx = 0;
 		gbc_lblNewLabel_2.gridy = 4;
 		contentPane.add(lblNewLabel_2, gbc_lblNewLabel_2);
-		
+
 		registrationUsernameInputText = new JTextField();
 		registrationUsernameInputText.setName("registrationUsernameInputText");
 		GridBagConstraints gbc_textField_1 = new GridBagConstraints();
-		gbc_textField_1.insets = new Insets(0, 0, 5, 0);
+		gbc_textField_1.insets = new Insets(0, 0, 5, 5);
 		gbc_textField_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField_1.gridx = 1;
 		gbc_textField_1.gridy = 4;
 		contentPane.add(registrationUsernameInputText, gbc_textField_1);
 		registrationUsernameInputText.setColumns(10);
-		
+
 		JLabel lblNewLabel_3 = new JLabel("Password");
 		lblNewLabel_3.setName("registrationPasswordLabel");
 		GridBagConstraints gbc_lblNewLabel_3 = new GridBagConstraints();
@@ -119,108 +124,144 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView{
 		gbc_lblNewLabel_3.gridx = 0;
 		gbc_lblNewLabel_3.gridy = 5;
 		contentPane.add(lblNewLabel_3, gbc_lblNewLabel_3);
-		
+
 		registrationPasswordInputText = new JPasswordField();
 		registrationPasswordInputText.setName("registrationPasswordInputText");
 		GridBagConstraints gbc_passwordField = new GridBagConstraints();
-		gbc_passwordField.insets = new Insets(0, 0, 5, 0);
+		gbc_passwordField.insets = new Insets(0, 0, 5, 5);
 		gbc_passwordField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_passwordField.gridx = 1;
 		gbc_passwordField.gridy = 5;
 		contentPane.add(registrationPasswordInputText, gbc_passwordField);
-		
-		JButton btnNewButton = new JButton("Register");
-		btnNewButton.setEnabled(false);
-		btnNewButton.setName("registerButton");
+
+		JLabel lblNewLabel_8 = new JLabel("Token");
+		lblNewLabel_8.setName("registrationTokenLabel");
+		GridBagConstraints gbc_lblNewLabel_8 = new GridBagConstraints();
+		gbc_lblNewLabel_8.anchor = GridBagConstraints.EAST;
+		gbc_lblNewLabel_8.insets = new Insets(0, 0, 5, 5);
+		gbc_lblNewLabel_8.gridx = 0;
+		gbc_lblNewLabel_8.gridy = 6;
+		contentPane.add(lblNewLabel_8, gbc_lblNewLabel_8);
+
+		registrationTokenInputText = new JTextField();
+		registrationTokenInputText.setName("registrationTokenInputText");
+		GridBagConstraints gbc_registrationTokenInputText = new GridBagConstraints();
+		gbc_registrationTokenInputText.insets = new Insets(0, 0, 5, 5);
+		gbc_registrationTokenInputText.fill = GridBagConstraints.HORIZONTAL;
+		gbc_registrationTokenInputText.gridx = 1;
+		gbc_registrationTokenInputText.gridy = 6;
+		contentPane.add(registrationTokenInputText, gbc_registrationTokenInputText);
+		registrationTokenInputText.setColumns(10);
+
+		registerButton = new JButton("Register");
+		registerButton.setEnabled(false);
+		registerButton.setName("registerButton");
 		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
-		gbc_btnNewButton.gridwidth = 2;
+		gbc_btnNewButton.gridwidth = 3;
 		gbc_btnNewButton.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewButton.gridx = 0;
-		gbc_btnNewButton.gridy = 6;
-		contentPane.add(btnNewButton, gbc_btnNewButton);
-		
+		gbc_btnNewButton.gridy = 7;
+		contentPane.add(registerButton, gbc_btnNewButton);
+
 		JLabel lblNewLabel_4 = new JLabel("Login Form");
 		GridBagConstraints gbc_lblNewLabel_4 = new GridBagConstraints();
 		gbc_lblNewLabel_4.gridwidth = 2;
 		gbc_lblNewLabel_4.insets = new Insets(0, 0, 5, 0);
-		gbc_lblNewLabel_4.gridx = 0;
-		gbc_lblNewLabel_4.gridy = 8;
+		gbc_lblNewLabel_4.gridx = 1;
+		gbc_lblNewLabel_4.gridy = 9;
 		contentPane.add(lblNewLabel_4, gbc_lblNewLabel_4);
-		
+
 		JLabel lblNewLabel_5 = new JLabel("Username");
 		lblNewLabel_5.setName("loginUsernameLabel");
 		GridBagConstraints gbc_lblNewLabel_5 = new GridBagConstraints();
 		gbc_lblNewLabel_5.anchor = GridBagConstraints.EAST;
 		gbc_lblNewLabel_5.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel_5.gridx = 0;
-		gbc_lblNewLabel_5.gridy = 10;
+		gbc_lblNewLabel_5.gridy = 11;
 		contentPane.add(lblNewLabel_5, gbc_lblNewLabel_5);
-		
+
 		loginUsernameInputText = new JTextField();
 		loginUsernameInputText.setName("loginUsernameInputText");
 		GridBagConstraints gbc_textField_2 = new GridBagConstraints();
-		gbc_textField_2.insets = new Insets(0, 0, 5, 0);
+		gbc_textField_2.insets = new Insets(0, 0, 5, 5);
 		gbc_textField_2.fill = GridBagConstraints.HORIZONTAL;
 		gbc_textField_2.gridx = 1;
-		gbc_textField_2.gridy = 10;
+		gbc_textField_2.gridy = 11;
 		contentPane.add(loginUsernameInputText, gbc_textField_2);
 		loginUsernameInputText.setColumns(10);
-		
+
 		JLabel lblNewLabel_6 = new JLabel("Password");
 		lblNewLabel_6.setName("loginPasswordLabel");
 		GridBagConstraints gbc_lblNewLabel_6 = new GridBagConstraints();
 		gbc_lblNewLabel_6.anchor = GridBagConstraints.EAST;
 		gbc_lblNewLabel_6.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel_6.gridx = 0;
-		gbc_lblNewLabel_6.gridy = 11;
+		gbc_lblNewLabel_6.gridy = 12;
 		contentPane.add(lblNewLabel_6, gbc_lblNewLabel_6);
-		
+
 		loginPasswordInputText = new JPasswordField();
 		loginPasswordInputText.setName("loginPasswordInputText");
 		GridBagConstraints gbc_passwordField_1 = new GridBagConstraints();
-		gbc_passwordField_1.insets = new Insets(0, 0, 5, 0);
+		gbc_passwordField_1.insets = new Insets(0, 0, 5, 5);
 		gbc_passwordField_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_passwordField_1.gridx = 1;
-		gbc_passwordField_1.gridy = 11;
+		gbc_passwordField_1.gridy = 12;
 		contentPane.add(loginPasswordInputText, gbc_passwordField_1);
-		
-		JButton btnNewButton_1 = new JButton("Login");
-		btnNewButton_1.setEnabled(false);
+
+		loginButton = new JButton("Login");
+		loginButton.setEnabled(false);
 		GridBagConstraints gbc_btnNewButton_1 = new GridBagConstraints();
-		gbc_btnNewButton_1.gridwidth = 2;
+		gbc_btnNewButton_1.gridwidth = 3;
 		gbc_btnNewButton_1.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNewButton_1.gridx = 0;
-		gbc_btnNewButton_1.gridy = 12;
-		contentPane.add(btnNewButton_1, gbc_btnNewButton_1);
-		
+		gbc_btnNewButton_1.gridy = 13;
+		contentPane.add(loginButton, gbc_btnNewButton_1);
+
 		JLabel lblNewLabel_7 = new JLabel(" ");
 		lblNewLabel_7.setForeground(new Color(165, 29, 45));
 		lblNewLabel_7.setName("errorMessageLabel");
 		GridBagConstraints gbc_lblNewLabel_7 = new GridBagConstraints();
-		gbc_lblNewLabel_7.insets = new Insets(0, 0, 5, 0);
+		gbc_lblNewLabel_7.insets = new Insets(0, 0, 5, 5);
 		gbc_lblNewLabel_7.gridwidth = 2;
 		gbc_lblNewLabel_7.gridx = 0;
 		gbc_lblNewLabel_7.gridy = 14;
 		contentPane.add(lblNewLabel_7, gbc_lblNewLabel_7);
 
+		eventsHandler();
+	}
+
+	private void eventsHandler() {
+		KeyAdapter keyAdapter = new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				registerButton.setEnabled(!registrationIdInputText.getText().isBlank()
+						&& !registrationUsernameInputText.getText().isBlank()
+						&& registrationPasswordInputText.getPassword().length > 0
+						&& !registrationTokenInputText.getText().isBlank());
+			}
+		};
+		registrationIdInputText.addKeyListener(keyAdapter);
+		registrationUsernameInputText.addKeyListener(keyAdapter);
+		registrationPasswordInputText.addKeyListener(keyAdapter);
+		registrationTokenInputText.addKeyListener(keyAdapter);
 	}
 
 	@Override
 	public void showError(String message, User user) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void showError(String message) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void switchPanel() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public UserController getUserController() {

@@ -72,9 +72,24 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 
 		window.label("loginPasswordLabel").requireEnabled();
 		window.textBox("loginPasswordInputText").requireEnabled();
+		
+		window.label("registrationTokenLabel").requireEnabled();
+		window.textBox("registrationTokenInputText").requireEnabled();
 
 		window.button(JButtonMatcher.withText("Login")).requireDisabled();
 		
 		window.label("errorMessageLabel").requireText(" ");
+	}
+	
+	@Test
+	@GUITest
+	public void testWhenIdAdUsernameAndPasswordAndTokenAreNonEmptyThenRegisterButtonShouldBeEnabled() {
+		window.textBox("registrationIdInputText").enterText("1");
+		window.textBox("registrationUsernameInputText").enterText("testUsername");
+		window.textBox("registrationPasswordInputText").enterText("testPassword");
+		window.textBox("registrationTokenInputText").enterText("validToken");
+
+		window.button(JButtonMatcher.withText("Register")).requireEnabled();
+		window.button(JButtonMatcher.withText("Login")).requireDisabled();
 	}
 }
