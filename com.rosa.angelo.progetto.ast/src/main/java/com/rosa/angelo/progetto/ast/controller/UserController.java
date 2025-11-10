@@ -47,7 +47,7 @@ public class UserController {
 		}
 
 		if (user.getPassword().length() < 8) {
-			loginView.showError("Username must be greater or equal than 8 chars ", user);
+			loginView.showError("Password must be greater or equal than 8 chars ", user);
 			return;
 		}
 		try {

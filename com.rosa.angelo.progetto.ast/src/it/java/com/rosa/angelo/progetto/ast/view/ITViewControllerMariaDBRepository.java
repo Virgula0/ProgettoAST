@@ -216,4 +216,32 @@ public class ITViewControllerMariaDBRepository extends AssertJSwingJUnitTestCase
 
 		window.label("errorMessageLabel").requireText("Invalid credentials");
 	}
+	
+	@Test
+	@GUITest
+	public void testShowErrorInvalidTokenRegistration() {
+		User user = new User("test123", "passwor1244", 1);
+
+		window.textBox("registrationIdInputText").enterText(String.valueOf(user.getId()));
+		window.textBox("registrationUsernameInputText").enterText(user.getUsername());
+		window.textBox("registrationPasswordInputText").enterText(user.getPassword());
+		window.textBox("registrationTokenInputText").enterText("invalid token");
+		window.button(JButtonMatcher.withText("Register")).click();
+		
+		window.label("errorMessageLabel").requireText("Invalid registration token");
+	}
+	
+	@Test
+	@GUITest
+	public void testShowErrorPasswordTooShort() {
+		User user = new User("test123", "psw", 1);
+
+		window.textBox("registrationIdInputText").enterText(String.valueOf(user.getId()));
+		window.textBox("registrationUsernameInputText").enterText(user.getUsername());
+		window.textBox("registrationPasswordInputText").enterText(user.getPassword());
+		window.textBox("registrationTokenInputText").enterText(VALID_TOKEN);
+		window.button(JButtonMatcher.withText("Register")).click();
+		
+		window.label("errorMessageLabel").requireText("Password must be greater or equal than 8 chars : " + user);
+	}
 }
