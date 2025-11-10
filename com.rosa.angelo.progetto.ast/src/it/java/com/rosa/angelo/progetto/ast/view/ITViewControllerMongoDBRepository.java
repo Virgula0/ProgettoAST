@@ -1,6 +1,17 @@
 package com.rosa.angelo.progetto.ast.view;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
+
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 
 import org.assertj.swing.core.matcher.JButtonMatcher;
 import org.assertj.swing.edt.GuiActionRunner;
@@ -27,6 +38,7 @@ public class ITViewControllerMongoDBRepository extends AssertJSwingJUnitTestCase
 	private LoginAndRegistrationSwingView loginView;
 	private UserMongoRepository userRepository;
 	private UserController userController;
+	private FakePanel fakePanel;
 
 	private FrameFixture window;
 
@@ -53,6 +65,8 @@ public class ITViewControllerMongoDBRepository extends AssertJSwingJUnitTestCase
 			loginView = new LoginAndRegistrationSwingView();
 			userController = new UserController(loginView, userRepository);
 			loginView.setUserController(userController);
+			fakePanel = new FakePanel();
+			loginView.setNextPanel(fakePanel);
 			return loginView;
 		});
 		window = new FrameFixture(robot(), loginView);
@@ -64,6 +78,43 @@ public class ITViewControllerMongoDBRepository extends AssertJSwingJUnitTestCase
 		client.close();
 	}
 
+	private static class FakePanel extends JFrame implements CommonPanel {
+		private JPanel contentPane;
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void start() {
+			setVisible(true);
+		}
+
+		public FakePanel() {
+			setTitle("FakePanel");
+			setName("FakePanel");
+			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			setBounds(100, 100, 450, 442);
+			contentPane = new JPanel();
+			contentPane.setName("LoginView");
+			contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+			setContentPane(contentPane);
+			GridBagLayout gbl_contentPane = new GridBagLayout();
+			gbl_contentPane.columnWidths = new int[] { 0, 387 };
+			gbl_contentPane.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+			gbl_contentPane.columnWeights = new double[] { 0.0, 1.0 };
+			gbl_contentPane.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+					0.0, 0.0, 0.0, Double.MIN_VALUE };
+			contentPane.setLayout(gbl_contentPane);
+
+			JLabel lblNewLabel = new JLabel("This is a test");
+			lblNewLabel.setName("testNewWindowLabel");
+			GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+			gbc_lblNewLabel.gridwidth = 2;
+			gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
+			gbc_lblNewLabel.gridx = 0;
+			gbc_lblNewLabel.gridy = 1;
+			contentPane.add(lblNewLabel, gbc_lblNewLabel);
+		}
+	}
+
 	@Test
 	public void testRegistrationViaUIAndCheckUserSaved() {
 		User user = new User("test123", "password1234", 1);
@@ -72,7 +123,35 @@ public class ITViewControllerMongoDBRepository extends AssertJSwingJUnitTestCase
 		window.textBox("registrationPasswordInputText").enterText(user.getPassword());
 		window.textBox("registrationTokenInputText").enterText(VALID_TOKEN);
 		window.button(JButtonMatcher.withText("Register")).click();
-		
+
 		assertThat(userRepository.findUserById(user.getId())).isEqualTo(user);
+	}
+
+	@Test
+	public void testLoginViaUIWhenUserExists() {
+		User user = new User("test123", "password1234", 1);
+
+		userRepository.save(user);
+
+		window.textBox("loginUsernameInputText").enterText(user.getUsername());
+		window.textBox("loginPasswordInputText").enterText(user.getPassword());
+
+		window.button(JButtonMatcher.withText("Login")).click();
+
+		try {
+			SwingUtilities.invokeAndWait(() -> {
+			});
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+
+		assertThat(loginView.isDisplayable()).isFalse();
+
+		FrameFixture fakeFixture = new FrameFixture(super.robot(), fakePanel);
+
+		fakeFixture.requireVisible();
+		fakeFixture.label("testNewWindowLabel").requireVisible();
+
+		fakeFixture.cleanUp();
 	}
 }
