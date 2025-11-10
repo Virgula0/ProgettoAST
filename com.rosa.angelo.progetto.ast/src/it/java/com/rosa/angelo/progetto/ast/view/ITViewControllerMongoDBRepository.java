@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import org.assertj.swing.annotation.GUITest;
 import org.assertj.swing.core.matcher.JButtonMatcher;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
@@ -128,6 +129,7 @@ public class ITViewControllerMongoDBRepository extends AssertJSwingJUnitTestCase
 	}
 
 	@Test
+	@GUITest
 	public void testLoginViaUIWhenUserExists() {
 		User user = new User("test123", "password1234", 1);
 
@@ -153,5 +155,34 @@ public class ITViewControllerMongoDBRepository extends AssertJSwingJUnitTestCase
 		fakeFixture.label("testNewWindowLabel").requireVisible();
 
 		fakeFixture.cleanUp();
+	}
+
+	@Test
+	@GUITest
+	public void testRegisterButtonError() {
+		User user = new User("test123", "passwor1244", 1);
+		User newUser = new User("test123", "passwor1244", 1);
+
+		userRepository.save(user);
+
+		window.textBox("registrationIdInputText").enterText(String.valueOf(newUser.getId()));
+		window.textBox("registrationUsernameInputText").enterText(newUser.getUsername());
+		window.textBox("registrationPasswordInputText").enterText(newUser.getPassword());
+		window.textBox("registrationTokenInputText").enterText(VALID_TOKEN);
+		window.button(JButtonMatcher.withText("Register")).click();
+
+		window.label("errorMessageLabel").requireText("Already existing user : " + newUser);
+	}
+
+	@Test
+	@GUITest
+	public void testLoginButtonError() {
+		User user = new User("test123", "passwor1244", 1);
+
+		window.textBox("loginUsernameInputText").enterText(user.getUsername());
+		window.textBox("loginPasswordInputText").enterText(user.getPassword());
+		window.button(JButtonMatcher.withText("Login")).click();
+
+		window.label("errorMessageLabel").requireText("Invalid credentials");
 	}
 }
