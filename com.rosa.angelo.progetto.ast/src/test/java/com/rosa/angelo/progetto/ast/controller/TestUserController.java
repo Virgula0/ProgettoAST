@@ -134,7 +134,7 @@ public class TestUserController {
 		verify(userRepository, times(1)).findUserById(userToAdd.getId());
 		verify(userRepository, times(1)).findUserByUsername(userToAdd.getUsername());
 
-		verify(loginView).showError("Username must be greater or equal than 8 chars ", userToAdd);
+		verify(loginView).showError("Password must be greater or equal than 8 chars ", userToAdd);
 		verifyNoMoreInteractions(ignoreStubs(userRepository));
 	}
 
