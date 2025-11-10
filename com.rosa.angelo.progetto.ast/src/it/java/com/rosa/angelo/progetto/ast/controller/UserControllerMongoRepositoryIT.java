@@ -70,10 +70,12 @@ public class UserControllerMongoRepositoryIT {
 
 	@Test
 	public void testLoginControllerITSuccesfullWithExistingUser() {
-		User user = new User("test", "password1234", 1);
+		String username = "test";
+		String password = "password1234";
+		User user = new User(username, password, 1);
 		userRepository.save(user);
 
-		userController.login("test", "password1234");
+		userController.login(username, password);
 
 		verify(loginView, times(1)).switchPanel();
 		verify(loginView, times(0)).showError(anyString());
@@ -82,11 +84,13 @@ public class UserControllerMongoRepositoryIT {
 
 	@Test
 	public void testNewUserController() {
-		User user = new User("test", "password1234", 1);
+		String username = "test";
+		String password = "password1234";
+		User user = new User(username, password, 1);
 		userController.newUser(user, validToken);
 
 		assertThat(userRepository.findUserById(1)).isEqualTo(user);
-		assertThat(userRepository.findUserByUsername("test")).isEqualTo(user);
-		assertThat(userRepository.findUserByUsernameAndPassword("test", "password1234")).isEqualTo(user);
+		assertThat(userRepository.findUserByUsername(username)).isEqualTo(user);
+		assertThat(userRepository.findUserByUsernameAndPassword(username, password)).isEqualTo(user);
 	}
 }

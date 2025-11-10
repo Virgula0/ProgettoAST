@@ -31,7 +31,7 @@ public class TestUserMariaDBRepository {
 			.withDatabaseName(UserMariaDBRepository.AST_DB_NAME).withUsername(UserMariaDBRepository.DB_USERNAME)
 			.withPassword(UserMariaDBRepository.DB_PASSWORD).withExposedPorts(UserMariaDBRepository.PORT);
 
-	private static UserMariaDBRepository userRepository;
+	private UserMariaDBRepository userRepository;
 	private static Connection connection;
 
 	private static final String TEST_USERNAME = "TEST_USERNAME";
