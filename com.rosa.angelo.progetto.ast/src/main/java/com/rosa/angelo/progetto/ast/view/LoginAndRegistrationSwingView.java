@@ -269,10 +269,12 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 		registrationPasswordInputText.addKeyListener(registerCheckerAdapter);
 		registrationTokenInputText.addKeyListener(registerCheckerAdapter);
 
-		registerButton.addActionListener(e -> userController.newUser(
-				new User(registrationUsernameInputText.getText(),
-						new String(registrationPasswordInputText.getPassword()), 1),
-				registrationTokenInputText.getText()));
+		registerButton
+				.addActionListener(e -> userController.newUser(
+						new User(registrationUsernameInputText.getText(),
+								new String(registrationPasswordInputText.getPassword()),
+								Integer.parseInt(registrationIdInputText.getText())),
+						registrationTokenInputText.getText()));
 
 		KeyAdapter loginCheckerAdapter = new KeyAdapter() {
 			@Override
