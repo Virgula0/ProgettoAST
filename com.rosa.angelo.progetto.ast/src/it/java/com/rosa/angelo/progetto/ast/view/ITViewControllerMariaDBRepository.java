@@ -57,7 +57,7 @@ public class ITViewControllerMariaDBRepository extends AssertJSwingJUnitTestCase
 			.withPassword(UserMariaDBRepository.DB_PASSWORD).withExposedPorts(UserMariaDBRepository.PORT);
 
 	private static Connection connection;
-		
+
 	private void cleanupAndCreate() {
 		try {
 			try (Statement stmt = connection.createStatement()) {
@@ -83,7 +83,6 @@ public class ITViewControllerMariaDBRepository extends AssertJSwingJUnitTestCase
 		connection = DriverManager.getConnection(jdbcUrl, username, password);
 	}
 
-
 	@Override
 	protected void onSetUp() throws Exception {
 		cleanupAndCreate();
@@ -99,9 +98,9 @@ public class ITViewControllerMariaDBRepository extends AssertJSwingJUnitTestCase
 		window = new FrameFixture(robot(), loginView);
 		window.show();
 	}
-	
+
 	@After
-	public void after() throws Exception {
+	public void after() {
 		cleanupAndCreate();
 	}
 
