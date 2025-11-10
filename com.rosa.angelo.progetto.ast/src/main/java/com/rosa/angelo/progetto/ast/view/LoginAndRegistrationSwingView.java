@@ -263,14 +263,12 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 
 	@Override
 	public void showError(String message, User user) {
-		// TODO Auto-generated method stub
 		errorMessageLabel.setText(message + ": " + user);
 	}
 
 	@Override
 	public void showError(String message) {
-		// TODO Auto-generated method stub
-
+		errorMessageLabel.setText(message);
 	}
 
 	@Override

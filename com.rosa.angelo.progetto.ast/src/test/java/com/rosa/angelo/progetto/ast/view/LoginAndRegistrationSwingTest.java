@@ -138,9 +138,9 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 		tokenBox.enterText("1");
 
 		window.button(JButtonMatcher.withText("Register")).requireDisabled();
-		
+
 		resetRegistrationInputs(idBox, usernameBox, passwordBox, tokenBox);
-		
+
 		idBox.enterText("1");
 		usernameBox.enterText("1");
 		passwordBox.enterText("1");
@@ -156,7 +156,7 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 		passwordBox.setText("");
 		tokenBox.setText("");
 	}
-	
+
 	@Test
 	@GUITest
 	public void testWhenEitherUsernameOrPasswordAreBlankThenLoginButtonShouldBeDisabled() {
@@ -174,11 +174,25 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 		passwordBox.enterText("test");
 		window.button(JButtonMatcher.withText("Login")).requireDisabled();
 	}
-	
+
 	@Test
-	public void testShowErrorShouldShowTheMessageInTheErrorLabel() {
-		User user = new User("test1","testpwd",1);
+	public void testShowErrorWithUserShouldShowTheMessageInTheErrorLabel() {
+		User user = new User("test1", "testpwd", 1);
 		GuiActionRunner.execute(() -> loginView.showError("error message", user));
 		window.label("errorMessageLabel").requireText("error message: " + user);
+	}
+
+	// docs
+	@Test
+	public void testShowErrorWithUserShouldShowTheMessageInTheErrorLabelNullValues() {
+		User user = new User("test1", "testpwd", 1);
+		GuiActionRunner.execute(() -> loginView.showError(null, null));
+		window.label("errorMessageLabel").requireText(null + ": " + null);
+	}
+
+	@Test
+	public void testShowErrorWithouNameShouldShowTheMessageInTheErrorLabel() {
+		GuiActionRunner.execute(() -> loginView.showError("this is an error message"));
+		window.label("errorMessageLabel").requireText("this is an error message");
 	}
 }
