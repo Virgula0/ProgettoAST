@@ -260,6 +260,7 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 	}
 
 	@Test
+	@GUITest
 	public void testswitchPanelClosesTheOldWindowAndLoadsTheNewOne() {
 		List<FakePanel> fakePanels = new ArrayList<>();
 		SwingUtilities.invokeLater(() -> {
@@ -287,7 +288,8 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 	}
 	
 	@Test
-	public void testRegisterClickCallsSchoolController() {
+	@GUITest
+	public void testRegisterClickCallsUserController() {
 		User user = new User("test123", "passsword1234", 1);
 		window.textBox("registrationIdInputText").enterText(String.valueOf(user.getId()));
 		window.textBox("registrationUsernameInputText").enterText(user.getUsername());
@@ -296,5 +298,16 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 
 		window.button(JButtonMatcher.withText("Register")).click();
 		verify(userController).newUser(user, VALID_TOKEN);
+	}
+	
+	@Test
+	@GUITest
+	public void testLoginClickCallsUserController() {
+		User user = new User("test123", "passsword1234", 1);
+		window.textBox("loginUsernameInputText").enterText(user.getUsername());
+		window.textBox("loginPasswordInputText").enterText(user.getPassword());
+
+		window.button(JButtonMatcher.withText("Login")).click();
+		verify(userController).login(user.getUsername(), user.getPassword());
 	}
 }

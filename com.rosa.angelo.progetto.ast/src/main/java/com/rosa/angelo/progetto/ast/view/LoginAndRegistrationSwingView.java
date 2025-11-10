@@ -282,7 +282,11 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 				loginButton.setEnabled(!loginUsernameInputText.getText().isBlank() && !password.isBlank());
 			}
 		};
+
 		loginUsernameInputText.addKeyListener(loginCheckerAdapter);
 		loginPasswordInputText.addKeyListener(loginCheckerAdapter);
+
+		loginButton.addActionListener(e -> userController.login(loginUsernameInputText.getText(),
+				new String(loginPasswordInputText.getPassword())));
 	}
 }
