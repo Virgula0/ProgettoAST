@@ -117,4 +117,47 @@ public class UserControllerMariaDBRepositoryIT {
 		assertThat(userRepository.findUserByUsername(username)).isEqualTo(user);
 		assertThat(userRepository.findUserByUsernameAndPassword(username, password)).isEqualTo(user);
 	}
+	
+	@Test
+	public void testNewUserControllerWithNullUser() throws GenericRepositoryException {
+		userController.newUser(null, validToken);
+		verify(loginView).showError("Invalid null user passed", null);
+	}
+	
+	@Test
+	public void testInvalidRegistrationToken() throws GenericRepositoryException {
+		String username = "test";
+		String password = "password1234";
+		User user = new User(username, password, 1);
+		userController.newUser(user, "invalid");
+
+		verify(loginView).showError("Invalid registration token");
+	}
+	
+	@Test
+	public void testNewUserAlreadyExists() throws GenericRepositoryException {
+		String username = "test";
+		String password = "password1234";
+		User user = new User(username, password, 1);
+		userRepository.save(user);
+		userController.newUser(user, validToken);
+
+		verify(loginView).showError("Already existing user ", user);
+	}
+	
+	@Test
+	public void testNewUserInvalidPasswordInRegistration() throws GenericRepositoryException {
+		String username = "test";
+		String password = "pwd";
+		User user = new User(username, password, 1);
+		userController.newUser(user, validToken);
+
+		verify(loginView).showError("Password must be greater or equal than 8 chars ", user);
+	}
+	
+	@Test
+	public void tesLoginInvalidCredentials() throws GenericRepositoryException {
+		userController.login("not valid", "not valid");
+		verify(loginView).showError("Invalid credentials");
+	}
 }
