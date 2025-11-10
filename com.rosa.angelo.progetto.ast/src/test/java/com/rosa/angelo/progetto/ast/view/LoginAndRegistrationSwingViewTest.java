@@ -32,7 +32,7 @@ import com.rosa.angelo.progetto.ast.controller.UserController;
 import com.rosa.angelo.progetto.ast.model.User;
 
 @RunWith(GUITestRunner.class)
-public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
+public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase {
 	private FrameFixture window;
 
 	private LoginAndRegistrationSwingView loginView;
@@ -235,7 +235,6 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 	// docs
 	@Test
 	public void testShowErrorWithUserShouldShowTheMessageInTheErrorLabelNullValues() {
-		User user = new User("test1", "testpwd", 1);
 		GuiActionRunner.execute(() -> loginView.showError(null, null));
 		window.label("errorMessageLabel").requireText(null + ": " + null);
 	}

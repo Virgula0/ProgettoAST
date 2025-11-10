@@ -11,6 +11,7 @@ import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import java.awt.Color;
@@ -21,7 +22,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private UserController userController;
+	private transient UserController userController;
 	private JTextField registrationIdInputText;
 	private JTextField registrationUsernameInputText;
 	private JPasswordField registrationPasswordInputText;
@@ -32,7 +33,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 	private JTextField registrationTokenInputText;
 	private JLabel errorMessageLabel;
 
-	private CommonPanel nextPanel;
+	private transient CommonPanel nextPanel;
 
 	public void setNextPanel(CommonPanel nextPanel) {
 		this.nextPanel = nextPanel;
@@ -71,12 +72,14 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 	 * Create the frame.
 	 */
 	public LoginAndRegistrationSwingView() {
-		setTitle("LoginView");
-		setName("LoginView");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		String viewName = "LoginView";
+		setTitle(viewName);
+		setName(viewName);
+		int exitOnClose = WindowConstants.EXIT_ON_CLOSE;
+		setDefaultCloseOperation(exitOnClose);
 		setBounds(100, 100, 450, 442);
 		contentPane = new JPanel();
-		contentPane.setName("LoginView");
+		contentPane.setName(viewName);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
