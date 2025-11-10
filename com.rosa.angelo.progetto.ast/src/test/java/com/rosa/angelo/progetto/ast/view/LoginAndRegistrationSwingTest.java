@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.rosa.angelo.progetto.ast.controller.UserController;
+import com.rosa.angelo.progetto.ast.model.User;
 
 @RunWith(GUITestRunner.class)
 public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
@@ -172,5 +173,12 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 		usernameBox.enterText(" ");
 		passwordBox.enterText("test");
 		window.button(JButtonMatcher.withText("Login")).requireDisabled();
+	}
+	
+	@Test
+	public void testShowErrorShouldShowTheMessageInTheErrorLabel() {
+		User user = new User("test1","testpwd",1);
+		GuiActionRunner.execute(() -> loginView.showError("error message", user));
+		window.label("errorMessageLabel").requireText("error message: " + user);
 	}
 }

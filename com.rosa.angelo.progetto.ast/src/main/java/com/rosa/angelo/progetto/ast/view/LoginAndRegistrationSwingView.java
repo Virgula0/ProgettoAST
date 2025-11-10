@@ -32,6 +32,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 	private JButton registerButton;
 	private JButton loginButton;
 	private JTextField registrationTokenInputText;
+	private JLabel errorMessageLabel;
 
 	/**
 	 * Launch the application.
@@ -217,15 +218,15 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		gbc_btnNewButton_1.gridy = 13;
 		contentPane.add(loginButton, gbc_btnNewButton_1);
 
-		JLabel lblNewLabel_7 = new JLabel(" ");
-		lblNewLabel_7.setForeground(new Color(165, 29, 45));
-		lblNewLabel_7.setName("errorMessageLabel");
+		errorMessageLabel = new JLabel(" ");
+		errorMessageLabel.setForeground(new Color(165, 29, 45));
+		errorMessageLabel.setName("errorMessageLabel");
 		GridBagConstraints gbc_lblNewLabel_7 = new GridBagConstraints();
 		gbc_lblNewLabel_7.insets = new Insets(0, 0, 5, 0);
 		gbc_lblNewLabel_7.gridwidth = 2;
 		gbc_lblNewLabel_7.gridx = 0;
 		gbc_lblNewLabel_7.gridy = 14;
-		contentPane.add(lblNewLabel_7, gbc_lblNewLabel_7);
+		contentPane.add(errorMessageLabel, gbc_lblNewLabel_7);
 
 		eventsHandler();
 	}
@@ -263,7 +264,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 	@Override
 	public void showError(String message, User user) {
 		// TODO Auto-generated method stub
-
+		errorMessageLabel.setText(message + ": " + user);
 	}
 
 	@Override
