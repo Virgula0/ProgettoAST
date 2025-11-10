@@ -42,7 +42,7 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 
 	private AutoCloseable closeable;
 
-	private static class FakePanel extends JFrame implements CommonPanel{
+	private static class FakePanel extends JFrame implements CommonPanel {
 		private JPanel contentPane;
 		private static final long serialVersionUID = 1L;
 

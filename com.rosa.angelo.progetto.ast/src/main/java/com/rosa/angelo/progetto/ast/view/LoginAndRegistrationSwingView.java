@@ -1,7 +1,5 @@
 package com.rosa.angelo.progetto.ast.view;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -33,13 +31,13 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 	private JButton loginButton;
 	private JTextField registrationTokenInputText;
 	private JLabel errorMessageLabel;
-	
+
 	private CommonPanel nextPanel;
-	
+
 	public void setNextPanel(CommonPanel nextPanel) {
 		this.nextPanel = nextPanel;
 	}
-	
+
 	@Override
 	public void showError(String message, User user) {
 		errorMessageLabel.setText(message + ": " + user);
@@ -49,7 +47,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 	public void showError(String message) {
 		errorMessageLabel.setText(message);
 	}
-	
+
 	@Override
 	public void start() {
 		setVisible(true);
@@ -67,23 +65,6 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 
 	public void setUserController(UserController userController) {
 		this.userController = userController;
-	}
-
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					LoginAndRegistrationSwingView frame = new LoginAndRegistrationSwingView();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
 	}
 
 	/**
