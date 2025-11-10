@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           java-version: 17
-          distribution: 'temurin'
+          distribution: "temurin"
           cache: maven
 
       - name: Cache Maven packages
@@ -46,4 +46,3 @@ jobs:
           prerelease: true
           commit: ${{ github.sha }}
           artifacts: "com.rosa.angelo.progetto.ast/target/*.jar"
-

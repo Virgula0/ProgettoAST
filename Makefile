@@ -31,15 +31,15 @@ docker-build:
 
 docker-stop:
 	xhost -local:docker
-	docker compose down -v 
+	docker compose down -v
 .PHONY: docker-stop
 
 sonarcube-up:
-	docker compose -f sonarcube/docker-compose.yaml up --build 
+	docker compose -f sonarcube/docker-compose.yaml up --build
 .PHONY: sonarcube-up
 
 sonarcube-down:
-	docker compose -f sonarcube/docker-compose.yaml down -v 
+	docker compose -f sonarcube/docker-compose.yaml down -v
 .PHONY: sonarcube-down
 
 sonarcube:
