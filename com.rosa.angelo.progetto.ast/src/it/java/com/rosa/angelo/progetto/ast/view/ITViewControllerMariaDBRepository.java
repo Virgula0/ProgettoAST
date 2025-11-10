@@ -110,7 +110,7 @@ public class ITViewControllerMariaDBRepository extends AssertJSwingJUnitTestCase
 			connection.close();
 	}
 
-	private static class FakePanel extends JFrame implements CommonPanel {
+	private static class FakePanel extends JFrame implements PanelSwitcher {
 		private JPanel contentPane;
 		private static final long serialVersionUID = 1L;
 

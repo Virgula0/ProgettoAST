@@ -1,24 +1,25 @@
 package com.rosa.angelo.progetto.ast.view;
 
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.rosa.angelo.progetto.ast.controller.UserController;
 import com.rosa.angelo.progetto.ast.model.User;
-import java.awt.GridBagLayout;
-import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
-import javax.swing.JPasswordField;
-import javax.swing.JButton;
-import java.awt.Color;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
-public class LoginAndRegistrationSwingView extends JFrame implements LoginView, CommonPanel {
+public class LoginAndRegistrationSwingView extends JFrame implements LoginView, PanelSwitcher {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -33,9 +34,9 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 	private JTextField registrationTokenInputText;
 	private JLabel errorMessageLabel;
 
-	private transient CommonPanel nextPanel;
+	private transient PanelSwitcher nextPanel;
 
-	public void setNextPanel(CommonPanel nextPanel) {
+	public void setNextPanel(PanelSwitcher nextPanel) {
 		this.nextPanel = nextPanel;
 	}
 

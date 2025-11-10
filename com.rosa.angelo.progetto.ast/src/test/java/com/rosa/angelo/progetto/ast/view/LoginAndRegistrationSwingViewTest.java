@@ -46,7 +46,7 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 	
 	private final String VALID_TOKEN = UserMongoRepository.REGISTRATION_TOKEN;
 
-	private static class FakePanel extends JFrame implements CommonPanel {
+	private static class FakePanel extends JFrame implements PanelSwitcher {
 		private JPanel contentPane;
 		private static final long serialVersionUID = 1L;
 
