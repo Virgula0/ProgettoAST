@@ -18,6 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.testcontainers.containers.MariaDBContainer;
 
 import com.rosa.angelo.progetto.ast.model.User;
@@ -36,6 +37,8 @@ public class UserControllerMariaDBRepositoryIT {
 			.withPassword(UserMariaDBRepository.DB_PASSWORD).withExposedPorts(UserMariaDBRepository.PORT);
 
 	private static Connection connection;
+	
+	private AutoCloseable closeable;
 
 	@Mock
 	private LoginView loginView;
@@ -71,12 +74,15 @@ public class UserControllerMariaDBRepositoryIT {
 
 	@Before
 	public void setup() {
+		closeable = MockitoAnnotations.openMocks(this);
 		userRepository = new UserMariaDBRepository(connection);
+		userController = new UserController(loginView, userRepository);
 		cleanupAndCreate();
 	}
 
 	@After
-	public void after() {
+	public void after() throws Exception {
+		closeable.close();
 		cleanupAndCreate();
 	}
 
