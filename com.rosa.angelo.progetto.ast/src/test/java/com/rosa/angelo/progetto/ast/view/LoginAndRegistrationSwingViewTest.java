@@ -2,6 +2,7 @@ package com.rosa.angelo.progetto.ast.view;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.verify;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -30,6 +31,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.rosa.angelo.progetto.ast.controller.UserController;
 import com.rosa.angelo.progetto.ast.model.User;
+import com.rosa.angelo.progetto.ast.repository.UserMongoRepository;
 
 @RunWith(GUITestRunner.class)
 public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase {
@@ -41,6 +43,8 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 	private UserController userController;
 
 	private AutoCloseable closeable;
+	
+	private final String VALID_TOKEN = UserMongoRepository.REGISTRATION_TOKEN;
 
 	private static class FakePanel extends JFrame implements CommonPanel {
 		private JPanel contentPane;
@@ -280,5 +284,17 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 		fakeFixture.label("testNewWindowLabel").requireVisible();
 
 		fakeFixture.cleanUp();
+	}
+	
+	@Test
+	public void testRegisterClickCallsSchoolController() {
+		User user = new User("test123", "passsword1234", 1);
+		window.textBox("registrationIdInputText").enterText(String.valueOf(user.getId()));
+		window.textBox("registrationUsernameInputText").enterText(user.getUsername());
+		window.textBox("registrationPasswordInputText").enterText(user.getPassword());
+		window.textBox("registrationTokenInputText").enterText(VALID_TOKEN);
+
+		window.button(JButtonMatcher.withText("Register")).click();
+		verify(userController).newUser(user, VALID_TOKEN);
 	}
 }
