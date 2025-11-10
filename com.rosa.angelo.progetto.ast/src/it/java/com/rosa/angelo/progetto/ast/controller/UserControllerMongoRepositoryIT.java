@@ -20,7 +20,6 @@ import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 import com.rosa.angelo.progetto.ast.model.User;
-import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;
 import com.rosa.angelo.progetto.ast.repository.UserMongoRepository;
 import com.rosa.angelo.progetto.ast.view.LoginView;
 
