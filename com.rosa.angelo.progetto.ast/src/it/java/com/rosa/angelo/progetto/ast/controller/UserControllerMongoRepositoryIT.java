@@ -133,7 +133,7 @@ public class UserControllerMongoRepositoryIT {
 	}
 
 	@Test
-	public void tesLoginInvalidCredentials() throws GenericRepositoryException {
+	public void tesLoginInvalidCredentials() {
 		userController.login("not valid", "not valid");
 		verify(loginView).showError("Invalid credentials");
 	}
