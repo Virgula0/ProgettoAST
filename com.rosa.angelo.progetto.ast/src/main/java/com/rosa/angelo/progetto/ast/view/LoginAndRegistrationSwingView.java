@@ -19,7 +19,7 @@ import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
+public class LoginAndRegistrationSwingView extends JFrame implements LoginView, CommonPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -33,6 +33,42 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 	private JButton loginButton;
 	private JTextField registrationTokenInputText;
 	private JLabel errorMessageLabel;
+	
+	private CommonPanel nextPanel;
+	
+	public void setNextPanel(CommonPanel nextPanel) {
+		this.nextPanel = nextPanel;
+	}
+	
+	@Override
+	public void showError(String message, User user) {
+		errorMessageLabel.setText(message + ": " + user);
+	}
+
+	@Override
+	public void showError(String message) {
+		errorMessageLabel.setText(message);
+	}
+	
+	@Override
+	public void start() {
+		setVisible(true);
+	}
+
+	@Override
+	public void switchPanel() {
+		this.dispose();
+		nextPanel.start();
+	}
+
+	public UserController getUserController() {
+		return userController;
+	}
+
+	public void setUserController(UserController userController) {
+		this.userController = userController;
+	}
+
 
 	/**
 	 * Launch the application.
@@ -260,29 +296,4 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView {
 		loginUsernameInputText.addKeyListener(loginCheckerAdapter);
 		loginPasswordInputText.addKeyListener(loginCheckerAdapter);
 	}
-
-	@Override
-	public void showError(String message, User user) {
-		errorMessageLabel.setText(message + ": " + user);
-	}
-
-	@Override
-	public void showError(String message) {
-		errorMessageLabel.setText(message);
-	}
-
-	@Override
-	public void switchPanel() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public UserController getUserController() {
-		return userController;
-	}
-
-	public void setUserController(UserController userController) {
-		this.userController = userController;
-	}
-
 }

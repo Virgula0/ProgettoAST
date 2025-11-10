@@ -1,6 +1,19 @@
 package com.rosa.angelo.progetto.ast.view;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
+
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 
 import org.assertj.swing.annotation.GUITest;
 import org.assertj.swing.core.matcher.JButtonMatcher;
@@ -28,6 +41,43 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 	private UserController userController;
 
 	private AutoCloseable closeable;
+
+	private static class FakePanel extends JFrame implements CommonPanel{
+		private JPanel contentPane;
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void start() {
+			setVisible(true);
+		}
+
+		public FakePanel() {
+			setTitle("FakePanel");
+			setName("FakePanel");
+			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			setBounds(100, 100, 450, 442);
+			contentPane = new JPanel();
+			contentPane.setName("LoginView");
+			contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+			setContentPane(contentPane);
+			GridBagLayout gbl_contentPane = new GridBagLayout();
+			gbl_contentPane.columnWidths = new int[] { 0, 387 };
+			gbl_contentPane.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+			gbl_contentPane.columnWeights = new double[] { 0.0, 1.0 };
+			gbl_contentPane.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+					0.0, 0.0, 0.0, Double.MIN_VALUE };
+			contentPane.setLayout(gbl_contentPane);
+
+			JLabel lblNewLabel = new JLabel("This is a test");
+			lblNewLabel.setName("testNewWindowLabel");
+			GridBagConstraints gbc_lblNewLabel = new GridBagConstraints();
+			gbc_lblNewLabel.gridwidth = 2;
+			gbc_lblNewLabel.insets = new Insets(0, 0, 5, 0);
+			gbc_lblNewLabel.gridx = 0;
+			gbc_lblNewLabel.gridy = 1;
+			contentPane.add(lblNewLabel, gbc_lblNewLabel);
+		}
+	}
 
 	@Override
 	protected void onSetUp() throws Exception {
@@ -194,5 +244,42 @@ public class LoginAndRegistrationSwingTest extends AssertJSwingJUnitTestCase {
 	public void testShowErrorWithouNameShouldShowTheMessageInTheErrorLabel() {
 		GuiActionRunner.execute(() -> loginView.showError("this is an error message"));
 		window.label("errorMessageLabel").requireText("this is an error message");
+	}
+
+	@Test
+	@GUITest
+	public void assertStartRunsCorrectly() throws Exception {
+		SwingUtilities.invokeAndWait(() -> {
+			loginView.start();
+		});
+		assertThat(loginView.isVisible()).isTrue();
+		SwingUtilities.invokeAndWait(() -> loginView.dispose());
+	}
+
+	@Test
+	public void testswitchPanelClosesTheOldWindowAndLoadsTheNewOne() {
+		List<FakePanel> fakePanels = new ArrayList<>();
+		SwingUtilities.invokeLater(() -> {
+			FakePanel fakePanel = new FakePanel();
+			loginView.setNextPanel(fakePanel);
+			fakePanels.add(fakePanel);
+		});
+
+		try {
+			SwingUtilities.invokeAndWait(() -> {
+				loginView.switchPanel();
+			});
+		} catch (Exception e) {
+			fail(e.getMessage());
+		}
+
+		assertThat(loginView.isDisplayable()).isFalse();
+
+		FrameFixture fakeFixture = new FrameFixture(super.robot(), fakePanels.get(0));
+
+		fakeFixture.requireVisible();
+		fakeFixture.label("testNewWindowLabel").requireVisible();
+
+		fakeFixture.cleanUp();
 	}
 }
