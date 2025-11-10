@@ -64,7 +64,7 @@ public class UserControllerMongoRepositoryIT {
 	}
 
 	@AfterClass
-	public static void tearDown() throws Exception {
+	public static void tearDown() {
 		client.close();
 	}
 
