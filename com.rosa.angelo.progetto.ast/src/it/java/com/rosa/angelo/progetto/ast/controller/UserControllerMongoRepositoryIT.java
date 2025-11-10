@@ -96,13 +96,13 @@ public class UserControllerMongoRepositoryIT {
 	}
 
 	@Test
-	public void testNewUserControllerWithNullUser() throws GenericRepositoryException {
+	public void testNewUserControllerWithNullUser() {
 		userController.newUser(null, validToken);
 		verify(loginView).showError("Invalid null user passed", null);
 	}
 
 	@Test
-	public void testInvalidRegistrationToken() throws GenericRepositoryException {
+	public void testInvalidRegistrationToken() {
 		String username = "test";
 		String password = "password1234";
 		User user = new User(username, password, 1);
@@ -112,7 +112,7 @@ public class UserControllerMongoRepositoryIT {
 	}
 
 	@Test
-	public void testNewUserAlreadyExists() throws GenericRepositoryException {
+	public void testNewUserAlreadyExists() {
 		String username = "test";
 		String password = "password1234";
 		User user = new User(username, password, 1);
@@ -123,7 +123,7 @@ public class UserControllerMongoRepositoryIT {
 	}
 
 	@Test
-	public void testNewUserInvalidPasswordInRegistration() throws GenericRepositoryException {
+	public void testNewUserInvalidPasswordInRegistration() {
 		String username = "test";
 		String password = "pwd";
 		User user = new User(username, password, 1);
