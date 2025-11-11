@@ -1,7 +1,9 @@
 package com.rosa.angelo.progetto.ast.controller;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.ignoreStubs;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -58,5 +60,34 @@ public class TestProductController {
 
 		productController.allProducts(validLoggedInUser);
 		verify(productView).showAllProductsSentByUser(products);
+	}
+
+	@Test
+	public void testNewProductWhenProductDoesNotExists() {
+		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
+				"packageType", 1);
+
+		when(productRepository.findProductById(product.getId())).thenReturn(null);
+
+		productController.newProduct(product);
+
+		InOrder inOrder = Mockito.inOrder(productRepository, productView);
+		inOrder.verify(productRepository).save(product);
+		inOrder.verify(productView).productAdded(product);
+	}
+
+	@Test
+	public void testNewProductWhenProductAlreadyExists() {
+		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
+				"packageType", 1);
+		Product product2SameId = new Product(validLoggedInUser, "receiverName2", "receiverSuername2",
+				"receiverAddress2", "packageType", 1);
+
+		when(productRepository.findProductById(product.getId())).thenReturn(product);
+
+		productController.newProduct(product2SameId);
+
+		verify(productView).showError("Product already exists with this ID ", product2SameId);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
 	}
 }
