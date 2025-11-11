@@ -95,8 +95,9 @@ public class TestProductController {
 				"packageType", 1);
 
 		when(productRepository.findProductById(productToDelete.getId())).thenReturn(productToDelete);
+		when(productRepository.findAllProductsSentByUser(productToDelete.getSender())).thenReturn(Arrays.asList(productToDelete));
 
-		productController.deleteProduct(productToDelete);
+		productController.deleteProduct(productToDelete, validLoggedInUser);
 
 		InOrder inOrder = Mockito.inOrder(productRepository, productView);
 		inOrder.verify(productRepository).delete(productToDelete);
@@ -110,7 +111,7 @@ public class TestProductController {
 
 		when(productRepository.findProductById(productToDelete.getId())).thenReturn(null);
 
-		productController.deleteProduct(productToDelete);
+		productController.deleteProduct(productToDelete, validLoggedInUser);
 
 		verify(productView).showError("Product does not exists with such ID ", productToDelete);
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
@@ -122,8 +123,8 @@ public class TestProductController {
 				"samePackageType", 1);
 		Product product2SameReceiver = new Product(validLoggedInUser, "receiverName", "receiverSurname",
 				"receiverAddress", "samePackageType", 2);
-		Product notRelevantProduct = new Product(validLoggedInUser, "receiverName2", "receiverSurname2", "receiverAddress2",
-				"samePackageTyp2e", 3);
+		Product notRelevantProduct = new Product(validLoggedInUser, "receiverName2", "receiverSurname2",
+				"receiverAddress2", "samePackageTyp2e", 3);
 
 		when(productRepository.findAllProductsSentByUser(product2SameReceiver.getSender()))
 				.thenReturn(Arrays.asList(notRelevantProduct, product));
@@ -135,6 +136,31 @@ public class TestProductController {
 		inOrder.verify(productRepository).findProductById(product2SameReceiver.getId());
 		inOrder.verify(productRepository).findAllProductsSentByUser(product2SameReceiver.getSender());
 		inOrder.verify(productView).showError("You already sent this package to that customer ", product2SameReceiver);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+	}
+
+	@Test
+	public void testDeleteProductShouldNotAllowToDeleteProductOfAnotherUser() {
+		Product productUser1 = new Product(validLoggedInUser, "receiverName", "receiverSurname", "receiverAddress",
+				"samePackageType", 1);
+		Product notRelevantProduct = new Product(validLoggedInUser, "receiverName2", "receiverSurname2",
+				"receiverAddress2", "samePackageTyp2e", 3);
+
+		User user2 = new User("test12345", "password1234", 2);
+		Product productUser2 = new Product(user2, "receiverName", "receiverSurname", "receiverAddress",
+				"samePackageType", 1);
+
+		when(productRepository.findAllProductsSentByUser(validLoggedInUser))
+				.thenReturn(Arrays.asList(notRelevantProduct, productUser1));
+		when(productRepository.findProductById(productUser2.getId())).thenReturn(productUser2);
+
+		InOrder inOrder = Mockito.inOrder(productRepository, productRepository, productView);
+
+		productController.deleteProduct(productUser2, validLoggedInUser);
+
+		inOrder.verify(productRepository).findProductById(productUser2.getId());
+		inOrder.verify(productRepository).findAllProductsSentByUser(validLoggedInUser);
+		inOrder.verify(productView).showError("You cannot delete a package you don't own ", productUser2);
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 	}
 }

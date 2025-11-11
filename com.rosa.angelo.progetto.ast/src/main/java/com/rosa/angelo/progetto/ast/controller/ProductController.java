@@ -1,5 +1,6 @@
 package com.rosa.angelo.progetto.ast.controller;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -41,10 +42,25 @@ public class ProductController {
 		productView.productAdded(productToInsert);
 	}
 
-	public void deleteProduct(Product productToDelete) {
+	public void deleteProduct(Product productToDelete, User loggedInUser) {
 
 		if (productRepository.findProductById(productToDelete.getId()) == null) {
 			productView.showError("Product does not exists with such ID ", productToDelete);
+			return;
+		}
+		
+		List<Product> products = productRepository.findAllProductsSentByUser(loggedInUser);
+		
+		int found = 0;
+		for (Product p : products) {
+			if (Objects.equals(p, productToDelete)) {
+				found++;
+				break;
+			}
+		}
+		
+		if (found < 1) {
+			productView.showError("You cannot delete a package you don't own ", productToDelete);
 			return;
 		}
 
