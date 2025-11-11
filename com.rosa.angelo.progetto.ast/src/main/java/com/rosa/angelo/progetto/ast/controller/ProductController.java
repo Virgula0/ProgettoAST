@@ -48,17 +48,10 @@ public class ProductController {
 			productView.showError("Product does not exists with such ID ", productToDelete);
 			return;
 		}
-		
-		List<Product> products = productRepository.findAllProductsSentByUser(loggedInUser);
-		
-		int found = 0;
-		for (Product p : products) {
-			if (Objects.equals(p, productToDelete)) {
-				found++;
-				break;
-			}
-		}
-		
+
+		int found = productRepository.findAllProductsSentByUser(loggedInUser).stream()
+				.filter(p -> Objects.equals(p, productToDelete)).collect(Collectors.counting()).intValue();
+
 		if (found < 1) {
 			productView.showError("You cannot delete a package you don't own ", productToDelete);
 			return;
