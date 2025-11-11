@@ -1,7 +1,7 @@
 package com.rosa.angelo.progetto.ast.controller;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.rosa.angelo.progetto.ast.model.Product;
 import com.rosa.angelo.progetto.ast.model.User;
@@ -29,13 +29,12 @@ public class ProductController {
 			return;
 		}
 
-		List<Product> products = productRepository.findAllProductsSentByUser(productToInsert.getSender());
-		
-		for (Product p : products) {
-			if (Objects.equals(p, productToInsert)) {
-				productView.showError("You already sent this package to that customer ", productToInsert);
-				return;
-			}
+		int numberOfAlreadySentSamePackages = productRepository.findAllProductsSentByUser(productToInsert.getSender())
+				.stream().filter(x -> Objects.equals(x, productToInsert)).collect(Collectors.counting()).intValue();
+
+		if (numberOfAlreadySentSamePackages > 0) {
+			productView.showError("You already sent this package to that customer ", productToInsert);
+			return;
 		}
 
 		productRepository.save(productToInsert);
