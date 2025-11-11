@@ -1,6 +1,5 @@
 package com.rosa.angelo.progetto.ast.controller;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,7 @@ public class ProductController {
 		productView.showAllProductsSentByUser(productRepository.findAllProductsSentByUser(logggedIn));
 	}
 
-	public void newProduct(Product productToInsert) {
+	public void newProduct(Product productToInsert, User loggedInUser) {
 		Product exists = productRepository.findProductById(productToInsert.getId());
 
 		if (exists != null) {
@@ -35,6 +34,11 @@ public class ProductController {
 
 		if (numberOfAlreadySentSamePackages > 0) {
 			productView.showError("You already sent this package to that customer ", productToInsert);
+			return;
+		}
+
+		if (!Objects.equals(productToInsert.getSender(), loggedInUser)) {
+			productView.showError("You cannot add a package to another user ", productToInsert);
 			return;
 		}
 

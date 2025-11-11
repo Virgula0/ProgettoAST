@@ -67,7 +67,7 @@ public class TestProductController {
 
 		when(productRepository.findProductById(product.getId())).thenReturn(null);
 
-		productController.newProduct(product);
+		productController.newProduct(product, validLoggedInUser);
 
 		InOrder inOrder = Mockito.inOrder(productRepository, productView);
 		inOrder.verify(productRepository).save(product);
@@ -83,7 +83,7 @@ public class TestProductController {
 
 		when(productRepository.findProductById(product.getId())).thenReturn(product);
 
-		productController.newProduct(product2SameId);
+		productController.newProduct(product2SameId, validLoggedInUser);
 
 		verify(productView).showError("Product already exists with this ID ", product2SameId);
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
@@ -95,7 +95,8 @@ public class TestProductController {
 				"packageType", 1);
 
 		when(productRepository.findProductById(productToDelete.getId())).thenReturn(productToDelete);
-		when(productRepository.findAllProductsSentByUser(productToDelete.getSender())).thenReturn(Arrays.asList(productToDelete));
+		when(productRepository.findAllProductsSentByUser(productToDelete.getSender()))
+				.thenReturn(Arrays.asList(productToDelete));
 
 		productController.deleteProduct(productToDelete, validLoggedInUser);
 
@@ -131,7 +132,7 @@ public class TestProductController {
 
 		InOrder inOrder = Mockito.inOrder(productRepository, productRepository, productView);
 
-		productController.newProduct(product2SameReceiver);
+		productController.newProduct(product2SameReceiver, validLoggedInUser);
 
 		inOrder.verify(productRepository).findProductById(product2SameReceiver.getId());
 		inOrder.verify(productRepository).findAllProductsSentByUser(product2SameReceiver.getSender());
@@ -162,5 +163,19 @@ public class TestProductController {
 		inOrder.verify(productRepository).findAllProductsSentByUser(validLoggedInUser);
 		inOrder.verify(productView).showError("You cannot delete a package you don't own ", productUser2);
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
+	}
+
+	@Test
+	public void testNewProductOwnedByDifferentUserShouldNotSucceed() {
+		User user2 = new User("user2", "password1234", 2);
+		Product product = new Product(user2, "receiverName", "receiverSuername", "receiverAddress", "packageType", 1);
+
+		when(productRepository.findProductById(product.getId())).thenReturn(null);
+
+		productController.newProduct(product, validLoggedInUser);
+
+		InOrder inOrder = Mockito.inOrder(productRepository, productView);
+		inOrder.verify(productRepository).findProductById(product.getId());
+		inOrder.verify(productView).showError("You cannot add a package to another user ", product);
 	}
 }
