@@ -178,5 +178,6 @@ public class TestProductController {
 		inOrder.verify(productRepository).findProductById(product.getId());
 		inOrder.verify(productRepository).findAllProductsSentByUser(user2);
 		inOrder.verify(productView).showError("You cannot add a package to another user ", product);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
 	}
 }
