@@ -43,10 +43,10 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 	private UserController userController;
 
 	private AutoCloseable closeable;
-	
+
 	private final String VALID_TOKEN = UserMongoRepository.REGISTRATION_TOKEN;
 
-	private static class FakePanel extends JFrame implements CommonPanel {
+	private static class FakePanel extends JFrame implements PanelSwitcher {
 		private JPanel contentPane;
 		private static final long serialVersionUID = 1L;
 
@@ -286,20 +286,40 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 
 		fakeFixture.cleanUp();
 	}
-	
+
 	@Test
 	@GUITest
 	public void testRegisterClickCallsUserController() {
 		User user = new User("test123", "passsword1234", 1);
-		window.textBox("registrationIdInputText").enterText(String.valueOf(user.getId()));
-		window.textBox("registrationUsernameInputText").enterText(user.getUsername());
-		window.textBox("registrationPasswordInputText").enterText(user.getPassword());
-		window.textBox("registrationTokenInputText").enterText(VALID_TOKEN);
+		JTextComponentFixture registrationIdInputText = window.textBox("registrationIdInputText");
+		registrationIdInputText.enterText(String.valueOf(user.getId()));
+		JTextComponentFixture registrationUsernameInputText = window.textBox("registrationUsernameInputText");
+		registrationUsernameInputText.enterText(user.getUsername());
+		JTextComponentFixture registrationPasswordInputText = window.textBox("registrationPasswordInputText");
+		registrationPasswordInputText.enterText(user.getPassword());
+		JTextComponentFixture registrationTokenInputText = window.textBox("registrationTokenInputText");
+		registrationTokenInputText.enterText(VALID_TOKEN);
 
 		window.button(JButtonMatcher.withText("Register")).click();
 		verify(userController).newUser(user, VALID_TOKEN);
+
+		resetRegistrationInputs(registrationIdInputText, registrationUsernameInputText, registrationPasswordInputText,
+				registrationTokenInputText);
+
+		User user2 = new User("NewUser", "passsword1234", 2);
+		JTextComponentFixture registrationIdInputText2 = window.textBox("registrationIdInputText");
+		registrationIdInputText2.enterText(String.valueOf(user2.getId()));
+		JTextComponentFixture registrationUsernameInputText2 = window.textBox("registrationUsernameInputText");
+		registrationUsernameInputText2.enterText(user2.getUsername());
+		JTextComponentFixture registrationPasswordInputText2 = window.textBox("registrationPasswordInputText");
+		registrationPasswordInputText2.enterText(user2.getPassword());
+		JTextComponentFixture registrationTokenInputText2 = window.textBox("registrationTokenInputText");
+		registrationTokenInputText2.enterText(VALID_TOKEN);
+
+		window.button(JButtonMatcher.withText("Register")).click();
+		verify(userController).newUser(user2, VALID_TOKEN);
 	}
-	
+
 	@Test
 	@GUITest
 	public void testLoginClickCallsUserController() {
@@ -309,5 +329,30 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 
 		window.button(JButtonMatcher.withText("Login")).click();
 		verify(userController).login(user.getUsername(), user.getPassword());
+	}
+
+	@Test
+	@GUITest
+	public void testIdIsNotAnInteger() {
+		JTextComponentFixture registrationIdInputText = window.textBox("registrationIdInputText");
+		registrationIdInputText.enterText("WORD");
+		JTextComponentFixture registrationUsernameInputText = window.textBox("registrationUsernameInputText");
+		registrationUsernameInputText.enterText("test123");
+		JTextComponentFixture registrationPasswordInputText = window.textBox("registrationPasswordInputText");
+		registrationPasswordInputText.enterText("password1234");
+		JTextComponentFixture registrationTokenInputText = window.textBox("registrationTokenInputText");
+		registrationTokenInputText.enterText(VALID_TOKEN);
+		window.button(JButtonMatcher.withText("Register")).click();
+
+		window.label("errorMessageLabel").requireText("Invalid id format");
+
+		resetRegistrationInputs(registrationIdInputText, registrationUsernameInputText, registrationPasswordInputText,
+				registrationTokenInputText);
+
+		window.textBox("registrationIdInputText").enterText("2.0"); // double
+		window.textBox("registrationUsernameInputText").enterText("testUsername");
+		window.textBox("registrationPasswordInputText").enterText("testPassword");
+		window.textBox("registrationTokenInputText").enterText("validToken");
+		window.label("errorMessageLabel").requireText("Invalid id format");
 	}
 }
