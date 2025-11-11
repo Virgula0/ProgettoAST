@@ -29,4 +29,9 @@ public class ProductController {
 		productRepository.save(product);
 		productView.productAdded(product);
 	}
+
+	public void deleteProduct(Product productToDelete) {
+		productRepository.delete(productToDelete);
+		productView.productRemoved(productToDelete);
+	}
 }
