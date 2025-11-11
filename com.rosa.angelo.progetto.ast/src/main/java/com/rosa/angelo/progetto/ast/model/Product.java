@@ -11,12 +11,13 @@ public class Product {
 	private String packageType;
 
 	public Product(User sender, String receiverName, String receiverSurname, String reiceiverAddress,
-			String packageType) {
+			String packageType, int id) {
 		this.sender = sender;
 		this.receiverName = receiverName;
 		this.receiverSurname = receiverSurname;
 		this.reiceiverAddress = reiceiverAddress;
 		this.packageType = packageType;
+		this.id = id;
 	}
 
 	@Override
@@ -48,4 +49,27 @@ public class Product {
 				+ receiverSurname + ", reiceiverAddress=" + reiceiverAddress + ", packageType=" + packageType + "]";
 	}
 
+	public int getId() {
+		return id;
+	}
+
+	public User getSender() {
+		return sender;
+	}
+
+	public String getReceiverName() {
+		return receiverName;
+	}
+
+	public String getReceiverSurname() {
+		return receiverSurname;
+	}
+
+	public String getReiceiverAddress() {
+		return reiceiverAddress;
+	}
+
+	public String getPackageType() {
+		return packageType;
+	}
 }
