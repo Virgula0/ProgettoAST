@@ -305,7 +305,7 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 
 		resetRegistrationInputs(registrationIdInputText, registrationUsernameInputText, registrationPasswordInputText,
 				registrationTokenInputText);
-		
+
 		User user2 = new User("NewUser", "passsword1234", 2);
 		JTextComponentFixture registrationIdInputText2 = window.textBox("registrationIdInputText");
 		registrationIdInputText2.enterText(String.valueOf(user2.getId()));
@@ -329,5 +329,30 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 
 		window.button(JButtonMatcher.withText("Login")).click();
 		verify(userController).login(user.getUsername(), user.getPassword());
+	}
+
+	@Test
+	@GUITest
+	public void testIdIsNotAnInteger() {
+		JTextComponentFixture registrationIdInputText = window.textBox("registrationIdInputText");
+		registrationIdInputText.enterText("WORD");
+		JTextComponentFixture registrationUsernameInputText = window.textBox("registrationUsernameInputText");
+		registrationUsernameInputText.enterText("test123");
+		JTextComponentFixture registrationPasswordInputText = window.textBox("registrationPasswordInputText");
+		registrationPasswordInputText.enterText("password1234");
+		JTextComponentFixture registrationTokenInputText = window.textBox("registrationTokenInputText");
+		registrationTokenInputText.enterText(VALID_TOKEN);
+		window.button(JButtonMatcher.withText("Register")).click();
+
+		window.label("errorMessageLabel").requireText("Invalid id format");
+
+		resetRegistrationInputs(registrationIdInputText, registrationUsernameInputText, registrationPasswordInputText,
+				registrationTokenInputText);
+
+		window.textBox("registrationIdInputText").enterText("2.0"); // double
+		window.textBox("registrationUsernameInputText").enterText("testUsername");
+		window.textBox("registrationPasswordInputText").enterText("testPassword");
+		window.textBox("registrationTokenInputText").enterText("validToken");
+		window.label("errorMessageLabel").requireText("Invalid id format");
 	}
 }

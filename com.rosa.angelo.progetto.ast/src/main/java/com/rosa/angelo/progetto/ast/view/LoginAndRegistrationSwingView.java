@@ -269,12 +269,19 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 		registrationPasswordInputText.addKeyListener(registerCheckerAdapter);
 		registrationTokenInputText.addKeyListener(registerCheckerAdapter);
 
-		registerButton
-				.addActionListener(e -> userController.newUser(
-						new User(registrationUsernameInputText.getText(),
-								new String(registrationPasswordInputText.getPassword()),
-								Integer.parseInt(registrationIdInputText.getText())),
-						registrationTokenInputText.getText()));
+		registerButton.addActionListener(e -> {
+			int parsedId;
+			try {
+				parsedId = Integer.parseInt(registrationIdInputText.getText());
+			} catch (NumberFormatException ex) {
+				this.showError("Invalid id format");
+				return;
+			}
+			userController.newUser(
+					new User(registrationUsernameInputText.getText(),
+							new String(registrationPasswordInputText.getPassword()), parsedId),
+					registrationTokenInputText.getText());
+		});
 
 		KeyAdapter loginCheckerAdapter = new KeyAdapter() {
 			@Override
