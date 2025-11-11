@@ -18,19 +18,25 @@ public class ProductController {
 		productView.showAllProductsSentByUser(productRepository.findAllProductsSentByUser(logggedIn));
 	}
 
-	public void newProduct(Product product) {
-		Product exists = productRepository.findProductById(product.getId());
+	public void newProduct(Product productToInsert) {
+		Product exists = productRepository.findProductById(productToInsert.getId());
 
 		if (exists != null) {
-			productView.showError("Product already exists with this ID ", product);
+			productView.showError("Product already exists with this ID ", productToInsert);
 			return;
 		}
 
-		productRepository.save(product);
-		productView.productAdded(product);
+		productRepository.save(productToInsert);
+		productView.productAdded(productToInsert);
 	}
 
 	public void deleteProduct(Product productToDelete) {
+
+		if (productRepository.findProductById(productToDelete.getId()) == null) {
+			productView.showError("Product does not exists with such ID ", productToDelete);
+			return;
+		}
+
 		productRepository.delete(productToDelete);
 		productView.productRemoved(productToDelete);
 	}

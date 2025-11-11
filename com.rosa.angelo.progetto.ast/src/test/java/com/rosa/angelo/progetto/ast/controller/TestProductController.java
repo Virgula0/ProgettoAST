@@ -90,18 +90,31 @@ public class TestProductController {
 		verify(productView).showError("Product already exists with this ID ", product2SameId);
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 	}
-	
+
 	@Test
-	public void testDeleteProcutWhenItExists() {
+	public void testDeleteProductWhenItExists() {
 		Product productToDelete = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
 				"packageType", 1);
-		
+
 		when(productRepository.findProductById(productToDelete.getId())).thenReturn(productToDelete);
-		
+
 		productController.deleteProduct(productToDelete);
-		
+
 		InOrder inOrder = Mockito.inOrder(productRepository, productView);
 		inOrder.verify(productRepository).delete(productToDelete);
 		inOrder.verify(productView).productRemoved(productToDelete);
+	}
+
+	@Test
+	public void testDeleteProductWhenItDoesNotExists() {
+		Product productToDelete = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
+				"packageType", 1);
+
+		when(productRepository.findProductById(productToDelete.getId())).thenReturn(null);
+
+		productController.deleteProduct(productToDelete);
+
+		verify(productView).showError("Product does not exists with such ID ", productToDelete);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
 	}
 }
