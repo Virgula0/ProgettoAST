@@ -174,8 +174,9 @@ public class TestProductController {
 
 		productController.newProduct(product, validLoggedInUser);
 
-		InOrder inOrder = Mockito.inOrder(productRepository, productView);
+		InOrder inOrder = Mockito.inOrder(productRepository, productRepository, productView);
 		inOrder.verify(productRepository).findProductById(product.getId());
+		inOrder.verify(productRepository).findAllProductsSentByUser(user2);
 		inOrder.verify(productView).showError("You cannot add a package to another user ", product);
 	}
 }
