@@ -1,6 +1,5 @@
 package com.rosa.angelo.progetto.ast.controller;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.ignoreStubs;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -21,7 +20,6 @@ import org.mockito.MockitoAnnotations;
 import com.rosa.angelo.progetto.ast.model.Product;
 import com.rosa.angelo.progetto.ast.model.User;
 import com.rosa.angelo.progetto.ast.repository.ProductRepository;
-import com.rosa.angelo.progetto.ast.repository.UserRepository;
 import com.rosa.angelo.progetto.ast.view.ProductView;
 
 public class TestProductController {
@@ -115,6 +113,28 @@ public class TestProductController {
 		productController.deleteProduct(productToDelete);
 
 		verify(productView).showError("Product does not exists with such ID ", productToDelete);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+	}
+
+	@Test
+	public void testNewProductErrorIfUserAlreadySentSuchPackageEvenIfIdIsDifferent() {
+		Product product = new Product(validLoggedInUser, "receiverName", "receiverSurname", "receiverAddress",
+				"samePackageType", 1);
+		Product product2SameReceiver = new Product(validLoggedInUser, "receiverName", "receiverSurname",
+				"receiverAddress", "samePackageType", 2);
+		Product notRelevantProduct = new Product(validLoggedInUser, "receiverName2", "receiverSurname2", "receiverAddress2",
+				"samePackageTyp2e", 3);
+
+		when(productRepository.findAllProductsSentByUser(product2SameReceiver.getSender()))
+				.thenReturn(Arrays.asList(notRelevantProduct, product));
+
+		InOrder inOrder = Mockito.inOrder(productRepository, productRepository, productView);
+
+		productController.newProduct(product2SameReceiver);
+
+		inOrder.verify(productRepository).findProductById(product2SameReceiver.getId());
+		inOrder.verify(productRepository).findAllProductsSentByUser(product2SameReceiver.getSender());
+		inOrder.verify(productView).showError("You already sent this package to that customer ", product2SameReceiver);
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 	}
 }

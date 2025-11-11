@@ -22,9 +22,10 @@ public class Product {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, packageType, receiverName, receiverSurname, reiceiverAddress, sender);
+		return Objects.hash(packageType, receiverName, receiverSurname, reiceiverAddress, sender);
 	}
 
+	// id not checked by equals voluntarily
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -37,7 +38,7 @@ public class Product {
 			return false;
 		}
 		Product other = (Product) obj;
-		return id == other.id && Objects.equals(packageType, other.packageType)
+		return Objects.equals(packageType, other.packageType)
 				&& Objects.equals(receiverName, other.receiverName)
 				&& Objects.equals(receiverSurname, other.receiverSurname)
 				&& Objects.equals(reiceiverAddress, other.reiceiverAddress) && Objects.equals(sender, other.sender);

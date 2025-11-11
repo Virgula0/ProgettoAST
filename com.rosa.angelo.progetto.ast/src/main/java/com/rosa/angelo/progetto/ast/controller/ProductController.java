@@ -1,5 +1,8 @@
 package com.rosa.angelo.progetto.ast.controller;
 
+import java.util.List;
+import java.util.Objects;
+
 import com.rosa.angelo.progetto.ast.model.Product;
 import com.rosa.angelo.progetto.ast.model.User;
 import com.rosa.angelo.progetto.ast.repository.ProductRepository;
@@ -24,6 +27,15 @@ public class ProductController {
 		if (exists != null) {
 			productView.showError("Product already exists with this ID ", productToInsert);
 			return;
+		}
+
+		List<Product> products = productRepository.findAllProductsSentByUser(productToInsert.getSender());
+		
+		for (Product p : products) {
+			if (Objects.equals(p, productToInsert)) {
+				productView.showError("You already sent this package to that customer ", productToInsert);
+				return;
+			}
 		}
 
 		productRepository.save(productToInsert);
