@@ -52,7 +52,7 @@ public class ProductMongoRepository implements ProductRepository {
 		}
 		return StreamSupport.stream(productCollection.find().spliterator(), false)
 				.filter(x -> Objects.equals(x.getInteger(SENDER_ID_KEY), user.getId()))
-				.map(d -> documentToProduct(user, d)).collect(Collectors.toList());
+				.map(d -> documentToProduct(user, d)).toList();
 	}
 
 	@Override
