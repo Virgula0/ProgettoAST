@@ -75,6 +75,24 @@ public class TestProductController {
 	}
 
 	@Test
+	public void testNewProductWhenUserAlreadyHasOtherProducts() {
+		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
+				"packageType", 1);
+		Product productToAdd = new Product(validLoggedInUser, "receiverName2", "receiverSuername2", "receiverAddress2",
+				"packageType", 2);
+
+		when(productRepository.findProductById(product.getId())).thenReturn(product);
+		when(productRepository.findAllProductsSentByUser(product.getSender())).thenReturn(Arrays.asList(product));
+
+		productController.newProduct(productToAdd, validLoggedInUser);
+
+		InOrder inOrder = Mockito.inOrder(productRepository, productView);
+		inOrder.verify(productRepository).save(productToAdd);
+		inOrder.verify(productView).productAdded(productToAdd);
+
+	}
+
+	@Test
 	public void testNewProductWhenProductAlreadyExists() {
 		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
 				"packageType", 1);
