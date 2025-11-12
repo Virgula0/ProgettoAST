@@ -33,7 +33,7 @@ public class ProductMongoRepository implements ProductRepository {
 	public static final String SENDER_ID_KEY = "senderid";
 	public static final String SENDER_USERNAME_KEY = "senderusername";
 
-	public static final String RECEIVER_ID_KEY = "id";
+	public static final String PRODUCT_ID_KEY = "id";
 	public static final String RECEIVER_NAME_KEY = "receivername";
 	public static final String RECEIVER_SURNAME_KEY = "receiverusername";
 	public static final String RECEIVER_ADDRESS_KEY = "receiveraddress";
@@ -42,7 +42,7 @@ public class ProductMongoRepository implements ProductRepository {
 	private Product documentToProduct(User user, Document doc) {
 		return new Product(user, doc.getString(RECEIVER_NAME_KEY), doc.getString(RECEIVER_SURNAME_KEY),
 				doc.getString(RECEIVER_ADDRESS_KEY), doc.getString(RECEIVER_PACKAGETYPE_KEY),
-				doc.getInteger(RECEIVER_ID_KEY));
+				doc.getInteger(PRODUCT_ID_KEY));
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class ProductMongoRepository implements ProductRepository {
 		productCollection
 				.insertOne(new Document().append(ProductMongoRepository.SENDER_ID_KEY, product.getSender().getId())
 						.append(ProductMongoRepository.SENDER_USERNAME_KEY, product.getSender().getUsername())
-						.append(ProductMongoRepository.RECEIVER_ID_KEY, product.getId())
+						.append(ProductMongoRepository.PRODUCT_ID_KEY, product.getId())
 						.append(ProductMongoRepository.RECEIVER_NAME_KEY, product.getReceiverName())
 						.append(ProductMongoRepository.RECEIVER_SURNAME_KEY, product.getReceiverSurname())
 						.append(ProductMongoRepository.RECEIVER_ADDRESS_KEY, product.getReiceiverAddress())
@@ -75,14 +75,14 @@ public class ProductMongoRepository implements ProductRepository {
 		if (product == null) {
 			return;
 		}
-		Document query = new Document(RECEIVER_ID_KEY, product.getId());
+		Document query = new Document(PRODUCT_ID_KEY, product.getId());
 		productCollection.findOneAndDelete(query);
 	}
 
 	@Override
 	public Product findProductById(int id) {
 		return StreamSupport.stream(productCollection.find().spliterator(), false)
-				.filter(x -> Objects.equals(x.getInteger(ProductMongoRepository.RECEIVER_ID_KEY), id))
+				.filter(x -> Objects.equals(x.getInteger(ProductMongoRepository.PRODUCT_ID_KEY), id))
 				.map(d -> documentToFullUser(d, id)).findFirst().orElse(null);
 	}
 

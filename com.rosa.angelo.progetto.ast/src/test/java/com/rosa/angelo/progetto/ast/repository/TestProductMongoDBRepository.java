@@ -54,7 +54,7 @@ public class TestProductMongoDBRepository {
 	private void addTestProductToDatabase(Product p) {
 		productCollection.insertOne(new Document().append(ProductMongoRepository.SENDER_ID_KEY, p.getSender().getId())
 				.append(ProductMongoRepository.SENDER_USERNAME_KEY, p.getSender().getUsername())
-				.append(ProductMongoRepository.RECEIVER_ID_KEY, p.getId())
+				.append(ProductMongoRepository.PRODUCT_ID_KEY, p.getId())
 				.append(ProductMongoRepository.RECEIVER_NAME_KEY, p.getReceiverName())
 				.append(ProductMongoRepository.RECEIVER_SURNAME_KEY, p.getReceiverSurname())
 				.append(ProductMongoRepository.RECEIVER_ADDRESS_KEY, p.getReiceiverAddress())
@@ -66,7 +66,7 @@ public class TestProductMongoDBRepository {
 				doc.getString(ProductMongoRepository.RECEIVER_SURNAME_KEY),
 				doc.getString(ProductMongoRepository.RECEIVER_ADDRESS_KEY),
 				doc.getString(ProductMongoRepository.RECEIVER_PACKAGETYPE_KEY),
-				doc.getInteger(ProductMongoRepository.RECEIVER_ID_KEY));
+				doc.getInteger(ProductMongoRepository.PRODUCT_ID_KEY));
 	}
 
 	@AfterClass
@@ -103,7 +103,7 @@ public class TestProductMongoDBRepository {
 		Product p1 = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
 		productRepository.save(p1);
 
-		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
+		assertThat(productCollection.find(eq(ProductMongoRepository.PRODUCT_ID_KEY, p1.getId()))
 				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p1);
 	}
 
@@ -112,7 +112,7 @@ public class TestProductMongoDBRepository {
 		Product p1 = new Product(null, "test", "test", "testAddress", "testPackage", 1);
 		productRepository.save(p1);
 
-		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
+		assertThat(productCollection.find(eq(ProductMongoRepository.PRODUCT_ID_KEY, p1.getId()))
 				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).isEmpty();
 	}
 
@@ -121,7 +121,7 @@ public class TestProductMongoDBRepository {
 		Product p1 = null;
 		productRepository.save(p1);
 
-		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, null))
+		assertThat(productCollection.find(eq(ProductMongoRepository.PRODUCT_ID_KEY, null))
 				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).isEmpty();
 	}
 
@@ -133,12 +133,12 @@ public class TestProductMongoDBRepository {
 		addTestProductToDatabase(p1);
 		addTestProductToDatabase(p2);
 
-		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
+		assertThat(productCollection.find(eq(ProductMongoRepository.PRODUCT_ID_KEY, p1.getId()))
 				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p1, p2);
 
 		productRepository.delete(p1);
 
-		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
+		assertThat(productCollection.find(eq(ProductMongoRepository.PRODUCT_ID_KEY, p1.getId()))
 				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p2);
 	}
 
@@ -147,12 +147,12 @@ public class TestProductMongoDBRepository {
 		Product p1 = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
 		addTestProductToDatabase(p1);
 
-		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
+		assertThat(productCollection.find(eq(ProductMongoRepository.PRODUCT_ID_KEY, p1.getId()))
 				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p1);
 
 		productRepository.delete(null);
 
-		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
+		assertThat(productCollection.find(eq(ProductMongoRepository.PRODUCT_ID_KEY, p1.getId()))
 				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p1);
 	}
 
