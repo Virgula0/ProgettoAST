@@ -154,4 +154,17 @@ public class TestProductMongoDBRepository {
 		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
 				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p1);
 	}
+	
+	@Test 
+	public void testFindProductByID() {
+		Product p1 = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
+		Product p2 = new Product(loggedInUser, "test2", "test2", "testAddress2", "testPackage2", 2);
+
+		addTestProductToDatabase(p1);
+		addTestProductToDatabase(p2);
+		
+		assertThat(productRepository.findProductById(p1.getId())).isEqualTo(p1);
+		assertThat(productRepository.findProductById(-1)).isNull();
+
+	}
 }

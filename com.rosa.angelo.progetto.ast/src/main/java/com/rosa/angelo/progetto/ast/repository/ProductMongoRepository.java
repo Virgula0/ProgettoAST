@@ -81,7 +81,22 @@ public class ProductMongoRepository implements ProductRepository {
 
 	@Override
 	public Product findProductById(int id) {
-		// TODO Auto-generated method stub
+		for (Document d : productCollection.find()) {
+			int productId = d.getInteger(ProductMongoRepository.RECEIVER_ID_KEY);
+			if (Objects.equals(productId, id)) {
+				return documentToFullUser(d, productId);
+			}
+		}
 		return null;
+	}
+
+	private Product documentToFullUser(Document d, int productId) {
+		return new Product(
+				new User(d.getString(ProductMongoRepository.SENDER_USERNAME_KEY), null,
+						d.getInteger(ProductMongoRepository.SENDER_ID_KEY)),
+				d.getString(ProductMongoRepository.RECEIVER_NAME_KEY),
+				d.getString(ProductMongoRepository.RECEIVER_SURNAME_KEY),
+				d.getString(ProductMongoRepository.RECEIVER_ADDRESS_KEY),
+				d.getString(ProductMongoRepository.RECEIVER_PACKAGETYPE_KEY), productId);
 	}
 }
