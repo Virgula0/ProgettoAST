@@ -1,8 +1,8 @@
 package com.rosa.angelo.progetto.ast.repository;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.bson.Document;
 
@@ -37,18 +37,16 @@ public class ProductMongoRepository implements ProductRepository {
 	public static final String RECEIVER_ADDRESS_KEY = "receiveraddress";
 	public static final String RECEIVER_PACKAGETYPE_KEY = "packagetype";
 
+	private Product documentToProduct(User user, Document doc) {
+		return new Product(user, doc.getString(RECEIVER_NAME_KEY), doc.getString(RECEIVER_SURNAME_KEY),
+				doc.getString(RECEIVER_ADDRESS_KEY), doc.getString(RECEIVER_PACKAGETYPE_KEY),
+				doc.getInteger(RECEIVER_ID_KEY));
+	}
+
 	@Override
 	public List<Product> findAllProductsSentByUser(User user) {
-		List<Product> products = new ArrayList<>();
-		for (Document doc : productCollection.find()) {
-			int userID = doc.getInteger(SENDER_ID_KEY);
-			if (Objects.equals(userID, user.getId())) {
-				products.add(new Product(user, doc.getString(RECEIVER_NAME_KEY), doc.getString(RECEIVER_SURNAME_KEY),
-						doc.getString(RECEIVER_ADDRESS_KEY), doc.getString(RECEIVER_PACKAGETYPE_KEY),
-						doc.getInteger(RECEIVER_ID_KEY)));
-			}
-		}
-		return products;
+		return StreamSupport.stream(productCollection.find().spliterator(), false).map(d -> documentToProduct(user, d))
+				.collect(Collectors.toList());
 	}
 
 	@Override
