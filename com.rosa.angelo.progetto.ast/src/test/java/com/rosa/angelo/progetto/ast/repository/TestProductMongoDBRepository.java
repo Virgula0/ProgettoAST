@@ -72,5 +72,15 @@ public class TestProductMongoDBRepository {
 		addTestProductToDatabase(p2);
 		assertThat(productRepository.findAllProductsSentByUser(loggedInUser)).containsExactly(p1, p2);
 	}
+	
+	@Test
+	public void testFindAllProductsSentByUserWhenUserIsNull() {
+		Product p1 = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
+		Product p2 = new Product(loggedInUser, "test2", "test2", "testAddress2", "testPackage2", 2);
+
+		addTestProductToDatabase(p1);
+		addTestProductToDatabase(p2);
+		assertThat(productRepository.findAllProductsSentByUser(null)).isEmpty();
+	}
 
 }

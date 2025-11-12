@@ -1,6 +1,7 @@
 package com.rosa.angelo.progetto.ast.repository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -45,8 +46,9 @@ public class ProductMongoRepository implements ProductRepository {
 
 	@Override
 	public List<Product> findAllProductsSentByUser(User user) {
-		return StreamSupport.stream(productCollection.find().spliterator(), false).map(d -> documentToProduct(user, d))
-				.collect(Collectors.toList());
+		return StreamSupport.stream(productCollection.find().spliterator(), false)
+				.filter(x -> Objects.equals(x.getInteger(SENDER_ID_KEY), user.getId()))
+				.map(d -> documentToProduct(user, d)).collect(Collectors.toList());
 	}
 
 	@Override
