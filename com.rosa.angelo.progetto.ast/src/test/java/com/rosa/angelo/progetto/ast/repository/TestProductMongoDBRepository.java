@@ -105,4 +105,13 @@ public class TestProductMongoDBRepository {
 		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
 				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p1);
 	}
+	
+	@Test
+	public void testSaveNewProductInDBIsNotSuccesfullWhenEmbeddedUserIsNull() {
+		Product p1 = new Product(null, "test", "test", "testAddress", "testPackage", 1);
+		productRepository.save(p1);
+
+		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
+				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).isEmpty();
+	}
 }

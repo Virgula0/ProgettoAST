@@ -57,6 +57,9 @@ public class ProductMongoRepository implements ProductRepository {
 
 	@Override
 	public void save(Product product) {
+		if (product.getSender() == null) {
+			return;
+		}
 		productCollection
 				.insertOne(new Document().append(ProductMongoRepository.SENDER_ID_KEY, product.getSender().getId())
 						.append(ProductMongoRepository.SENDER_USERNAME_KEY, product.getSender().getUsername())
