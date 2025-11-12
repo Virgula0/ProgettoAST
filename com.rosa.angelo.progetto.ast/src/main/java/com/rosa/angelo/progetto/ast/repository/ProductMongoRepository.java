@@ -57,8 +57,14 @@ public class ProductMongoRepository implements ProductRepository {
 
 	@Override
 	public void save(Product product) {
-		// TODO Auto-generated method stub
-
+		productCollection
+				.insertOne(new Document().append(ProductMongoRepository.SENDER_ID_KEY, product.getSender().getId())
+						.append(ProductMongoRepository.SENDER_USERNAME_KEY, product.getSender().getUsername())
+						.append(ProductMongoRepository.RECEIVER_ID_KEY, product.getId())
+						.append(ProductMongoRepository.RECEIVER_NAME_KEY, product.getReceiverName())
+						.append(ProductMongoRepository.RECEIVER_SURNAME_KEY, product.getReceiverSurname())
+						.append(ProductMongoRepository.RECEIVER_ADDRESS_KEY, product.getReiceiverAddress())
+						.append(ProductMongoRepository.RECEIVER_PACKAGETYPE_KEY, product.getPackageType()));
 	}
 
 	@Override
