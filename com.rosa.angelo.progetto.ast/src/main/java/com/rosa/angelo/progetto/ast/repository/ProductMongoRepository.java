@@ -72,8 +72,8 @@ public class ProductMongoRepository implements ProductRepository {
 
 	@Override
 	public void delete(Product product) {
-		// TODO Auto-generated method stub
-
+		Document query = new Document(RECEIVER_ID_KEY, product.getId());
+		productCollection.findOneAndDelete(query);
 	}
 
 	@Override

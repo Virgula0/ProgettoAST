@@ -123,4 +123,18 @@ public class TestProductMongoDBRepository {
 		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, null))
 				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).isEmpty();
 	}
+	
+	@Test
+	public void testDeleteProduct() {
+		Product p1 = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
+		addTestProductToDatabase(p1);
+
+		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
+				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p1);
+		
+		productRepository.delete(p1);
+		
+		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
+				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).isEmpty();
+	}
 }
