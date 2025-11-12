@@ -57,7 +57,7 @@ public class ProductMongoRepository implements ProductRepository {
 
 	@Override
 	public void save(Product product) {
-		if (product.getSender() == null) {
+		if (product == null || product.getSender() == null) {
 			return;
 		}
 		productCollection

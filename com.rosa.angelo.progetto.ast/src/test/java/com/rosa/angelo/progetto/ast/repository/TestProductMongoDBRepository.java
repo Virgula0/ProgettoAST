@@ -114,4 +114,13 @@ public class TestProductMongoDBRepository {
 		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
 				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).isEmpty();
 	}
+	
+	@Test
+	public void testSaveNewProductInDBIsNotSuccesfullWhenProductIsNull() {
+		Product p1 = null;
+		productRepository.save(p1);
+
+		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, null))
+				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).isEmpty();
+	}
 }
