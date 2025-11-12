@@ -81,13 +81,9 @@ public class ProductMongoRepository implements ProductRepository {
 
 	@Override
 	public Product findProductById(int id) {
-		for (Document d : productCollection.find()) {
-			int productId = d.getInteger(ProductMongoRepository.RECEIVER_ID_KEY);
-			if (Objects.equals(productId, id)) {
-				return documentToFullUser(d, productId);
-			}
-		}
-		return null;
+		return StreamSupport.stream(productCollection.find().spliterator(), false)
+				.filter(x -> Objects.equals(x.getInteger(ProductMongoRepository.RECEIVER_ID_KEY), id))
+				.map(d -> documentToFullUser(d, id)).findFirst().orElse(null);
 	}
 
 	private Product documentToFullUser(Document d, int productId) {
