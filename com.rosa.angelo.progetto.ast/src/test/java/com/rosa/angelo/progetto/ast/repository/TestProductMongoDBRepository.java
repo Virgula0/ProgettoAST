@@ -127,14 +127,31 @@ public class TestProductMongoDBRepository {
 	@Test
 	public void testDeleteProduct() {
 		Product p1 = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
+		Product p2 = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
+
+		addTestProductToDatabase(p1);
+		addTestProductToDatabase(p2);
+
+		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
+				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p1,p2);
+		
+		productRepository.delete(p1);
+		
+		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
+				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p2);
+	}
+	
+	@Test
+	public void testDeleteNullProduct() {
+		Product p1 = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
 		addTestProductToDatabase(p1);
 
 		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
 				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p1);
 		
-		productRepository.delete(p1);
+		productRepository.delete(null);
 		
 		assertThat(productCollection.find(eq(ProductMongoRepository.RECEIVER_ID_KEY, p1.getId()))
-				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).isEmpty();
+				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p1);
 	}
 }

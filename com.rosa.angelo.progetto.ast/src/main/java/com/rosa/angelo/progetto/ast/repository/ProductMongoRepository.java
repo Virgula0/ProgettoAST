@@ -72,6 +72,9 @@ public class ProductMongoRepository implements ProductRepository {
 
 	@Override
 	public void delete(Product product) {
+		if (product == null) {
+			return;
+		}
 		Document query = new Document(RECEIVER_ID_KEY, product.getId());
 		productCollection.findOneAndDelete(query);
 	}
