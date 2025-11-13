@@ -84,7 +84,7 @@ public class TestUserMariaDBRepository {
 		assertThat(userRepository.getRegistrationToken()).isEqualTo("validToken");
 	}
 
-	private List<User> getAllUsers() {
+	private List<User> getAllUsers() throws GenericRepositoryException {
 		String query = "SELECT * from users";
 		List<User> users = new ArrayList<>();
 		try {
@@ -95,7 +95,7 @@ public class TestUserMariaDBRepository {
 				}
 			}
 		} catch (SQLException ex) {
-			new GenericRepositoryException(ex.getMessage());
+			throw new GenericRepositoryException(ex.getMessage());
 		}
 		return users;
 	}
