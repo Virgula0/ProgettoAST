@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.rosa.angelo.progetto.ast.model.Product;
@@ -36,7 +37,7 @@ public class ProductMariaDBRepository implements ProductRepository {
 	public ProductMariaDBRepository(Connection connection) {
 		this.connection = connection;
 	}
-	
+
 	void injectFindAllProductsSentByUserQuery(String string) {
 		this.findAllProductsSentByUserQuery = string;
 	}
@@ -54,6 +55,10 @@ public class ProductMariaDBRepository implements ProductRepository {
 
 	@Override
 	public List<Product> findAllProductsSentByUser(User user) throws GenericRepositoryException {
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
 		String statement = String.format(findAllProductsSentByUserQuery, USER_ID_FOREIGN_KEY, PRODUCT_TABLE_NAME,
 				UserMariaDBRepository.USER_TABLE_NAME, USER_ID_FOREIGN_KEY, UserMariaDBRepository.ID_KEY);
 		List<Product> products = new ArrayList<>();

@@ -131,4 +131,9 @@ public class TestProductMariaDBRepository {
 		assertThatThrownBy(() -> productRepository.findAllProductsSentByUser(loggedInUser))
 				.isInstanceOf(GenericRepositoryException.class).extracting("message").asString().isNotEmpty();
 	}
+	
+	@Test
+	public void testFindAllProductsSentByUserWithNullUser() throws GenericRepositoryException {		
+		assertThat(productRepository.findAllProductsSentByUser(null)).isEmpty();
+	}
 }
