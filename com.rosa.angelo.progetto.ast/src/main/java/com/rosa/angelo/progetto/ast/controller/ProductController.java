@@ -66,6 +66,11 @@ public class ProductController {
 			productView.showError("Invalid product to delete ", productToDelete);
 			return;
 		}
+		
+		if (productToDelete.getSender() == null) {
+			productView.showError("Invalid sender user for product ", productToDelete);
+			return;
+		}
 
 		if (productRepository.findProductById(productToDelete.getId()) == null) {
 			productView.showError("Product does not exists with such ID ", productToDelete);

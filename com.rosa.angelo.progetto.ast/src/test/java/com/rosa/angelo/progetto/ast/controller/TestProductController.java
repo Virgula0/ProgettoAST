@@ -232,4 +232,13 @@ public class TestProductController {
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 		verifyNoMoreInteractions(ignoreStubs(productView));
 	}
+	
+	@Test
+	public void testNewProductWhithNullSender() {
+		Product product = new Product(null, "receiverName", "receiverSuername", "receiverAddress", "packageType", 1);
+		productController.deleteProduct(product, null);
+		verify(productView).showError("Invalid sender user for product ", product);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
+	}
 }
