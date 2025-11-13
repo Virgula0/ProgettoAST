@@ -229,6 +229,7 @@ public class TestProductMariaDBRepository {
 		assertThat(getAllProducts()).containsExactly(p1,p2);
 		
 		assertThat(productRepository.findProductById(p1.getId())).isEqualTo(p1);
+		assertThat(productRepository.findProductById(-1)).isNull();
 	}
 	
 	@Test
@@ -239,5 +240,4 @@ public class TestProductMariaDBRepository {
 		assertThatThrownBy(() -> productRepository.findProductById(product.getId())).isInstanceOf(GenericRepositoryException.class)
 				.extracting("message").asString().isNotEmpty();
 	}
-
 }
