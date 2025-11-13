@@ -45,14 +45,14 @@ public class ProductController {
 			return;
 		}
 
-		Product exists = productRepository.findProductById(productToInsert.getId());
-
-		if (exists != null) {
-			productView.showError("Product already exists with this ID ", productToInsert);
-			return;
-		}
-
 		try {
+			Product exists = productRepository.findProductById(productToInsert.getId());
+
+			if (exists != null) {
+				productView.showError("Product already exists with this ID ", productToInsert);
+				return;
+			}
+
 			int numberOfAlreadySentSamePackages = productRepository
 					.findAllProductsSentByUser(productToInsert.getSender()).stream()
 					.filter(x -> Objects.equals(x, productToInsert)).collect(Collectors.counting()).intValue();
@@ -68,7 +68,7 @@ public class ProductController {
 			}
 
 			productRepository.save(productToInsert);
-			
+
 		} catch (GenericRepositoryException ex) {
 			hadleRepoException(ex);
 		}
@@ -101,9 +101,9 @@ public class ProductController {
 				productView.showError("You cannot delete a package you don't own ", productToDelete);
 				return;
 			}
-			
+
 			productRepository.delete(productToDelete);
-			
+
 		} catch (GenericRepositoryException ex) {
 			hadleRepoException(ex);
 		}

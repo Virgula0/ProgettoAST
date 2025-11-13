@@ -95,7 +95,7 @@ public class TestProductController {
 	}
 
 	@Test
-	public void testNewProductWhenProductAlreadyExists() {
+	public void testNewProductWhenProductAlreadyExists() throws GenericRepositoryException {
 		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
 				"packageType", 1);
 		Product product2SameId = new Product(validLoggedInUser, "receiverName2", "receiverSuername2",
@@ -126,7 +126,7 @@ public class TestProductController {
 	}
 
 	@Test
-	public void testDeleteProductWhenItDoesNotExists() {
+	public void testDeleteProductWhenItDoesNotExists() throws GenericRepositoryException {
 		Product productToDelete = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
 				"packageType", 1);
 
@@ -309,6 +309,19 @@ public class TestProductController {
 				.delete(productToDelete);
 
 		productController.deleteProduct(productToDelete, validLoggedInUser);
+		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
+	
+	@Test
+	public void testNewProductExceptionShowingErrorFindUserByID() throws GenericRepositoryException {
+		String exceptionMessage = "Database connection failed";
+		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
+				"packageType", 1);
+
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(productRepository)
+				.findProductById(product.getId());
+
+		productController.newProduct(product, validLoggedInUser);
 		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
 	}
 }

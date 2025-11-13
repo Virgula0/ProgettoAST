@@ -31,12 +31,18 @@ public class ProductMariaDBRepository implements ProductRepository {
 
 	private Connection connection;
 
+	// queries
 	private String findAllProductsSentByUserQuery = "SELECT product.*, u.id as %s, u.username "
 			+ "FROM %s product JOIN %s u ON product.%s=u.%s WHERE u.id=?";
 
 	private String saveProductQuery = "INSERT INTO %s (id,sender_id,receivername,receiverusername,receiveraddress,packagetype)"
 			+ " VALUES(?,?,?,?,?,?)";
+
 	private String deleteProductQuery = "DELETE FROM %s WHERE %s=?";
+
+	private String findProductById = "SELECT product.*, u.id as %s, u.username "
+			+ "FROM %s product JOIN %s u ON product.%s=u.%s WHERE product.id=?";
+	// end of queries
 
 	public ProductMariaDBRepository(Connection connection) {
 		this.connection = connection;
@@ -49,9 +55,13 @@ public class ProductMariaDBRepository implements ProductRepository {
 	void injectSaveProductsQuery(String string) {
 		this.saveProductQuery = string;
 	}
-	
+
 	void injectDeleteProductsQuery(String string) {
 		this.deleteProductQuery = string;
+	}
+
+	void injectFindProductByIdQuery(String string) {
+		this.findProductById = string;
 	}
 
 	private GenericRepositoryException handleDBException(SQLException ex) {
@@ -114,8 +124,18 @@ public class ProductMariaDBRepository implements ProductRepository {
 	}
 
 	@Override
-	public Product findProductById(int id) {
-		// TODO Auto-generated method stub
+	public Product findProductById(int id) throws GenericRepositoryException {
+		String statement = String.format(findProductById, USER_ID_FOREIGN_KEY, PRODUCT_TABLE_NAME,
+				UserMariaDBRepository.USER_TABLE_NAME, USER_ID_FOREIGN_KEY, UserMariaDBRepository.ID_KEY);
+		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+			stmt.setInt(1, id);
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				return databaseToProduct(rs);
+			}
+		} catch (SQLException ex) {
+			throw (handleDBException(ex));
+		}
 		return null;
 	}
 }

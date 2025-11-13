@@ -10,7 +10,7 @@ public interface ProductRepository {
 
 	void delete(Product product) throws GenericRepositoryException;
 
-	Product findProductById(int id);
+	Product findProductById(int id) throws GenericRepositoryException;
 
 	List<Product> findAllProductsSentByUser(User user) throws GenericRepositoryException ;
 }
