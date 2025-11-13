@@ -30,6 +30,11 @@ public class ProductController {
 			productView.showError("Invalid product ", productToInsert);
 			return;
 		}
+		
+		if (productToInsert.getSender() == null) {
+			productView.showError("Invalid associated user to product ", productToInsert);
+			return;
+		}
 
 		Product exists = productRepository.findProductById(productToInsert.getId());
 

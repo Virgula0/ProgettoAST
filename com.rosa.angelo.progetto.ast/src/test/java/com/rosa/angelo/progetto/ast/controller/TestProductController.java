@@ -214,4 +214,13 @@ public class TestProductController {
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 		verifyNoMoreInteractions(ignoreStubs(productView));
 	}
+	
+	@Test
+	public void testNewProductWithNullUserInProduct() {
+		Product product = new Product(null, "receiverName", "receiverSuername", "receiverAddress", "packageType", 1);
+		productController.newProduct(product, null);
+		verify(productView).showError("Invalid associated user to product ", product);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
+	}
 }
