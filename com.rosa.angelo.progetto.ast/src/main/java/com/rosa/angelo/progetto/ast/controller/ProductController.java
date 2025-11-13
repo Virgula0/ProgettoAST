@@ -17,11 +17,25 @@ public class ProductController {
 		this.productRepository = productRepository;
 	}
 
-	public void allProducts(User logggedIn) {
-		productView.showAllProductsSentByUser(productRepository.findAllProductsSentByUser(logggedIn));
+	public void allProducts(User loggedIn) {
+		if (loggedIn == null) {
+			return;
+		}
+		productView.showAllProductsSentByUser(productRepository.findAllProductsSentByUser(loggedIn));
 	}
 
 	public void newProduct(Product productToInsert, User loggedInUser) {
+
+		if (productToInsert == null) {
+			productView.showError("Invalid product ", productToInsert);
+			return;
+		}
+		
+		if (productToInsert.getSender() == null) {
+			productView.showError("Invalid associated user to product ", productToInsert);
+			return;
+		}
+
 		Product exists = productRepository.findProductById(productToInsert.getId());
 
 		if (exists != null) {
@@ -47,6 +61,16 @@ public class ProductController {
 	}
 
 	public void deleteProduct(Product productToDelete, User loggedInUser) {
+		
+		if (productToDelete == null) {
+			productView.showError("Invalid product to delete ", productToDelete);
+			return;
+		}
+		
+		if (productToDelete.getSender() == null) {
+			productView.showError("Invalid sender user for product ", productToDelete);
+			return;
+		}
 
 		if (productRepository.findProductById(productToDelete.getId()) == null) {
 			productView.showError("Product does not exists with such ID ", productToDelete);

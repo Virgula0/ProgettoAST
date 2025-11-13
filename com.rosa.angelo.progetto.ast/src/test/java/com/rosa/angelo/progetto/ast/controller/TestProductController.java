@@ -198,4 +198,47 @@ public class TestProductController {
 		inOrder.verify(productView).showError("You cannot add a package to another user ", product);
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 	}
+	
+	@Test
+	public void testAllProductsWithNullUser() {
+		productController.allProducts(null);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
+	}
+	
+	@Test
+	public void testNewProductWithNullProduct() {
+		Product product = null;
+		productController.newProduct(product, validLoggedInUser);
+		verify(productView).showError("Invalid product ", product);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
+	}
+	
+	@Test
+	public void testNewProductWithNullUserInProduct() {
+		Product product = new Product(null, "receiverName", "receiverSuername", "receiverAddress", "packageType", 1);
+		productController.newProduct(product, null);
+		verify(productView).showError("Invalid associated user to product ", product);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
+	}
+	
+	@Test
+	public void testNewProductWhitNullProduct() {
+		Product p = null;
+		productController.deleteProduct(p, validLoggedInUser);
+		verify(productView).showError("Invalid product to delete ", p);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
+	}
+	
+	@Test
+	public void testNewProductWhithNullSender() {
+		Product product = new Product(null, "receiverName", "receiverSuername", "receiverAddress", "packageType", 1);
+		productController.deleteProduct(product, null);
+		verify(productView).showError("Invalid sender user for product ", product);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
+	}
 }
