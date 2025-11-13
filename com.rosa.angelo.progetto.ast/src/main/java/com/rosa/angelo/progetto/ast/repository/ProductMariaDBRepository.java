@@ -33,6 +33,9 @@ public class ProductMariaDBRepository implements ProductRepository {
 
 	private String findAllProductsSentByUserQuery = "SELECT product.*, u.id as %s, u.username "
 			+ "FROM %s product JOIN %s u ON product.%s=u.%s WHERE u.id=?";
+	
+	private String saveProductQuery = "INSERT INTO %s (id,sender_id,receivername,receiverusername,receiveraddress,packagetype)"
+			+ " VALUES(?,?,?,?,?,?)";
 
 	public ProductMariaDBRepository(Connection connection) {
 		this.connection = connection;
@@ -40,6 +43,10 @@ public class ProductMariaDBRepository implements ProductRepository {
 
 	void injectFindAllProductsSentByUserQuery(String string) {
 		this.findAllProductsSentByUserQuery = string;
+	}
+	
+	void injectSaveProductsQuery(String string) {
+		this.saveProductQuery = string;
 	}
 
 	private GenericRepositoryException handleDBException(SQLException ex) {
@@ -75,9 +82,19 @@ public class ProductMariaDBRepository implements ProductRepository {
 	}
 
 	@Override
-	public void save(Product product) {
-		// TODO Auto-generated method stub
-
+	public void save(Product product) throws GenericRepositoryException {
+		String statement = String.format(saveProductQuery, PRODUCT_TABLE_NAME);
+		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+			stmt.setInt(1, product.getId());
+			stmt.setInt(2, product.getSender().getId());
+			stmt.setString(3, product.getReceiverName());
+			stmt.setString(4, product.getReceiverSurname());
+			stmt.setString(5, product.getReceiverAddress());
+			stmt.setString(6, product.getPackageType());
+			stmt.executeUpdate();
+		} catch (SQLException ex) {
+			throw (handleDBException(ex));
+		}
 	}
 
 	@Override

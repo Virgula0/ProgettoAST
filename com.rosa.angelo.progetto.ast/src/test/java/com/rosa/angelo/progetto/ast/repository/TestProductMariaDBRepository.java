@@ -6,8 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -91,8 +94,10 @@ public class TestProductMariaDBRepository {
 		if (connection != null)
 			connection.close();
 	}
+	
+	// -- HELPERS -- 
 
-	private void addTestProductToUserToDatabase(Product p) {
+	private void addTestProductToUserToDatabase(Product p) throws GenericRepositoryException {
 		String query = "INSERT INTO %s (id,sender_id,receivername,receiverusername,receiveraddress,packagetype)"
 				+ " VALUES (?,?,?,?,?,?)";
 		String statement = String.format(query, ProductMariaDBRepository.PRODUCT_TABLE_NAME);
@@ -107,9 +112,45 @@ public class TestProductMariaDBRepository {
 				stmt.executeUpdate();
 			}
 		} catch (SQLException ex) {
-			new GenericRepositoryException(ex.getMessage());
+			throw new GenericRepositoryException(ex.getMessage());
 		}
 	}
+
+	private Product databaseToProduct(ResultSet rs) throws SQLException {
+		User senderUser = new User(rs.getString(UserMariaDBRepository.USERNAME_KEY),
+				rs.getString(UserMariaDBRepository.PWD_DB_KEY),
+				rs.getInt(ProductMariaDBRepository.USER_ID_FOREIGN_KEY));
+
+		return new Product(senderUser, rs.getString(ProductMariaDBRepository.RECEIVER_NAME_KEY),
+				rs.getString(ProductMariaDBRepository.RECEIVER_SURNAME_KEY),
+				rs.getString(ProductMariaDBRepository.RECEIVER_ADDRESS_KEY),
+				rs.getString(ProductMariaDBRepository.RECEIVER_PACKAGETYPE_KEY),
+				rs.getInt(ProductMariaDBRepository.PRODUCT_ID_KEY));
+	}
+
+	private List<Product> getAllProducts() throws GenericRepositoryException {
+		String query = "SELECT p.*,u.%s,u.%s from %s p JOIN %s u ON u.id=p.%s";
+		List<Product> products = new ArrayList<>();
+
+		query = String.format(query, UserMariaDBRepository.USERNAME_KEY, UserMariaDBRepository.PWD_DB_KEY,
+				ProductMariaDBRepository.PRODUCT_TABLE_NAME, UserMariaDBRepository.USER_TABLE_NAME,
+				ProductMariaDBRepository.USER_ID_FOREIGN_KEY);
+
+		try {
+			try (PreparedStatement stmt = connection.prepareStatement(query)) {
+				ResultSet rs = stmt.executeQuery();
+				while (rs.next()) {
+					products.add(databaseToProduct(rs));
+				}
+			}
+		} catch (SQLException e) {
+			throw new GenericRepositoryException(e.getMessage());
+		}
+
+		return products;
+	}
+	
+	// -- END OF HELPERS -- 
 
 	@Test
 	public void testFindAllProductsSentByUser() throws GenericRepositoryException {
@@ -131,9 +172,28 @@ public class TestProductMariaDBRepository {
 		assertThatThrownBy(() -> productRepository.findAllProductsSentByUser(loggedInUser))
 				.isInstanceOf(GenericRepositoryException.class).extracting("message").asString().isNotEmpty();
 	}
-	
+
 	@Test
-	public void testFindAllProductsSentByUserWithNullUser() throws GenericRepositoryException {		
+	public void testFindAllProductsSentByUserWithNullUser() throws GenericRepositoryException {
 		assertThat(productRepository.findAllProductsSentByUser(null)).isEmpty();
 	}
+
+	@Test
+	public void testSaveANewProductSuccesfully() throws GenericRepositoryException {
+		Product product = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
+
+		productRepository.save(product);
+
+		assertThat(getAllProducts()).containsExactly(product);
+	}
+	
+	@Test
+	public void testWhenSQLExceptionisthrownBySaveProduct() {
+		Product product = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
+		productRepository.injectSaveProductsQuery("bad query");
+
+		assertThatThrownBy(() -> productRepository.save(product))
+				.isInstanceOf(GenericRepositoryException.class).extracting("message").asString().isNotEmpty();
+	}
+
 }

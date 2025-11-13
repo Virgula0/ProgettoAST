@@ -61,16 +61,18 @@ public class ProductController {
 				productView.showError("You already sent this package to that customer ", productToInsert);
 				return;
 			}
+
+			if (!Objects.equals(productToInsert.getSender(), loggedInUser)) {
+				productView.showError("You cannot add a package to another user ", productToInsert);
+				return;
+			}
+
+			productRepository.save(productToInsert);
+			
 		} catch (GenericRepositoryException ex) {
 			hadleRepoException(ex);
 		}
 
-		if (!Objects.equals(productToInsert.getSender(), loggedInUser)) {
-			productView.showError("You cannot add a package to another user ", productToInsert);
-			return;
-		}
-
-		productRepository.save(productToInsert);
 		productView.productAdded(productToInsert);
 	}
 
