@@ -47,7 +47,7 @@ public class UserControllerMariaDBRepositoryIT {
 
 	private final String validToken = UserMongoRepository.REGISTRATION_TOKEN;
 
-	private void cleanupAndCreate() {
+	private void cleanupAndCreate() throws GenericRepositoryException {
 		try {
 			try (Statement stmt = connection.createStatement()) {
 				stmt.execute("DROP DATABASE IF EXISTS " + UserMariaDBRepository.AST_DB_NAME);
@@ -58,7 +58,7 @@ public class UserControllerMariaDBRepositoryIT {
 						+ " (id INT PRIMARY KEY,username VARCHAR(255),password VARCHAR(255))");
 			}
 		} catch (SQLException ex) {
-			new GenericRepositoryException(ex.getMessage());
+			throw new GenericRepositoryException(ex.getMessage());
 		}
 	}
 
@@ -73,7 +73,7 @@ public class UserControllerMariaDBRepositoryIT {
 	}
 
 	@Before
-	public void setup() {
+	public void setup() throws GenericRepositoryException {
 		closeable = MockitoAnnotations.openMocks(this);
 		userRepository = new UserMariaDBRepository(connection);
 		userController = new UserController(loginView, userRepository);
