@@ -205,4 +205,13 @@ public class TestProductController {
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 		verifyNoMoreInteractions(ignoreStubs(productView));
 	}
+	
+	@Test
+	public void testNewProductWithNullProduct() {
+		Product product = null;
+		productController.newProduct(product, validLoggedInUser);
+		verify(productView).showError("Invalid product ", product);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
+	}
 }

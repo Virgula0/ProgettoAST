@@ -25,6 +25,12 @@ public class ProductController {
 	}
 
 	public void newProduct(Product productToInsert, User loggedInUser) {
+
+		if (productToInsert == null) {
+			productView.showError("Invalid product ", productToInsert);
+			return;
+		}
+
 		Product exists = productRepository.findProductById(productToInsert.getId());
 
 		if (exists != null) {
