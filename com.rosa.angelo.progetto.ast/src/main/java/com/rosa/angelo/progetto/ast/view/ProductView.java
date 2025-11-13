@@ -12,4 +12,6 @@ public interface ProductView {
 	void productAdded(Product product);
 
 	void productRemoved(Product product);
+
+	void showError(String string);
 }

@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import com.rosa.angelo.progetto.ast.model.Product;
 import com.rosa.angelo.progetto.ast.model.User;
+import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;
 import com.rosa.angelo.progetto.ast.repository.ProductRepository;
 import com.rosa.angelo.progetto.ast.view.ProductView;
 
@@ -21,7 +22,15 @@ public class ProductController {
 		if (loggedIn == null) {
 			return;
 		}
-		productView.showAllProductsSentByUser(productRepository.findAllProductsSentByUser(loggedIn));
+		try {
+			productView.showAllProductsSentByUser(productRepository.findAllProductsSentByUser(loggedIn));
+		} catch (GenericRepositoryException ex) {
+			hadleRepoException(ex);
+		}
+	}
+
+	private void hadleRepoException(GenericRepositoryException ex) {
+		productView.showError("Exception occurred in repository: " + ex.getMessage());
 	}
 
 	public void newProduct(Product productToInsert, User loggedInUser) {
@@ -30,62 +39,75 @@ public class ProductController {
 			productView.showError("Invalid product ", productToInsert);
 			return;
 		}
-		
+
 		if (productToInsert.getSender() == null) {
 			productView.showError("Invalid associated user to product ", productToInsert);
 			return;
 		}
 
-		Product exists = productRepository.findProductById(productToInsert.getId());
+		try {
+			Product exists = productRepository.findProductById(productToInsert.getId());
 
-		if (exists != null) {
-			productView.showError("Product already exists with this ID ", productToInsert);
-			return;
+			if (exists != null) {
+				productView.showError("Product already exists with this ID ", productToInsert);
+				return;
+			}
+
+			int numberOfAlreadySentSamePackages = productRepository
+					.findAllProductsSentByUser(productToInsert.getSender()).stream()
+					.filter(x -> Objects.equals(x, productToInsert)).collect(Collectors.counting()).intValue();
+
+			if (numberOfAlreadySentSamePackages > 0) {
+				productView.showError("You already sent this package to that customer ", productToInsert);
+				return;
+			}
+
+			if (!Objects.equals(productToInsert.getSender(), loggedInUser)) {
+				productView.showError("You cannot add a package to another user ", productToInsert);
+				return;
+			}
+
+			productRepository.save(productToInsert);
+
+		} catch (GenericRepositoryException ex) {
+			hadleRepoException(ex);
 		}
 
-		int numberOfAlreadySentSamePackages = productRepository.findAllProductsSentByUser(productToInsert.getSender())
-				.stream().filter(x -> Objects.equals(x, productToInsert)).collect(Collectors.counting()).intValue();
-
-		if (numberOfAlreadySentSamePackages > 0) {
-			productView.showError("You already sent this package to that customer ", productToInsert);
-			return;
-		}
-
-		if (!Objects.equals(productToInsert.getSender(), loggedInUser)) {
-			productView.showError("You cannot add a package to another user ", productToInsert);
-			return;
-		}
-
-		productRepository.save(productToInsert);
 		productView.productAdded(productToInsert);
 	}
 
 	public void deleteProduct(Product productToDelete, User loggedInUser) {
-		
+
 		if (productToDelete == null) {
 			productView.showError("Invalid product to delete ", productToDelete);
 			return;
 		}
-		
+
 		if (productToDelete.getSender() == null) {
 			productView.showError("Invalid sender user for product ", productToDelete);
 			return;
 		}
 
-		if (productRepository.findProductById(productToDelete.getId()) == null) {
-			productView.showError("Product does not exists with such ID ", productToDelete);
-			return;
+		try {
+			if (productRepository.findProductById(productToDelete.getId()) == null) {
+				productView.showError("Product does not exists with such ID ", productToDelete);
+				return;
+			}
+
+			int found = productRepository.findAllProductsSentByUser(loggedInUser).stream()
+					.filter(p -> Objects.equals(p, productToDelete)).collect(Collectors.counting()).intValue();
+
+			if (found < 1) {
+				productView.showError("You cannot delete a package you don't own ", productToDelete);
+				return;
+			}
+
+			productRepository.delete(productToDelete);
+
+		} catch (GenericRepositoryException ex) {
+			hadleRepoException(ex);
 		}
 
-		int found = productRepository.findAllProductsSentByUser(loggedInUser).stream()
-				.filter(p -> Objects.equals(p, productToDelete)).collect(Collectors.counting()).intValue();
-
-		if (found < 1) {
-			productView.showError("You cannot delete a package you don't own ", productToDelete);
-			return;
-		}
-
-		productRepository.delete(productToDelete);
 		productView.productRemoved(productToDelete);
 	}
 }

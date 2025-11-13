@@ -1,5 +1,6 @@
 package com.rosa.angelo.progetto.ast.controller;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.ignoreStubs;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -19,6 +20,7 @@ import org.mockito.MockitoAnnotations;
 
 import com.rosa.angelo.progetto.ast.model.Product;
 import com.rosa.angelo.progetto.ast.model.User;
+import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;
 import com.rosa.angelo.progetto.ast.repository.ProductRepository;
 import com.rosa.angelo.progetto.ast.view.ProductView;
 
@@ -48,7 +50,7 @@ public class TestProductController {
 	}
 
 	@Test
-	public void showAllProductsSentByUser() {
+	public void showAllProductsSentByUser() throws GenericRepositoryException {
 		List<Product> products = Arrays.asList(
 				new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress", "packageType", 1),
 				new Product(validLoggedInUser, "receiverName2", "receiverSuername2", "receiverAddress2", "packageType2",
@@ -61,7 +63,7 @@ public class TestProductController {
 	}
 
 	@Test
-	public void testNewProductWhenProductDoesNotExists() {
+	public void testNewProductWhenProductDoesNotExists() throws GenericRepositoryException {
 		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
 				"packageType", 1);
 
@@ -75,7 +77,7 @@ public class TestProductController {
 	}
 
 	@Test
-	public void testNewProductWhenUserAlreadyHasOtherProducts() {
+	public void testNewProductWhenUserAlreadyHasOtherProducts() throws GenericRepositoryException {
 		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
 				"packageType", 1);
 		Product productToAdd = new Product(validLoggedInUser, "receiverName2", "receiverSuername2", "receiverAddress2",
@@ -93,7 +95,7 @@ public class TestProductController {
 	}
 
 	@Test
-	public void testNewProductWhenProductAlreadyExists() {
+	public void testNewProductWhenProductAlreadyExists() throws GenericRepositoryException {
 		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
 				"packageType", 1);
 		Product product2SameId = new Product(validLoggedInUser, "receiverName2", "receiverSuername2",
@@ -108,7 +110,7 @@ public class TestProductController {
 	}
 
 	@Test
-	public void testDeleteProductWhenItExists() {
+	public void testDeleteProductWhenItExists() throws GenericRepositoryException {
 		Product productToDelete = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
 				"packageType", 1);
 
@@ -124,7 +126,7 @@ public class TestProductController {
 	}
 
 	@Test
-	public void testDeleteProductWhenItDoesNotExists() {
+	public void testDeleteProductWhenItDoesNotExists() throws GenericRepositoryException {
 		Product productToDelete = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
 				"packageType", 1);
 
@@ -137,7 +139,7 @@ public class TestProductController {
 	}
 
 	@Test
-	public void testNewProductErrorIfUserAlreadySentSuchPackageEvenIfIdIsDifferent() {
+	public void testNewProductErrorIfUserAlreadySentSuchPackageEvenIfIdIsDifferent() throws GenericRepositoryException {
 		Product product = new Product(validLoggedInUser, "receiverName", "receiverSurname", "receiverAddress",
 				"samePackageType", 1);
 		Product product2SameReceiver = new Product(validLoggedInUser, "receiverName", "receiverSurname",
@@ -159,7 +161,7 @@ public class TestProductController {
 	}
 
 	@Test
-	public void testDeleteProductShouldNotAllowToDeleteProductOfAnotherUser() {
+	public void testDeleteProductShouldNotAllowToDeleteProductOfAnotherUser() throws GenericRepositoryException {
 		Product productUser1 = new Product(validLoggedInUser, "receiverName", "receiverSurname", "receiverAddress",
 				"samePackageType", 1);
 		Product notRelevantProduct = new Product(validLoggedInUser, "receiverName2", "receiverSurname2",
@@ -184,7 +186,7 @@ public class TestProductController {
 	}
 
 	@Test
-	public void testNewProductOwnedByDifferentUserShouldNotSucceed() {
+	public void testNewProductOwnedByDifferentUserShouldNotSucceed() throws GenericRepositoryException {
 		User user2 = new User("user2", "password1234", 2);
 		Product product = new Product(user2, "receiverName", "receiverSuername", "receiverAddress", "packageType", 1);
 
@@ -198,14 +200,14 @@ public class TestProductController {
 		inOrder.verify(productView).showError("You cannot add a package to another user ", product);
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 	}
-	
+
 	@Test
 	public void testAllProductsWithNullUser() {
 		productController.allProducts(null);
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 		verifyNoMoreInteractions(ignoreStubs(productView));
 	}
-	
+
 	@Test
 	public void testNewProductWithNullProduct() {
 		Product product = null;
@@ -214,7 +216,7 @@ public class TestProductController {
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 		verifyNoMoreInteractions(ignoreStubs(productView));
 	}
-	
+
 	@Test
 	public void testNewProductWithNullUserInProduct() {
 		Product product = new Product(null, "receiverName", "receiverSuername", "receiverAddress", "packageType", 1);
@@ -223,7 +225,7 @@ public class TestProductController {
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 		verifyNoMoreInteractions(ignoreStubs(productView));
 	}
-	
+
 	@Test
 	public void testNewProductWhitNullProduct() {
 		Product p = null;
@@ -232,7 +234,7 @@ public class TestProductController {
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 		verifyNoMoreInteractions(ignoreStubs(productView));
 	}
-	
+
 	@Test
 	public void testNewProductWhithNullSender() {
 		Product product = new Product(null, "receiverName", "receiverSuername", "receiverAddress", "packageType", 1);
@@ -240,5 +242,86 @@ public class TestProductController {
 		verify(productView).showError("Invalid sender user for product ", product);
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 		verifyNoMoreInteractions(ignoreStubs(productView));
+	}
+
+	@Test
+	public void testAllProductsExceptionShowingErrorOnfindAllProductsSentByUser()
+			throws GenericRepositoryException {
+		String exceptionMessage = "Database connection failed";
+
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(productRepository)
+				.findAllProductsSentByUser(validLoggedInUser);
+
+		productController.allProducts(validLoggedInUser);
+		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
+
+	@Test
+	public void testNewProductExceptionShowingErrorOnOnfindAllProductsSentByUser() throws GenericRepositoryException {
+		String exceptionMessage = "Database connection failed";
+		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
+				"packageType", 1);
+
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(productRepository)
+				.findAllProductsSentByUser(validLoggedInUser);
+
+		productController.newProduct(product, validLoggedInUser);
+		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
+	
+	@Test
+	public void testDeleteProductExceptionShowingErrorOnOnfindAllProductsSentByUser() throws GenericRepositoryException {
+		String exceptionMessage = "Database connection failed";
+		Product productToDelete = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
+				"packageType", 1);
+
+		when(productRepository.findProductById(productToDelete.getId())).thenReturn(productToDelete);
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(productRepository)
+				.findAllProductsSentByUser(validLoggedInUser);
+
+		productController.deleteProduct(productToDelete, validLoggedInUser);
+		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
+	
+	@Test
+	public void testNewProductExceptionShowingErrorOnSaveProduct() throws GenericRepositoryException {
+		String exceptionMessage = "Database connection failed";
+		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
+				"packageType", 1);
+
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(productRepository)
+				.save(product);
+
+		productController.newProduct(product, validLoggedInUser);
+		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
+	
+	@Test
+	public void testDeleteProducttExceptionShowingErrorOnDelete() throws GenericRepositoryException {
+		String exceptionMessage = "Database connection failed";
+		Product productToDelete = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
+				"packageType", 1);
+
+		when(productRepository.findProductById(productToDelete.getId())).thenReturn(productToDelete);
+		when(productRepository.findAllProductsSentByUser(productToDelete.getSender()))
+				.thenReturn(Arrays.asList(productToDelete));
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(productRepository)
+				.delete(productToDelete);
+
+		productController.deleteProduct(productToDelete, validLoggedInUser);
+		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
+	
+	@Test
+	public void testNewProductExceptionShowingErrorFindUserByID() throws GenericRepositoryException {
+		String exceptionMessage = "Database connection failed";
+		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
+				"packageType", 1);
+
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(productRepository)
+				.findProductById(product.getId());
+
+		productController.newProduct(product, validLoggedInUser);
+		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
 	}
 }

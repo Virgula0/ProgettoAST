@@ -37,7 +37,7 @@ public class TestUserMariaDBRepository {
 	private static final String TEST_USERNAME = "TEST_USERNAME";
 	private static final String TEST_PASSWORD = "TEST_PASSWORD";
 
-	private void cleanupAndCreate() {
+	private void cleanupAndCreate() throws GenericRepositoryException{
 		try {
 			try (Statement stmt = connection.createStatement()) {
 				stmt.execute("DROP DATABASE IF EXISTS " + UserMariaDBRepository.AST_DB_NAME);
@@ -48,7 +48,7 @@ public class TestUserMariaDBRepository {
 						+ " (id INT PRIMARY KEY,username VARCHAR(255),password VARCHAR(255))");
 			}
 		} catch (SQLException ex) {
-			new GenericRepositoryException(ex.getMessage());
+			throw new GenericRepositoryException(ex.getMessage());
 		}
 	}
 
@@ -63,13 +63,13 @@ public class TestUserMariaDBRepository {
 	}
 
 	@Before
-	public void setup() {
+	public void setup() throws GenericRepositoryException{
 		userRepository = new UserMariaDBRepository(connection);
 		cleanupAndCreate();
 	}
 
 	@After
-	public void after() {
+	public void after() throws GenericRepositoryException{
 		cleanupAndCreate();
 	}
 
@@ -100,7 +100,7 @@ public class TestUserMariaDBRepository {
 		return users;
 	}
 
-	private void addTestUserToDatabase(int id, String username, String password) {
+	private void addTestUserToDatabase(int id, String username, String password) throws GenericRepositoryException {
 		String query = "INSERT INTO %s (username,password,id) VALUES (?,?,?)";
 		String statement = String.format(query, UserMariaDBRepository.USER_TABLE_NAME);
 		try {
@@ -111,7 +111,7 @@ public class TestUserMariaDBRepository {
 				stmt.executeUpdate();
 			}
 		} catch (SQLException ex) {
-			new GenericRepositoryException(ex.getMessage());
+			throw new GenericRepositoryException(ex.getMessage());
 		}
 	}
 

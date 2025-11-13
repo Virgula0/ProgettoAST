@@ -65,7 +65,7 @@ public class ProductMongoRepository implements ProductRepository {
 						.append(ProductMongoRepository.PRODUCT_ID_KEY, product.getId())
 						.append(ProductMongoRepository.RECEIVER_NAME_KEY, product.getReceiverName())
 						.append(ProductMongoRepository.RECEIVER_SURNAME_KEY, product.getReceiverSurname())
-						.append(ProductMongoRepository.RECEIVER_ADDRESS_KEY, product.getReiceiverAddress())
+						.append(ProductMongoRepository.RECEIVER_ADDRESS_KEY, product.getReceiverAddress())
 						.append(ProductMongoRepository.RECEIVER_PACKAGETYPE_KEY, product.getPackageType()));
 	}
 
