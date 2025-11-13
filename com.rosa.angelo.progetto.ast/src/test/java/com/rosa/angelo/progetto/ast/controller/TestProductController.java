@@ -198,4 +198,11 @@ public class TestProductController {
 		inOrder.verify(productView).showError("You cannot add a package to another user ", product);
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 	}
+	
+	@Test
+	public void testAllProductsWithNullUser() {
+		productController.allProducts(null);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
+	}
 }

@@ -17,8 +17,11 @@ public class ProductController {
 		this.productRepository = productRepository;
 	}
 
-	public void allProducts(User logggedIn) {
-		productView.showAllProductsSentByUser(productRepository.findAllProductsSentByUser(logggedIn));
+	public void allProducts(User loggedIn) {
+		if (loggedIn == null) {
+			return;
+		}
+		productView.showAllProductsSentByUser(productRepository.findAllProductsSentByUser(loggedIn));
 	}
 
 	public void newProduct(Product productToInsert, User loggedInUser) {
