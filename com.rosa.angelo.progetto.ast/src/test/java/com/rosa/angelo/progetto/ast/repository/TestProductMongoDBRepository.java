@@ -57,7 +57,7 @@ public class TestProductMongoDBRepository {
 				.append(ProductMongoRepository.PRODUCT_ID_KEY, p.getId())
 				.append(ProductMongoRepository.RECEIVER_NAME_KEY, p.getReceiverName())
 				.append(ProductMongoRepository.RECEIVER_SURNAME_KEY, p.getReceiverSurname())
-				.append(ProductMongoRepository.RECEIVER_ADDRESS_KEY, p.getReiceiverAddress())
+				.append(ProductMongoRepository.RECEIVER_ADDRESS_KEY, p.getReceiverAddress())
 				.append(ProductMongoRepository.RECEIVER_PACKAGETYPE_KEY, p.getPackageType()));
 	}
 

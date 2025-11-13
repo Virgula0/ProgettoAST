@@ -7,7 +7,7 @@ public class Product {
 	private User sender;
 	private String receiverName;
 	private String receiverSurname;
-	private String reiceiverAddress;
+	private String receiverAddress;
 	private String packageType;
 
 	public Product(User sender, String receiverName, String receiverSurname, String reiceiverAddress,
@@ -15,14 +15,14 @@ public class Product {
 		this.sender = sender;
 		this.receiverName = receiverName;
 		this.receiverSurname = receiverSurname;
-		this.reiceiverAddress = reiceiverAddress;
+		this.receiverAddress = reiceiverAddress;
 		this.packageType = packageType;
 		this.id = id;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(packageType, receiverName, receiverSurname, reiceiverAddress, sender);
+		return Objects.hash(packageType, receiverName, receiverSurname, receiverAddress, sender);
 	}
 
 	// id not checked by equals voluntarily
@@ -41,13 +41,13 @@ public class Product {
 		return Objects.equals(packageType, other.packageType)
 				&& Objects.equals(receiverName, other.receiverName)
 				&& Objects.equals(receiverSurname, other.receiverSurname)
-				&& Objects.equals(reiceiverAddress, other.reiceiverAddress) && Objects.equals(sender, other.sender);
+				&& Objects.equals(receiverAddress, other.receiverAddress) && Objects.equals(sender, other.sender);
 	}
 
 	@Override
 	public String toString() {
 		return "Product [id=" + id + ", sender=" + sender + ", receiverName=" + receiverName + ", receiverSurname="
-				+ receiverSurname + ", reiceiverAddress=" + reiceiverAddress + ", packageType=" + packageType + "]";
+				+ receiverSurname + ", reiceiverAddress=" + receiverAddress + ", packageType=" + packageType + "]";
 	}
 
 	public int getId() {
@@ -66,8 +66,8 @@ public class Product {
 		return receiverSurname;
 	}
 
-	public String getReiceiverAddress() {
-		return reiceiverAddress;
+	public String getReceiverAddress() {
+		return receiverAddress;
 	}
 
 	public String getPackageType() {
