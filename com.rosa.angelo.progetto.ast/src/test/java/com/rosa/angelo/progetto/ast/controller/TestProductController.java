@@ -295,4 +295,20 @@ public class TestProductController {
 		productController.newProduct(product, validLoggedInUser);
 		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
 	}
+	
+	@Test
+	public void testDeleteProducttExceptionShowingErrorOnDelete() throws GenericRepositoryException {
+		String exceptionMessage = "Database connection failed";
+		Product productToDelete = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
+				"packageType", 1);
+
+		when(productRepository.findProductById(productToDelete.getId())).thenReturn(productToDelete);
+		when(productRepository.findAllProductsSentByUser(productToDelete.getSender()))
+				.thenReturn(Arrays.asList(productToDelete));
+		doThrow(new GenericRepositoryException(exceptionMessage)).when(productRepository)
+				.delete(productToDelete);
+
+		productController.deleteProduct(productToDelete, validLoggedInUser);
+		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
+	}
 }

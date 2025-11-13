@@ -101,11 +101,13 @@ public class ProductController {
 				productView.showError("You cannot delete a package you don't own ", productToDelete);
 				return;
 			}
+			
+			productRepository.delete(productToDelete);
+			
 		} catch (GenericRepositoryException ex) {
 			hadleRepoException(ex);
 		}
 
-		productRepository.delete(productToDelete);
 		productView.productRemoved(productToDelete);
 	}
 }

@@ -33,9 +33,10 @@ public class ProductMariaDBRepository implements ProductRepository {
 
 	private String findAllProductsSentByUserQuery = "SELECT product.*, u.id as %s, u.username "
 			+ "FROM %s product JOIN %s u ON product.%s=u.%s WHERE u.id=?";
-	
+
 	private String saveProductQuery = "INSERT INTO %s (id,sender_id,receivername,receiverusername,receiveraddress,packagetype)"
 			+ " VALUES(?,?,?,?,?,?)";
+	private String deleteProductQuery = "DELETE FROM %s WHERE %s=?";
 
 	public ProductMariaDBRepository(Connection connection) {
 		this.connection = connection;
@@ -44,9 +45,13 @@ public class ProductMariaDBRepository implements ProductRepository {
 	void injectFindAllProductsSentByUserQuery(String string) {
 		this.findAllProductsSentByUserQuery = string;
 	}
-	
+
 	void injectSaveProductsQuery(String string) {
 		this.saveProductQuery = string;
+	}
+	
+	void injectDeleteProductsQuery(String string) {
+		this.deleteProductQuery = string;
 	}
 
 	private GenericRepositoryException handleDBException(SQLException ex) {
@@ -98,9 +103,14 @@ public class ProductMariaDBRepository implements ProductRepository {
 	}
 
 	@Override
-	public void delete(Product product) {
-		// TODO Auto-generated method stub
-
+	public void delete(Product product) throws GenericRepositoryException {
+		String statement = String.format(deleteProductQuery, PRODUCT_TABLE_NAME, PRODUCT_ID_KEY);
+		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+			stmt.setInt(1, product.getId());
+			stmt.execute();
+		} catch (SQLException ex) {
+			throw (handleDBException(ex));
+		}
 	}
 
 	@Override

@@ -94,8 +94,8 @@ public class TestProductMariaDBRepository {
 		if (connection != null)
 			connection.close();
 	}
-	
-	// -- HELPERS -- 
+
+	// -- HELPERS --
 
 	private void addTestProductToUserToDatabase(Product p) throws GenericRepositoryException {
 		String query = "INSERT INTO %s (id,sender_id,receivername,receiverusername,receiveraddress,packagetype)"
@@ -149,8 +149,8 @@ public class TestProductMariaDBRepository {
 
 		return products;
 	}
-	
-	// -- END OF HELPERS -- 
+
+	// -- END OF HELPERS --
 
 	@Test
 	public void testFindAllProductsSentByUser() throws GenericRepositoryException {
@@ -186,14 +186,37 @@ public class TestProductMariaDBRepository {
 
 		assertThat(getAllProducts()).containsExactly(product);
 	}
-	
+
 	@Test
 	public void testWhenSQLExceptionisthrownBySaveProduct() {
 		Product product = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
 		productRepository.injectSaveProductsQuery("bad query");
 
-		assertThatThrownBy(() -> productRepository.save(product))
-				.isInstanceOf(GenericRepositoryException.class).extracting("message").asString().isNotEmpty();
+		assertThatThrownBy(() -> productRepository.save(product)).isInstanceOf(GenericRepositoryException.class)
+				.extracting("message").asString().isNotEmpty();
+	}
+
+	@Test
+	public void testDeleteAProductSuccesfully() throws GenericRepositoryException {
+		Product product = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
+		Product product2 = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 2);
+		
+		addTestProductToUserToDatabase(product);
+		addTestProductToUserToDatabase(product2);
+		assertThat(getAllProducts()).containsExactly(product, product2);
+
+		productRepository.delete(product);
+
+		assertThat(getAllProducts()).containsExactly(product2);
+	}
+	
+	@Test
+	public void testWhenSQLExceptionisthrownByDeleteProduct() {
+		Product product = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
+		productRepository.injectDeleteProductsQuery("bad query");
+
+		assertThatThrownBy(() -> productRepository.delete(product)).isInstanceOf(GenericRepositoryException.class)
+				.extracting("message").asString().isNotEmpty();
 	}
 
 }
