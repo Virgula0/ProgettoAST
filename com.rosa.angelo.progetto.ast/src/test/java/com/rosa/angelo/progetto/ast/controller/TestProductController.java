@@ -223,4 +223,13 @@ public class TestProductController {
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 		verifyNoMoreInteractions(ignoreStubs(productView));
 	}
+	
+	@Test
+	public void testNewProductWhitNullProduct() {
+		Product p = null;
+		productController.deleteProduct(p, validLoggedInUser);
+		verify(productView).showError("Invalid product to delete ", p);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
+	}
 }

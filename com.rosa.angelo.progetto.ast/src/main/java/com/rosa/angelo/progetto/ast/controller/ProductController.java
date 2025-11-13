@@ -61,6 +61,11 @@ public class ProductController {
 	}
 
 	public void deleteProduct(Product productToDelete, User loggedInUser) {
+		
+		if (productToDelete == null) {
+			productView.showError("Invalid product to delete ", productToDelete);
+			return;
+		}
 
 		if (productRepository.findProductById(productToDelete.getId()) == null) {
 			productView.showError("Product does not exists with such ID ", productToDelete);
