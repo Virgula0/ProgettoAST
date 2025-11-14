@@ -25,8 +25,9 @@ import javax.swing.JScrollPane;
 import java.awt.Color;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.List;
 
-public class ProductSwingView extends JFrame {
+public class ProductSwingView extends JFrame implements ProductView {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -265,5 +266,34 @@ public class ProductSwingView extends JFrame {
 				deleteButton.setEnabled(productList.getSelectedIndex() != -1);
 			}
 		});
+	}
+
+	@Override
+	public void showAllProductsSentByUser(List<Product> toDisplay) {
+		toDisplay.stream().forEach(listProductModel::addElement);
+	}
+
+	@Override
+	public void showError(String message, Product product) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void productAdded(Product product) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void productRemoved(Product product) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void showError(String string) {
+		// TODO Auto-generated method stub
+
 	}
 }

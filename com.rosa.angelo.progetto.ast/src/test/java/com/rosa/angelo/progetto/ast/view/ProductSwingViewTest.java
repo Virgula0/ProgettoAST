@@ -2,6 +2,8 @@ package com.rosa.angelo.progetto.ast.view;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+
 import org.assertj.swing.annotation.GUITest;
 import org.assertj.swing.core.matcher.JButtonMatcher;
 import org.assertj.swing.core.matcher.JLabelMatcher;
@@ -157,5 +159,16 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		deleteButton.requireEnabled();
 		window.list("productList").clearSelection();
 		deleteButton.requireDisabled();
+	}
+	
+	@Test
+	@GUITest
+	public void testsShowAllProductsShouldAddProductDescriptionsToTheList() {
+		Product product1 = new Product(loggedInUser, "test", "test", "test", "test", 1);
+		Product product2 = new Product(loggedInUser, "test", "test", "test", "test", 2);
+		
+		GuiActionRunner.execute(() -> productView.showAllProductsSentByUser(Arrays.asList(product1, product2)));
+		String[] listContents = window.list().contents();
+		assertThat(listContents).containsExactly(product1.toString(), product2.toString());
 	}
 }
