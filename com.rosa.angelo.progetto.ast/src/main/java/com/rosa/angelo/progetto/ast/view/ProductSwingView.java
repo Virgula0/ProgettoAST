@@ -20,6 +20,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
+import javax.swing.WindowConstants;
 import javax.swing.JScrollPane;
 import java.awt.Color;
 import java.awt.event.KeyAdapter;
@@ -31,7 +32,7 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 
-	private ProductController productController;
+	private transient ProductController productController;
 	private JTextField productIdInputText;
 	private JTextField receiverNameInputText;
 	private JTextField receiverSurnameInputText;
@@ -44,7 +45,7 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 	private JLabel errorMessageLabel;
 	private JButton addButton;
 
-	private User loggedInUser;
+	private transient User loggedInUser;
 
 	private DefaultListModel<Product> listProductModel;
 
@@ -81,7 +82,8 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 		productList = new JList<>(listProductModel);
 
 		setTitle("ManagerView");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		int exitOnClose = WindowConstants.EXIT_ON_CLOSE;
+		setDefaultCloseOperation(exitOnClose);
 		setBounds(100, 100, 749, 462);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -259,11 +261,7 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 		receiverAddressInputText.addKeyListener(keyAdapter);
 		packageTypeInputText.addKeyListener(keyAdapter);
 
-		productList.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent arg0) {
-				deleteButton.setEnabled(productList.getSelectedIndex() != -1);
-			}
-		});
+		productList.addListSelectionListener(e -> deleteButton.setEnabled(productList.getSelectedIndex() != -1));
 
 		addButton.addActionListener(e -> {
 			int parsedId;

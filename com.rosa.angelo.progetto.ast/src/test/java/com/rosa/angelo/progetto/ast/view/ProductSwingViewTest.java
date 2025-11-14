@@ -156,8 +156,8 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 	@Test
 	@GUITest
 	public void testDeleteButtonShouldBeEnabledOnlyWhenAProductIsSelected() {
-		JListFixture list = window.list("productList");
-		assertThat(list.contents().length).isZero();
+		String[] listContents = window.list().contents();
+		assertThat(listContents).isEmpty();
 
 		GuiActionRunner.execute(() -> productView.getListProductModel()
 				.addElement(new Product(loggedInUser, "test", "test", "test", "test", 1)));
@@ -300,7 +300,7 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 	
 	@Test
 	@GUITest
-	public void testDeleteButtonShouldDelegateToProductontrollerDeleteproduct() {
+	public void testDeleteButtonShouldDelegateToProductControllerDeleteproduct() {
 		productView.setLoggedInUser(loggedInUser);
 		Product product = new Product(loggedInUser, "test", "test", "test", "test", 1);
 		Product product2 = new Product(loggedInUser, "test", "test", "test", "test", 2);
