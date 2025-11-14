@@ -275,8 +275,7 @@ public class ProductSwingView extends JFrame implements ProductView {
 
 	@Override
 	public void showError(String message, Product product) {
-		// TODO Auto-generated method stub
-
+		errorMessageLabel.setText(message + ": " + product);
 	}
 
 	@Override
@@ -292,8 +291,7 @@ public class ProductSwingView extends JFrame implements ProductView {
 	}
 
 	@Override
-	public void showError(String string) {
-		// TODO Auto-generated method stub
-
+	public void showError(String message) {
+		errorMessageLabel.setText(message);
 	}
 }

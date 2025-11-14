@@ -151,7 +151,7 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 	public void testDeleteButtonShouldBeEnabledOnlyWhenAProductIsSelected() {
 		JListFixture list = window.list("productList");
 		assertThat(list.contents().length).isZero();
-		
+
 		GuiActionRunner.execute(() -> productView.getListProductModel()
 				.addElement(new Product(loggedInUser, "test", "test", "test", "test", 1)));
 		window.list("productList").selectItem(0);
@@ -160,15 +160,31 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		window.list("productList").clearSelection();
 		deleteButton.requireDisabled();
 	}
-	
+
 	@Test
 	@GUITest
 	public void testsShowAllProductsShouldAddProductDescriptionsToTheList() {
 		Product product1 = new Product(loggedInUser, "test", "test", "test", "test", 1);
 		Product product2 = new Product(loggedInUser, "test", "test", "test", "test", 2);
-		
+
 		GuiActionRunner.execute(() -> productView.showAllProductsSentByUser(Arrays.asList(product1, product2)));
 		String[] listContents = window.list().contents();
 		assertThat(listContents).containsExactly(product1.toString(), product2.toString());
+	}
+
+	@Test
+	@GUITest
+	public void testShowErrorShouldShowTheMessageInTheErrorLabel() {
+		Product product = new Product(loggedInUser, "test", "test", "test", "test", 1);
+		GuiActionRunner.execute(() -> productView.showError("error message", product));
+		window.label("errorMessageLabel").requireText("error message: " + product);
+
+		GuiActionRunner.execute(() -> {
+			window.label("errorMessageLabel").target().setText(" ");
+		});
+
+		// message
+		GuiActionRunner.execute(() -> productView.showError("error message"));
+		window.label("errorMessageLabel").requireText("error message");
 	}
 }
