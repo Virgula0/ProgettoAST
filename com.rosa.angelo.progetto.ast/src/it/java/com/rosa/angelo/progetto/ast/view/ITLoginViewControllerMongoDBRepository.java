@@ -6,10 +6,6 @@ import static org.junit.Assert.fail;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -23,25 +19,25 @@ import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.junit.runner.GUITestRunner;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.testcontainers.containers.MariaDBContainer;
+import org.testcontainers.containers.GenericContainer;
 
+import com.mongodb.MongoClient;
+import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoDatabase;
 import com.rosa.angelo.progetto.ast.controller.UserController;
 import com.rosa.angelo.progetto.ast.model.User;
-import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;
-import com.rosa.angelo.progetto.ast.repository.UserMariaDBRepository;
 import com.rosa.angelo.progetto.ast.repository.UserMongoRepository;
 
 @RunWith(GUITestRunner.class)
-public class ITViewControllerMariaDBRepository extends AssertJSwingJUnitTestCase {
+public class ITLoginViewControllerMongoDBRepository extends AssertJSwingJUnitTestCase {
 
 	private LoginAndRegistrationSwingView loginView;
-	private UserMariaDBRepository userRepository;
+	private UserMongoRepository userRepository;
 	private UserController userController;
 	private FakePanel fakePanel;
 
@@ -49,45 +45,24 @@ public class ITViewControllerMariaDBRepository extends AssertJSwingJUnitTestCase
 
 	private final String VALID_TOKEN = UserMongoRepository.REGISTRATION_TOKEN;
 
-	@SuppressWarnings({ "resource" })
+	@SuppressWarnings({ "rawtypes", "resource" })
 	@ClassRule
-	public static final MariaDBContainer<?> mariadb = new MariaDBContainer<>(
-			UserMariaDBRepository.IMAGE + ":" + UserMariaDBRepository.VERSION)
-			.withDatabaseName(UserMariaDBRepository.AST_DB_NAME).withUsername(UserMariaDBRepository.DB_USERNAME)
-			.withPassword(UserMariaDBRepository.DB_PASSWORD).withExposedPorts(UserMariaDBRepository.PORT);
-
-	private static Connection connection;
-
-	private void cleanupAndCreate() {
-		try {
-			try (Statement stmt = connection.createStatement()) {
-				stmt.execute("DROP DATABASE IF EXISTS " + UserMariaDBRepository.AST_DB_NAME);
-				stmt.execute("CREATE DATABASE " + UserMariaDBRepository.AST_DB_NAME);
-				stmt.execute("USE " + UserMariaDBRepository.AST_DB_NAME);
-
-				stmt.execute("CREATE TABLE " + UserMariaDBRepository.USER_TABLE_NAME
-						+ " (id INT PRIMARY KEY,username VARCHAR(255),password VARCHAR(255))");
-			}
-		} catch (SQLException ex) {
-			new GenericRepositoryException(ex.getMessage());
-		}
-	}
+	public static final GenericContainer mongo = new GenericContainer(
+			UserMongoRepository.IMAGE + ":" + UserMongoRepository.VERSION).withExposedPorts(UserMongoRepository.PORT);
+	private static MongoClient client;
+	private static MongoDatabase database;
 
 	@BeforeClass
-	public static void beforeClass() throws SQLException {
-		String host = mariadb.getHost();
-		Integer port = mariadb.getMappedPort(UserMariaDBRepository.PORT);
-		String jdbcUrl = String.format("jdbc:mariadb://%s:%d/%s", host, port, UserMariaDBRepository.AST_DB_NAME);
-		String username = mariadb.getUsername();
-		String password = mariadb.getPassword();
-		connection = DriverManager.getConnection(jdbcUrl, username, password);
+	public static void beforeClassSetup() {
+		client = new MongoClient(new ServerAddress(mongo.getHost(), mongo.getMappedPort(UserMongoRepository.PORT)));
+		database = client.getDatabase(UserMongoRepository.AST_DB_NAME);
 	}
 
 	@Override
 	protected void onSetUp() throws Exception {
-		cleanupAndCreate();
+		database.drop();
 		GuiActionRunner.execute(() -> {
-			userRepository = new UserMariaDBRepository(connection);
+			userRepository = new UserMongoRepository(client);
 			loginView = new LoginAndRegistrationSwingView();
 			userController = new UserController(loginView, userRepository);
 			loginView.setUserController(userController);
@@ -99,15 +74,9 @@ public class ITViewControllerMariaDBRepository extends AssertJSwingJUnitTestCase
 		window.show();
 	}
 
-	@After
-	public void after() {
-		cleanupAndCreate();
-	}
-
 	@AfterClass
-	public static void afterClass() throws SQLException {
-		if (connection != null)
-			connection.close();
+	public static void afterClass() {
+		client.close();
 	}
 
 	private static class FakePanel extends JFrame implements PanelSwitcher {
@@ -148,7 +117,7 @@ public class ITViewControllerMariaDBRepository extends AssertJSwingJUnitTestCase
 	}
 
 	@Test
-	public void testRegistrationViaUIAndCheckUserSaved() throws GenericRepositoryException {
+	public void testRegistrationViaUIAndCheckUserSaved() {
 		User user = new User("test123", "password1234", 1);
 		window.textBox("registrationIdInputText").enterText(String.valueOf(user.getId()));
 		window.textBox("registrationUsernameInputText").enterText(user.getUsername());
@@ -161,7 +130,7 @@ public class ITViewControllerMariaDBRepository extends AssertJSwingJUnitTestCase
 
 	@Test
 	@GUITest
-	public void testLoginViaUIWhenUserExists() throws GenericRepositoryException {
+	public void testLoginViaUIWhenUserExists() {
 		User user = new User("test123", "password1234", 1);
 
 		userRepository.save(user);
@@ -190,7 +159,7 @@ public class ITViewControllerMariaDBRepository extends AssertJSwingJUnitTestCase
 
 	@Test
 	@GUITest
-	public void testRegisterButtonError() throws GenericRepositoryException {
+	public void testRegisterButtonError() {
 		User user = new User("test123", "passwor1244", 1);
 		User newUser = new User("test123", "passwor1244", 1);
 
