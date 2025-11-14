@@ -50,19 +50,27 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		assertThat(productView.getProductController()).isSameAs(productController).isEqualTo(productController);
 	}
 
+	private void resetInputsStatus() {
+		window.textBox("productIdInputText").setText("");
+		window.textBox("receiverNameInputText").setText("");
+		window.textBox("receiverSurnameInputText").setText("");
+		window.textBox("receiverAddressInputText").setText("");
+		window.textBox("packageTypeInputText").setText("");
+	}
+
 	@Test
 	@GUITest
 	public void testControlInitialStates() {
 		window.label(JLabelMatcher.withText("id"));
 		window.textBox("productIdInputText").requireEnabled();
-		
+
 		window.label("productAdditionLabel").requireVisible();
 		window.label("receiverNameLabel").requireVisible();
 		window.textBox("receiverNameInputText").requireEnabled();
 
 		window.label("receiverSurnameLabel").requireVisible();
 		window.textBox("receiverSurnameInputText").requireEnabled();
-		
+
 		window.label("receiverAddressLabel").requireVisible();
 		window.textBox("receiverAddressInputText").requireEnabled();
 
@@ -76,4 +84,57 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 
 		window.label("errorMessageLabel").requireText(" ");
 	}
+
+	@Test
+	@GUITest
+	public void testWhenProductInputTextAreNonEmptyThenAddButtonShouldBeEnabled() {
+		window.textBox("productIdInputText").enterText("1");
+		window.textBox("receiverNameInputText").enterText("test");
+		window.textBox("receiverSurnameInputText").enterText("test");
+		window.textBox("receiverAddressInputText").enterText("test");
+		window.textBox("packageTypeInputText").enterText("test");
+		window.button(JButtonMatcher.withText("Add")).requireEnabled();
+	}
+
+	@Test
+	@GUITest
+	public void testWhenProductInputTextAreAreFuzzedShouldBeDisabled() {
+		window.textBox("receiverNameInputText").enterText("test");
+		window.textBox("receiverSurnameInputText").enterText("test");
+		window.textBox("receiverAddressInputText").enterText("test");
+		window.textBox("packageTypeInputText").enterText("test");
+		window.button(JButtonMatcher.withText("Add")).requireDisabled();
+
+		resetInputsStatus();
+
+		window.textBox("productIdInputText").enterText("1");
+		window.textBox("receiverSurnameInputText").enterText("test");
+		window.textBox("receiverAddressInputText").enterText("test");
+		window.textBox("packageTypeInputText").enterText("test");
+		window.button(JButtonMatcher.withText("Add")).requireDisabled();
+
+		resetInputsStatus();
+
+		window.textBox("productIdInputText").enterText("1");
+		window.textBox("receiverNameInputText").enterText("test");
+		window.textBox("receiverAddressInputText").enterText("test");
+		window.textBox("packageTypeInputText").enterText("test");
+		window.button(JButtonMatcher.withText("Add")).requireDisabled();
+		resetInputsStatus();
+
+		window.textBox("productIdInputText").enterText("1");
+		window.textBox("receiverNameInputText").enterText("test");
+		window.textBox("receiverSurnameInputText").enterText("test");
+		window.textBox("packageTypeInputText").enterText("test");
+		window.button(JButtonMatcher.withText("Add")).requireDisabled();
+
+		resetInputsStatus();
+
+		window.textBox("productIdInputText").enterText("1");
+		window.textBox("receiverNameInputText").enterText("test");
+		window.textBox("receiverSurnameInputText").enterText("test");
+		window.textBox("receiverAddressInputText").enterText("test");
+		window.button(JButtonMatcher.withText("Add")).requireDisabled();
+	}
+
 }
