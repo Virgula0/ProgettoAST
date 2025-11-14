@@ -16,6 +16,7 @@ import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.fixture.JButtonFixture;
 import org.assertj.swing.fixture.JListFixture;
+import org.assertj.swing.fixture.JTextComponentFixture;
 import org.assertj.swing.junit.runner.GUITestRunner;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.junit.Test;
@@ -250,5 +251,49 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		verify(productController, times(1)).allProducts(loggedInUser);
 		assertThat(productView.isVisible()).isTrue();
 		SwingUtilities.invokeAndWait(() -> productView.dispose());
+	}
+
+	@Test
+	@GUITest
+	public void testAddButtonShouldDelegateToProductControllerNewProduct() {
+		productView.setLoggedInUser(loggedInUser);
+		window.textBox("productIdInputText").enterText("1");
+		window.textBox("receiverNameInputText").enterText("test");
+		window.textBox("receiverSurnameInputText").enterText("test");
+		window.textBox("receiverAddressInputText").enterText("test");
+		window.textBox("packageTypeInputText").enterText("test");
+		window.button(JButtonMatcher.withText("Add")).requireEnabled();
+		window.button(JButtonMatcher.withText("Add")).click();
+
+		verify(productController).newProduct(new Product(loggedInUser, "test", "test", "test", "test", 1),
+				loggedInUser);
+	}
+	
+	@Test
+	@GUITest
+	public void testIdIsNotAnInteger() {
+		JTextComponentFixture productIdInputText = window.textBox("productIdInputText");
+		productIdInputText.enterText("WORD");
+		JTextComponentFixture nameInputText = window.textBox("receiverNameInputText");
+		nameInputText.enterText("test");
+		JTextComponentFixture surnameInputText = window.textBox("receiverSurnameInputText");
+		surnameInputText.enterText("test");
+		JTextComponentFixture addressInputText = window.textBox("receiverAddressInputText");
+		addressInputText.enterText("test");
+		JTextComponentFixture packageInputText = window.textBox("packageTypeInputText");
+		packageInputText.enterText("test");
+		window.button(JButtonMatcher.withText("Add")).click();
+
+		window.label("errorMessageLabel").requireText("Invalid id format");
+
+		resetInputsStatus();
+
+		window.textBox("productIdInputText").enterText("2.0"); // double
+		window.textBox("receiverNameInputText").enterText("test");
+		window.textBox("receiverSurnameInputText").enterText("test");
+		window.textBox("receiverAddressInputText").enterText("test");
+		window.textBox("packageTypeInputText").enterText("test");
+
+		window.label("errorMessageLabel").requireText("Invalid id format");
 	}
 }

@@ -45,15 +45,15 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 	private JButton deleteButton;
 	private JLabel errorMessageLabel;
 	private JButton addButton;
-	
+
 	private User loggedInUser;
-	
+
 	private DefaultListModel<Product> listProductModel;
 
 	DefaultListModel<Product> getListProductModel() { // package private method used fot testing purpose only
 		return listProductModel;
 	}
-	
+
 	public void setLoggedInUser(User loggedInUser) {
 		this.loggedInUser = loggedInUser;
 	}
@@ -65,7 +65,7 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 	public ProductController getProductController() {
 		return productController;
 	}
-	
+
 	@Override
 	public void start() {
 		setVisible(true);
@@ -281,6 +281,22 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 			public void valueChanged(ListSelectionEvent arg0) {
 				deleteButton.setEnabled(productList.getSelectedIndex() != -1);
 			}
+		});
+
+		addButton.addActionListener(e -> {
+			int parsedId;
+			try {
+				parsedId = Integer.parseInt(productIdInputText.getText());
+			} catch (NumberFormatException ex) {
+				this.showError("Invalid id format");
+				return;
+			}
+			productController.newProduct(
+					new Product(loggedInUser, receiverNameInputText.getText(), receiverSurnameInputText.getText(),
+							receiverAddressInputText.getText(), packageTypeInputText.getText(), parsedId),
+					loggedInUser);
+
+			return;
 		});
 	}
 
