@@ -98,6 +98,7 @@ public class TestUserController {
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository).save(user);
+		verify(loginView).resetErrorMessage();
 	}
 
 	@Test

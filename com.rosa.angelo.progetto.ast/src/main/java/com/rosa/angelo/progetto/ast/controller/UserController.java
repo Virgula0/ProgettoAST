@@ -73,6 +73,7 @@ public class UserController {
 		} catch (GenericRepositoryException ex) {
 			hadleRepoException(ex);
 		}
+		loginView.resetErrorMessage();
 	}
 
 	private void hadleRepoException(GenericRepositoryException ex) {

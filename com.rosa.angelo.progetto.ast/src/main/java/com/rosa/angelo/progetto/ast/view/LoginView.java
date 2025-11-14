@@ -8,4 +8,6 @@ public interface LoginView {
 	void showError(String message);
 
 	void switchPanel(User user);
+	
+	void resetErrorMessage();
 }

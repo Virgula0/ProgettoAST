@@ -47,6 +47,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 
 	@Override
 	public void showError(String message) {
+		errorMessageLabel.setText("Error : " +message);
 	}
 
 	@Override
@@ -58,6 +59,11 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 	public void switchPanel(User sessionUser) {
 		this.dispose();
 		nextPanel.start(sessionUser);
+	}
+	
+	@Override
+	public void resetErrorMessage() {
+		errorMessageLabel.setText(" ");
 	}
 
 	public UserController getUserController() {

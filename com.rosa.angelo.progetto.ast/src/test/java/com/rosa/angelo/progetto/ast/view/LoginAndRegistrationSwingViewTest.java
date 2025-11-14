@@ -245,8 +245,9 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 
 	@Test
 	public void testShowErrorWithouNameShouldShowTheMessageInTheErrorLabel() {
+		window.label("errorMessageLabel").requireText(" ");
 		GuiActionRunner.execute(() -> loginView.showError("this is an error message"));
-		window.label("errorMessageLabel").requireText("this is an error message");
+		window.label("errorMessageLabel").requireText("Error : this is an error message");
 	}
 
 	@Test
@@ -344,7 +345,7 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 		registrationTokenInputText.enterText(VALID_TOKEN);
 		window.button(JButtonMatcher.withText("Register")).click();
 
-		window.label("errorMessageLabel").requireText("Invalid id format");
+		window.label("errorMessageLabel").requireText("Error : Invalid id format");
 
 		resetRegistrationInputs(registrationIdInputText, registrationUsernameInputText, registrationPasswordInputText,
 				registrationTokenInputText);
@@ -353,6 +354,6 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 		window.textBox("registrationUsernameInputText").enterText("testUsername");
 		window.textBox("registrationPasswordInputText").enterText("testPassword");
 		window.textBox("registrationTokenInputText").enterText("validToken");
-		window.label("errorMessageLabel").requireText("Invalid id format");
+		window.label("errorMessageLabel").requireText("Error : Invalid id format");
 	}
 }
