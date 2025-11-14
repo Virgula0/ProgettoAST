@@ -51,7 +51,7 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public void start() {
+		public void start(User userSession) {
 			setVisible(true);
 		}
 
@@ -253,7 +253,7 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 	@GUITest
 	public void assertStartRunsCorrectly() throws Exception {
 		SwingUtilities.invokeAndWait(() -> {
-			loginView.start();
+			loginView.start(null);
 		});
 		assertThat(loginView.isVisible()).isTrue();
 		SwingUtilities.invokeAndWait(() -> loginView.dispose());
@@ -271,7 +271,7 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 
 		try {
 			SwingUtilities.invokeAndWait(() -> {
-				loginView.switchPanel();
+				loginView.switchPanel(null);
 			});
 		} catch (Exception e) {
 			fail(e.getMessage());

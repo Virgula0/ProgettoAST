@@ -101,7 +101,7 @@ public class UserControllerMariaDBRepositoryIT {
 
 		userController.login(username, password);
 
-		verify(loginView, times(1)).switchPanel();
+		verify(loginView, times(1)).switchPanel(user);
 		verify(loginView, times(0)).showError(anyString());
 		verify(loginView, times(0)).showError(anyString(), any());
 	}

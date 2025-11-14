@@ -235,18 +235,14 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 	@GUITest
 	public void assertStartRunsCorrectly() throws Exception {
 		// logged in not initialized!
-		productView.setLoggedInUser(null);
-
 		SwingUtilities.invokeAndWait(() -> {
-			productView.start();
+			productView.start(null);
 		});
 
 		verify(productController, times(0)).allProducts(any());
 
-		productView.setLoggedInUser(loggedInUser);
-
 		SwingUtilities.invokeAndWait(() -> {
-			productView.start();
+			productView.start(loggedInUser);
 		});
 
 		verify(productController, times(1)).allProducts(loggedInUser);

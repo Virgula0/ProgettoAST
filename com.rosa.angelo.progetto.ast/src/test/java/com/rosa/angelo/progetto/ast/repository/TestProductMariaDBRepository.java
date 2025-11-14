@@ -200,7 +200,7 @@ public class TestProductMariaDBRepository {
 	public void testDeleteAProductSuccesfully() throws GenericRepositoryException {
 		Product product = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
 		Product product2 = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 2);
-		
+
 		addTestProductToUserToDatabase(product);
 		addTestProductToUserToDatabase(product2);
 		assertThat(getAllProducts()).containsExactly(product, product2);
@@ -209,7 +209,7 @@ public class TestProductMariaDBRepository {
 
 		assertThat(getAllProducts()).containsExactly(product2);
 	}
-	
+
 	@Test
 	public void testWhenSQLExceptionisthrownByDeleteProduct() {
 		Product product = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
@@ -218,7 +218,7 @@ public class TestProductMariaDBRepository {
 		assertThatThrownBy(() -> productRepository.delete(product)).isInstanceOf(GenericRepositoryException.class)
 				.extracting("message").asString().isNotEmpty();
 	}
-	
+
 	@Test
 	public void testfindProductByIdSuccefully() throws GenericRepositoryException {
 		Product p1 = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
@@ -226,18 +226,18 @@ public class TestProductMariaDBRepository {
 
 		addTestProductToUserToDatabase(p1);
 		addTestProductToUserToDatabase(p2);
-		assertThat(getAllProducts()).containsExactly(p1,p2);
-		
+		assertThat(getAllProducts()).containsExactly(p1, p2);
+
 		assertThat(productRepository.findProductById(p1.getId())).isEqualTo(p1);
 		assertThat(productRepository.findProductById(-1)).isNull();
 	}
-	
+
 	@Test
 	public void testWhenSQLExceptionisthrownByFindProductById() {
 		Product product = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
 		productRepository.injectFindProductByIdQuery("bad query");
-		
-		assertThatThrownBy(() -> productRepository.findProductById(product.getId())).isInstanceOf(GenericRepositoryException.class)
-				.extracting("message").asString().isNotEmpty();
+
+		assertThatThrownBy(() -> productRepository.findProductById(product.getId()))
+				.isInstanceOf(GenericRepositoryException.class).extracting("message").asString().isNotEmpty();
 	}
 }

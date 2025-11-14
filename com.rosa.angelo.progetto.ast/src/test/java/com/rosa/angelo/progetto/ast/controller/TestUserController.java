@@ -241,7 +241,7 @@ public class TestUserController {
 
 		userController.login(null, password);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(null, password);
-		verify(loginView, times(0)).switchPanel();
+		verify(loginView, times(0)).switchPanel(any());
 		verify(loginView, times(1)).showError("Invalid credentials");
 	}
 
@@ -251,7 +251,7 @@ public class TestUserController {
 
 		userController.login(username, null);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, null);
-		verify(loginView, times(0)).switchPanel();
+		verify(loginView, times(0)).switchPanel(any());
 		verify(loginView, times(1)).showError("Invalid credentials");
 	}
 
@@ -260,7 +260,7 @@ public class TestUserController {
 	public void loginWhitEmptyCredentials() throws GenericRepositoryException {
 		userController.login("", "");
 		verify(userRepository, times(1)).findUserByUsernameAndPassword("", "");
-		verify(loginView, times(0)).switchPanel();
+		verify(loginView, times(0)).switchPanel(any());
 		verify(loginView, times(1)).showError("Invalid credentials");
 	}
 
@@ -274,7 +274,7 @@ public class TestUserController {
 
 		userController.login(username, password);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
-		verify(loginView, times(1)).switchPanel();
+		verify(loginView, times(1)).switchPanel(any());
 		verify(loginView, times(0)).showError(anyString());
 		verify(loginView, times(0)).showError(anyString(), any());
 	}
@@ -287,7 +287,7 @@ public class TestUserController {
 		userController.login(username, password);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
 		verify(loginView, times(1)).showError("Invalid credentials");
-		verify(loginView, times(0)).switchPanel();
+		verify(loginView, times(0)).switchPanel(any());
 
 	}
 
@@ -302,7 +302,7 @@ public class TestUserController {
 		String wrongUsername = "wrongUsername";
 		userController.login(wrongUsername, wrongPassword);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(wrongUsername, wrongPassword);
-		verify(loginView, times(0)).switchPanel();
+		verify(loginView, times(0)).switchPanel(any());
 		verify(loginView).showError("Invalid credentials");
 	}
 
@@ -311,12 +311,12 @@ public class TestUserController {
 		String username = "test";
 		String password = VALID_PASSWORD;
 		// mock
-		when(userRepository.findUserByUsernameAndPassword(username, password))
-				.thenReturn(new User(username, password, 1));
+		User user = new User(username, password, 1);
+		when(userRepository.findUserByUsernameAndPassword(username, password)).thenReturn(user);
 
 		userController.login(username, password);
 		InOrder inOrder = inOrder(userRepository, loginView);
 		inOrder.verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
-		inOrder.verify(loginView, times(1)).switchPanel();
+		inOrder.verify(loginView, times(1)).switchPanel(user);
 	}
 }

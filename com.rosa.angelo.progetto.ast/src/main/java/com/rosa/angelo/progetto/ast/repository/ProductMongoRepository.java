@@ -1,5 +1,12 @@
 package com.rosa.angelo.progetto.ast.repository;
 
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -7,12 +14,39 @@ import java.util.stream.StreamSupport;
 
 import org.bson.Document;
 
+import com.google.inject.BindingAnnotation;
+import com.google.inject.Inject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.rosa.angelo.progetto.ast.model.Product;
 import com.rosa.angelo.progetto.ast.model.User;
 
 public class ProductMongoRepository implements ProductRepository {
+
+	@BindingAnnotation
+	@Target({ FIELD, PARAMETER, METHOD })
+	@Retention(RUNTIME)
+	public @interface MongoHost {
+	}
+
+	@BindingAnnotation
+	@Target({ FIELD, PARAMETER, METHOD })
+	@Retention(RUNTIME)
+	public @interface MongoPort {
+	}
+
+	@BindingAnnotation
+	@Target({ FIELD, PARAMETER, METHOD })
+	@Retention(RUNTIME)
+	public static @interface ProductDatabaseName {
+	}
+
+	@BindingAnnotation
+	@Target({ FIELD, PARAMETER, METHOD })
+	@Retention(RUNTIME)
+	public static @interface ProductCollectionName {
+	}
+
 	public static final String IMAGE = System.getProperty("mongo.image", "mongo");
 	public static final String VERSION = System.getProperty("mongo.version", "4.4.3");
 	public static final int PORT = Integer.parseInt(System.getProperty("mongo.port", "27017"));
@@ -21,7 +55,9 @@ public class ProductMongoRepository implements ProductRepository {
 	public static final String PRODUCT_COLLECTION_NAME = "product";
 	private MongoCollection<Document> productCollection;
 
-	public ProductMongoRepository(MongoClient client, String databaseName, String collectionName) {
+	@Inject
+	public ProductMongoRepository(MongoClient client, @ProductDatabaseName String databaseName,
+			@ProductCollectionName String collectionName) {
 		productCollection = client.getDatabase(databaseName).getCollection(collectionName);
 	}
 

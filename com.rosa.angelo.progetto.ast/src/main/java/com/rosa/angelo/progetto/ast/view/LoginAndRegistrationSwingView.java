@@ -51,14 +51,14 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 	}
 
 	@Override
-	public void start() {
+	public void start(User loggedIn) {
 		setVisible(true);
 	}
 
 	@Override
-	public void switchPanel() {
+	public void switchPanel(User sessionUser) {
 		this.dispose();
-		nextPanel.start();
+		nextPanel.start(sessionUser);
 	}
 
 	public UserController getUserController() {

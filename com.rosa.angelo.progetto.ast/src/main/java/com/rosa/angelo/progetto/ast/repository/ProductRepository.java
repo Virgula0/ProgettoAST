@@ -12,5 +12,5 @@ public interface ProductRepository {
 
 	Product findProductById(int id) throws GenericRepositoryException;
 
-	List<Product> findAllProductsSentByUser(User user) throws GenericRepositoryException ;
+	List<Product> findAllProductsSentByUser(User user) throws GenericRepositoryException;
 }

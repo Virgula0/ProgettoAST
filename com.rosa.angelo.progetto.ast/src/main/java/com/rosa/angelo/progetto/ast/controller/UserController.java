@@ -1,17 +1,35 @@
 package com.rosa.angelo.progetto.ast.controller;
 
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.util.Objects;
 
+import com.google.inject.BindingAnnotation;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.rosa.angelo.progetto.ast.model.User;
 import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;
 import com.rosa.angelo.progetto.ast.repository.UserRepository;
 import com.rosa.angelo.progetto.ast.view.LoginView;
 
 public class UserController {
+
+	@BindingAnnotation
+	@Target({ FIELD, PARAMETER, METHOD })
+	@Retention(RUNTIME)
+	public static @interface RepoType {
+	}
+
 	private LoginView loginView;
 	private UserRepository userRepo;
 
-	public UserController(LoginView view, UserRepository userRepo) {
+	@Inject
+	public UserController(@Assisted LoginView view, @RepoType UserRepository userRepo) {
 		this.loginView = view;
 		this.userRepo = userRepo;
 	}
@@ -62,9 +80,11 @@ public class UserController {
 	}
 
 	public void login(String username, String password) {
+		User user;
 
 		try {
-			if (userRepo.findUserByUsernameAndPassword(username, password) == null) {
+			user = userRepo.findUserByUsernameAndPassword(username, password);
+			if (user == null) {
 				loginView.showError("Invalid credentials");
 				return;
 			}
@@ -73,7 +93,7 @@ public class UserController {
 			return;
 		}
 
-		loginView.switchPanel();
+		loginView.switchPanel(user);
 	}
 
 }

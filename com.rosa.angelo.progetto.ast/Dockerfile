@@ -23,4 +23,4 @@ RUN apt update \
 
 COPY --from=builder /app/com.rosa.angelo.progetto.ast/target/*-jar-with-dependencies.jar /app/app.jar
 
-CMD ["java", "-jar", "/app/app.jar", "--mongo-host", "mongodb"]
+CMD ["java", "-jar", "/app/app.jar", "--db", "mongodb"]

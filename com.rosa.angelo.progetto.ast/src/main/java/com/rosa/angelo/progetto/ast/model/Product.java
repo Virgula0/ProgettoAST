@@ -38,8 +38,7 @@ public class Product {
 			return false;
 		}
 		Product other = (Product) obj;
-		return Objects.equals(packageType, other.packageType)
-				&& Objects.equals(receiverName, other.receiverName)
+		return Objects.equals(packageType, other.packageType) && Objects.equals(receiverName, other.receiverName)
 				&& Objects.equals(receiverSurname, other.receiverSurname)
 				&& Objects.equals(receiverAddress, other.receiverAddress) && Objects.equals(sender, other.sender);
 	}
