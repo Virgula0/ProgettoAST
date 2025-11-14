@@ -236,11 +236,12 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 	public void assertStartRunsCorrectly() throws Exception {
 		// logged in not initialized!
 		productView.setLoggedInUser(null);
-		verify(productController, times(0)).allProducts(any());
 
 		SwingUtilities.invokeAndWait(() -> {
 			productView.start();
 		});
+
+		verify(productController, times(0)).allProducts(any());
 
 		productView.setLoggedInUser(loggedInUser);
 
@@ -268,7 +269,7 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		verify(productController).newProduct(new Product(loggedInUser, "test", "test", "test", "test", 1),
 				loggedInUser);
 	}
-	
+
 	@Test
 	@GUITest
 	public void testIdIsNotAnInteger() {
@@ -296,20 +297,20 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 
 		window.label("errorMessageLabel").requireText("Invalid id format");
 	}
-	
+
 	@Test
 	@GUITest
 	public void testDeleteButtonShouldDelegateToProductControllerDeleteproduct() {
 		productView.setLoggedInUser(loggedInUser);
 		Product product = new Product(loggedInUser, "test", "test", "test", "test", 1);
 		Product product2 = new Product(loggedInUser, "test", "test", "test", "test", 2);
-		
+
 		GuiActionRunner.execute(() -> {
 			DefaultListModel<Product> productListModel = productView.getListProductModel();
 			productListModel.addElement(product);
 			productListModel.addElement(product2);
 		});
-		
+
 		window.list("productList").selectItem(1);
 		window.button(JButtonMatcher.withText("Delete Product")).click();
 		verify(productController).deleteProduct(product2, loggedInUser);
