@@ -7,6 +7,8 @@ import org.assertj.swing.core.matcher.JButtonMatcher;
 import org.assertj.swing.core.matcher.JLabelMatcher;
 import org.assertj.swing.edt.GuiActionRunner;
 import org.assertj.swing.fixture.FrameFixture;
+import org.assertj.swing.fixture.JButtonFixture;
+import org.assertj.swing.fixture.JListFixture;
 import org.assertj.swing.junit.runner.GUITestRunner;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
 import org.junit.Test;
@@ -15,6 +17,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.rosa.angelo.progetto.ast.controller.ProductController;
+import com.rosa.angelo.progetto.ast.model.Product;
+import com.rosa.angelo.progetto.ast.model.User;
 
 @RunWith(GUITestRunner.class)
 public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
@@ -27,6 +31,8 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 
 	private AutoCloseable closeable;
 
+	private User loggedInUser;
+
 	@Override
 	protected void onSetUp() throws Exception {
 		closeable = MockitoAnnotations.openMocks(this);
@@ -37,6 +43,7 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		});
 		window = new FrameFixture(super.robot(), productView);
 		window.show(); // shows the frame to test
+		loggedInUser = new User("Test", "password1234", 1);
 	}
 
 	@Override
@@ -98,7 +105,7 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testWhenProductInputTextAreAreFuzzedShouldBeDisabled() {
+	public void testWhenProductInputTextAreFuzzedShouldBeDisabled() {
 		window.textBox("receiverNameInputText").enterText("test");
 		window.textBox("receiverSurnameInputText").enterText("test");
 		window.textBox("receiverAddressInputText").enterText("test");
@@ -137,4 +144,18 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		window.button(JButtonMatcher.withText("Add")).requireDisabled();
 	}
 
+	@Test
+	@GUITest
+	public void testDeleteButtonShouldBeEnabledOnlyWhenAProductIsSelected() {
+		JListFixture list = window.list("productList");
+		assertThat(list.contents().length).isZero();
+		
+		GuiActionRunner.execute(() -> productView.getListProductModel()
+				.addElement(new Product(loggedInUser, "test", "test", "test", "test", 1)));
+		window.list("productList").selectItem(0);
+		JButtonFixture deleteButton = window.button(JButtonMatcher.withText("Delete Product"));
+		deleteButton.requireEnabled();
+		window.list("productList").clearSelection();
+		deleteButton.requireDisabled();
+	}
 }

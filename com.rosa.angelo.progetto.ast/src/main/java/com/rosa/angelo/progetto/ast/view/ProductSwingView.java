@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.rosa.angelo.progetto.ast.controller.ProductController;
 import com.rosa.angelo.progetto.ast.model.Product;
@@ -14,6 +16,8 @@ import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
 import javax.swing.JTextField;
 import java.awt.Insets;
+
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
@@ -39,6 +43,12 @@ public class ProductSwingView extends JFrame {
 	private JButton deleteButton;
 	private JLabel errorMessageLabel;
 	private JButton addButton;
+
+	private DefaultListModel<Product> listProductModel;
+
+	DefaultListModel<Product> getListProductModel() { // package private method used fot testing purpose only
+		return listProductModel;
+	}
 
 	public void setProductController(ProductController productController) {
 		this.productController = productController;
@@ -68,6 +78,9 @@ public class ProductSwingView extends JFrame {
 	 * Create the frame.
 	 */
 	public ProductSwingView() {
+		listProductModel = new DefaultListModel<>();
+		productList = new JList<>(listProductModel);
+
 		setTitle("ManagerView");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 749, 462);
@@ -205,7 +218,6 @@ public class ProductSwingView extends JFrame {
 		gbc_scrollPane.gridy = 7;
 		contentPane.add(scrollPane, gbc_scrollPane);
 
-		productList = new JList<Product>();
 		scrollPane.setViewportView(productList);
 		productList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		productList.setName("productList");
@@ -247,5 +259,11 @@ public class ProductSwingView extends JFrame {
 		receiverSurnameInputText.addKeyListener(keyAdapter);
 		receiverAddressInputText.addKeyListener(keyAdapter);
 		packageTypeInputText.addKeyListener(keyAdapter);
+
+		productList.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent arg0) {
+				deleteButton.setEnabled(productList.getSelectedIndex() != -1);
+			}
+		});
 	}
 }
