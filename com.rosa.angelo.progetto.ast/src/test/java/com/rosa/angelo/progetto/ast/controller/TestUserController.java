@@ -119,7 +119,7 @@ public class TestUserController {
 
 		verify(userRepository, times(1)).findUserById(userToAdd.getId());
 		verify(userRepository, times(1)).getRegistrationToken();
-		verify(loginView).showError("Already existing user ", existingUser);
+		verify(loginView).showError("Already existing user by id or username similarity ", existingUser);
 		verifyNoMoreInteractions(ignoreStubs(userRepository));
 	}
 
@@ -231,7 +231,7 @@ public class TestUserController {
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(1)).findUserById(userToAdd.getId());
 
-		verify(loginView).showError("Already existing user ", existingUser);
+		verify(loginView).showError("Already existing user by id or username similarity ", existingUser);
 		verifyNoMoreInteractions(ignoreStubs(userRepository));
 	}
 

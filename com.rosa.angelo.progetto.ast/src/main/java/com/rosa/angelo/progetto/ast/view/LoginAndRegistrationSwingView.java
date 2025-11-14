@@ -47,7 +47,6 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 
 	@Override
 	public void showError(String message) {
-		errorMessageLabel.setText(message);
 	}
 
 	@Override
@@ -78,7 +77,7 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 		setName(viewName);
 		int exitOnClose = WindowConstants.EXIT_ON_CLOSE;
 		setDefaultCloseOperation(exitOnClose);
-		setBounds(100, 100, 450, 442);
+		setBounds(100, 100, 682, 412);
 		contentPane = new JPanel();
 		contentPane.setName(viewName);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

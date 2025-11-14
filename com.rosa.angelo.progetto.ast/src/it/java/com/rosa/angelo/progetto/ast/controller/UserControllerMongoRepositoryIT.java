@@ -118,7 +118,7 @@ public class UserControllerMongoRepositoryIT {
 		userRepository.save(user);
 		userController.newUser(user, validToken);
 
-		verify(loginView).showError("Already existing user ", user);
+		verify(loginView).showError("Already existing user by id or username similarity ", user);
 	}
 
 	@Test

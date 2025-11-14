@@ -171,7 +171,7 @@ public class ITLoginViewControllerMongoDBRepository extends AssertJSwingJUnitTes
 		window.textBox("registrationTokenInputText").enterText(VALID_TOKEN);
 		window.button(JButtonMatcher.withText("Register")).click();
 
-		window.label("errorMessageLabel").requireText("Already existing user : " + newUser);
+		window.label("errorMessageLabel").requireText("Already existing user by id or username similarity : " + newUser);
 	}
 
 	@Test

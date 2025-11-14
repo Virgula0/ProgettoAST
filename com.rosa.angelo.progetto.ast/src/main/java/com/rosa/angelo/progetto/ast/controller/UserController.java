@@ -60,7 +60,7 @@ public class UserController {
 		}
 
 		if (found != null) {
-			loginView.showError("Already existing user ", found);
+			loginView.showError("Already existing user by id or username similarity ", found);
 			return;
 		}
 
