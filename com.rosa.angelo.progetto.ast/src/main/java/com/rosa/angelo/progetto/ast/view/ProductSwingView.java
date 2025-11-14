@@ -1,7 +1,5 @@
 package com.rosa.angelo.progetto.ast.view;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -73,22 +71,6 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 			return;
 		}
 		productController.allProducts(loggedInUser);
-	}
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ProductSwingView frame = new ProductSwingView();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
 	}
 
 	/**
@@ -295,9 +277,11 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 					new Product(loggedInUser, receiverNameInputText.getText(), receiverSurnameInputText.getText(),
 							receiverAddressInputText.getText(), packageTypeInputText.getText(), parsedId),
 					loggedInUser);
-
 			return;
 		});
+
+		deleteButton
+				.addActionListener(e -> productController.deleteProduct(productList.getSelectedValue(), loggedInUser));
 	}
 
 	@Override

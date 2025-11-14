@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 
+import javax.swing.DefaultListModel;
 import javax.swing.SwingUtilities;
 
 import org.assertj.swing.annotation.GUITest;
@@ -295,5 +296,24 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		window.textBox("packageTypeInputText").enterText("test");
 
 		window.label("errorMessageLabel").requireText("Invalid id format");
+	}
+	
+	@Test
+	@GUITest
+	public void testDeleteButtonShouldDelegateToProductontrollerDeleteproduct() {
+		productView.setLoggedInUser(loggedInUser);
+		Product product = new Product(loggedInUser, "test", "test", "test", "test", 1);
+		Product product2 = new Product(loggedInUser, "test", "test", "test", "test", 2);
+		
+		GuiActionRunner.execute(() -> {
+			DefaultListModel<Product> productListModel = productView.getListProductModel();
+			productListModel.addElement(product);
+			productListModel.addElement(product2);
+		});
+		
+		window.list("productList").selectItem(1);
+		window.button(JButtonMatcher.withText("Delete Product")).click();
+		verify(productController).deleteProduct(product2, loggedInUser);
+		GuiActionRunner.execute(() -> productView.showAllProductsSentByUser(Arrays.asList(product)));
 	}
 }
