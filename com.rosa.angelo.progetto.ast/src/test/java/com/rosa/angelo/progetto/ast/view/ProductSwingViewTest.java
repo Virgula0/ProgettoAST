@@ -1,8 +1,13 @@
 package com.rosa.angelo.progetto.ast.view;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
+
+import javax.swing.SwingUtilities;
 
 import org.assertj.swing.annotation.GUITest;
 import org.assertj.swing.core.matcher.JButtonMatcher;
@@ -186,5 +191,64 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		// message
 		GuiActionRunner.execute(() -> productView.showError("error message"));
 		window.label("errorMessageLabel").requireText("error message");
+	}
+
+	@Test
+	@GUITest
+	public void testProductAddedShouldAddTheProductToTheListAndResetTheErrorLabel() {
+		Product product = new Product(loggedInUser, "test", "test", "test", "test", 1);
+
+		GuiActionRunner.execute(() -> productView.productAdded(product));
+		String[] listContents = window.list().contents();
+		assertThat(listContents).containsExactly(product.toString());
+		window.label("errorMessageLabel").requireText(" ");
+	}
+
+	@Test
+	@GUITest
+	public void testProductDeletedShouldDeleteTheProductFromTheListAndResetTheErrorLabel() {
+		// setup
+		Product product = new Product(loggedInUser, "test", "test", "test", "test", 1);
+		Product product2 = new Product(loggedInUser, "test", "test", "test", "test", 2);
+
+		GuiActionRunner.execute(() -> {
+			productView.getListProductModel().addElement(product);
+			productView.getListProductModel().addElement(product2);
+		});
+
+		String[] listContents = window.list().contents();
+		String[] productStrings = new String[] { product.toString(), product2.toString() };
+		assertThat(listContents).containsExactly(productStrings);
+
+		// execute
+		window.list("productList").selectItem(0);
+		GuiActionRunner.execute(() -> productView.productRemoved(product)); // remove
+
+		// verify
+		listContents = window.list().contents();
+		assertThat(listContents).containsExactly(product2.toString());
+		window.label("errorMessageLabel").requireText(" ");
+	}
+
+	@Test
+	@GUITest
+	public void assertStartRunsCorrectly() throws Exception {
+		// logged in not initialized!
+		productView.setLoggedInUser(null);
+		verify(productController, times(0)).allProducts(any());
+
+		SwingUtilities.invokeAndWait(() -> {
+			productView.start();
+		});
+
+		productView.setLoggedInUser(loggedInUser);
+
+		SwingUtilities.invokeAndWait(() -> {
+			productView.start();
+		});
+
+		verify(productController, times(1)).allProducts(loggedInUser);
+		assertThat(productView.isVisible()).isTrue();
+		SwingUtilities.invokeAndWait(() -> productView.dispose());
 	}
 }

@@ -10,6 +10,7 @@ import javax.swing.event.ListSelectionListener;
 
 import com.rosa.angelo.progetto.ast.controller.ProductController;
 import com.rosa.angelo.progetto.ast.model.Product;
+import com.rosa.angelo.progetto.ast.model.User;
 
 import java.awt.GridBagLayout;
 import javax.swing.JLabel;
@@ -27,7 +28,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
-public class ProductSwingView extends JFrame implements ProductView {
+public class ProductSwingView extends JFrame implements ProductView, PanelSwitcher {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -44,11 +45,17 @@ public class ProductSwingView extends JFrame implements ProductView {
 	private JButton deleteButton;
 	private JLabel errorMessageLabel;
 	private JButton addButton;
-
+	
+	private User loggedInUser;
+	
 	private DefaultListModel<Product> listProductModel;
 
 	DefaultListModel<Product> getListProductModel() { // package private method used fot testing purpose only
 		return listProductModel;
+	}
+	
+	public void setLoggedInUser(User loggedInUser) {
+		this.loggedInUser = loggedInUser;
 	}
 
 	public void setProductController(ProductController productController) {
@@ -57,6 +64,15 @@ public class ProductSwingView extends JFrame implements ProductView {
 
 	public ProductController getProductController() {
 		return productController;
+	}
+	
+	@Override
+	public void start() {
+		setVisible(true);
+		if (loggedInUser == null) {
+			return;
+		}
+		productController.allProducts(loggedInUser);
 	}
 
 	/**
@@ -280,14 +296,14 @@ public class ProductSwingView extends JFrame implements ProductView {
 
 	@Override
 	public void productAdded(Product product) {
-		// TODO Auto-generated method stub
-
+		listProductModel.addElement(product);
+		errorMessageLabel.setText(" ");
 	}
 
 	@Override
 	public void productRemoved(Product product) {
-		// TODO Auto-generated method stub
-
+		listProductModel.removeElement(product);
+		errorMessageLabel.setText(" ");
 	}
 
 	@Override
