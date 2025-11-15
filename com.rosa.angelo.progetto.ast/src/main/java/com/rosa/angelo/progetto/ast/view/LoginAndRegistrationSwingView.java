@@ -55,12 +55,12 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 		this.dispose();
 		nextPanel.start(sessionUser);
 	}
-	
+
 	@Override
 	public void resetErrorMessage() {
 		errorMessageLabel.setText(" ");
 	}
-	
+
 	@Override
 	public void start(User loggedIn) {
 		setVisible(true);

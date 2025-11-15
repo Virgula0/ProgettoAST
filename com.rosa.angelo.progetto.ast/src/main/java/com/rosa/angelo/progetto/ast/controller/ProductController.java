@@ -1,18 +1,11 @@
 package com.rosa.angelo.progetto.ast.controller;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.google.inject.BindingAnnotation;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.rosa.angelo.progetto.ast.main.MongoDefaultModule.RepoType;
 import com.rosa.angelo.progetto.ast.model.Product;
 import com.rosa.angelo.progetto.ast.model.User;
 import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;
@@ -20,13 +13,6 @@ import com.rosa.angelo.progetto.ast.repository.ProductRepository;
 import com.rosa.angelo.progetto.ast.view.ProductView;
 
 public class ProductController {
-
-	@BindingAnnotation
-	@Target({ FIELD, PARAMETER, METHOD })
-	@Retention(RUNTIME)
-	public static @interface RepoType {
-	}
-
 	private ProductView productView;
 	private ProductRepository productRepository;
 

@@ -1,30 +1,16 @@
 package com.rosa.angelo.progetto.ast.controller;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.util.Objects;
 
-import com.google.inject.BindingAnnotation;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.rosa.angelo.progetto.ast.main.MongoDefaultModule.RepoType;
 import com.rosa.angelo.progetto.ast.model.User;
 import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;
 import com.rosa.angelo.progetto.ast.repository.UserRepository;
 import com.rosa.angelo.progetto.ast.view.LoginView;
 
 public class UserController {
-
-	@BindingAnnotation
-	@Target({ FIELD, PARAMETER, METHOD })
-	@Retention(RUNTIME)
-	public static @interface RepoType {
-	}
-
 	private LoginView loginView;
 	private UserRepository userRepo;
 

@@ -22,19 +22,6 @@ import com.rosa.angelo.progetto.ast.model.Product;
 import com.rosa.angelo.progetto.ast.model.User;
 
 public class ProductMongoRepository implements ProductRepository {
-
-	@BindingAnnotation
-	@Target({ FIELD, PARAMETER, METHOD })
-	@Retention(RUNTIME)
-	public @interface MongoHost {
-	}
-
-	@BindingAnnotation
-	@Target({ FIELD, PARAMETER, METHOD })
-	@Retention(RUNTIME)
-	public @interface MongoPort {
-	}
-
 	@BindingAnnotation
 	@Target({ FIELD, PARAMETER, METHOD })
 	@Retention(RUNTIME)

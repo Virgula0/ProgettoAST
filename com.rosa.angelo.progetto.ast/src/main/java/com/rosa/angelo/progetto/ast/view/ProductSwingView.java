@@ -83,7 +83,7 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 		setTitle("ManagerView");
 		int exitOnClose = WindowConstants.EXIT_ON_CLOSE;
 		setDefaultCloseOperation(exitOnClose);
-		setBounds(100, 100, 749, 462);
+		setBounds(100, 100, 986, 462);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);

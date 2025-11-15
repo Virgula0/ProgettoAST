@@ -198,7 +198,7 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 	@GUITest
 	public void testProductAddedShouldAddTheProductToTheListAndResetTheErrorLabel() {
 		Product product = new Product(loggedInUser, "test", "test", "test", "test", 1);
-		
+
 		GuiActionRunner.execute(() -> {
 			window.label("errorMessageLabel").target().setText("fake error");
 		});
