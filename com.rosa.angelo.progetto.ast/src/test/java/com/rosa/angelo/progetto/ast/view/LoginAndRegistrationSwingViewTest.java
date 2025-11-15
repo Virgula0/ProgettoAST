@@ -2,7 +2,9 @@ package com.rosa.angelo.progetto.ast.view;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -98,6 +100,14 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 	@Override
 	protected void onTearDown() throws Exception {
 		closeable.close();
+	}
+
+	private void resetRegistrationInputs(JTextComponentFixture idBox, JTextComponentFixture usernameBox,
+			JTextComponentFixture passwordBox, JTextComponentFixture tokenBox) {
+		idBox.setText("");
+		usernameBox.setText("");
+		passwordBox.setText("");
+		tokenBox.setText("");
 	}
 
 	// docs
@@ -203,14 +213,6 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 		window.button(JButtonMatcher.withText("Register")).requireDisabled();
 	}
 
-	private void resetRegistrationInputs(JTextComponentFixture idBox, JTextComponentFixture usernameBox,
-			JTextComponentFixture passwordBox, JTextComponentFixture tokenBox) {
-		idBox.setText("");
-		usernameBox.setText("");
-		passwordBox.setText("");
-		tokenBox.setText("");
-	}
-
 	@Test
 	@GUITest
 	public void testWhenEitherUsernameOrPasswordAreBlankThenLoginButtonShouldBeDisabled() {
@@ -303,22 +305,6 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 
 		window.button(JButtonMatcher.withText("Register")).click();
 		verify(userController).newUser(user, VALID_TOKEN);
-
-		resetRegistrationInputs(registrationIdInputText, registrationUsernameInputText, registrationPasswordInputText,
-				registrationTokenInputText);
-
-		User user2 = new User("NewUser", "passsword1234", 2);
-		JTextComponentFixture registrationIdInputText2 = window.textBox("registrationIdInputText");
-		registrationIdInputText2.enterText(String.valueOf(user2.getId()));
-		JTextComponentFixture registrationUsernameInputText2 = window.textBox("registrationUsernameInputText");
-		registrationUsernameInputText2.enterText(user2.getUsername());
-		JTextComponentFixture registrationPasswordInputText2 = window.textBox("registrationPasswordInputText");
-		registrationPasswordInputText2.enterText(user2.getPassword());
-		JTextComponentFixture registrationTokenInputText2 = window.textBox("registrationTokenInputText");
-		registrationTokenInputText2.enterText(VALID_TOKEN);
-
-		window.button(JButtonMatcher.withText("Register")).click();
-		verify(userController).newUser(user2, VALID_TOKEN);
 	}
 
 	@Test
@@ -335,25 +321,34 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 	@Test
 	@GUITest
 	public void testIdIsNotAnInteger() {
-		JTextComponentFixture registrationIdInputText = window.textBox("registrationIdInputText");
-		registrationIdInputText.enterText("WORD");
-		JTextComponentFixture registrationUsernameInputText = window.textBox("registrationUsernameInputText");
-		registrationUsernameInputText.enterText("test123");
-		JTextComponentFixture registrationPasswordInputText = window.textBox("registrationPasswordInputText");
-		registrationPasswordInputText.enterText("password1234");
-		JTextComponentFixture registrationTokenInputText = window.textBox("registrationTokenInputText");
-		registrationTokenInputText.enterText(VALID_TOKEN);
-		window.button(JButtonMatcher.withText("Register")).click();
-
-		window.label("errorMessageLabel").requireText("Error : Invalid id format");
-
-		resetRegistrationInputs(registrationIdInputText, registrationUsernameInputText, registrationPasswordInputText,
-				registrationTokenInputText);
-
 		window.textBox("registrationIdInputText").enterText("2.0"); // double
 		window.textBox("registrationUsernameInputText").enterText("testUsername");
 		window.textBox("registrationPasswordInputText").enterText("testPassword");
-		window.textBox("registrationTokenInputText").enterText("validToken");
+		window.textBox("registrationTokenInputText").enterText(VALID_TOKEN);
+		window.button(JButtonMatcher.withText("Register")).click();
 		window.label("errorMessageLabel").requireText("Error : Invalid id format");
+	}
+
+	@Test
+	public void currentErroMustBeResetWhenRegisterButtonIsClicked() {
+		GuiActionRunner.execute(() -> {
+			window.label("errorMessageLabel").target().setText("error set");
+		});
+
+		User user = new User("test123", "passsword1234", 1);
+
+		doAnswer(invocation -> {
+			loginView.resetErrorMessage();
+			return null;
+		}).when(userController).newUser(user, VALID_TOKEN);
+
+		window.textBox("registrationIdInputText").enterText(String.valueOf(user.getId()));
+		window.textBox("registrationUsernameInputText").enterText(user.getUsername());
+		window.textBox("registrationPasswordInputText").enterText(user.getPassword());
+		window.textBox("registrationTokenInputText").enterText(VALID_TOKEN);
+
+		window.button(JButtonMatcher.withText("Register")).click();
+		verify(userController).newUser(user, VALID_TOKEN);
+		window.label("errorMessageLabel").requireText(" ");
 	}
 }
