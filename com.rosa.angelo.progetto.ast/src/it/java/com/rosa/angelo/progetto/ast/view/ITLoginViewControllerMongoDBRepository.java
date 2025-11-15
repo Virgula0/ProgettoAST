@@ -184,7 +184,7 @@ public class ITLoginViewControllerMongoDBRepository extends AssertJSwingJUnitTes
 		window.textBox("loginPasswordInputText").enterText(user.getPassword());
 		window.button(JButtonMatcher.withText("Login")).click();
 
-		window.label("errorMessageLabel").requireText("Invalid credentials");
+		window.label("errorMessageLabel").requireText("Error : Invalid credentials");
 	}
 
 	@Test
@@ -198,7 +198,7 @@ public class ITLoginViewControllerMongoDBRepository extends AssertJSwingJUnitTes
 		window.textBox("registrationTokenInputText").enterText("invalid token");
 		window.button(JButtonMatcher.withText("Register")).click();
 
-		window.label("errorMessageLabel").requireText("Invalid registration token");
+		window.label("errorMessageLabel").requireText("Error : Invalid registration token");
 	}
 
 	@Test
