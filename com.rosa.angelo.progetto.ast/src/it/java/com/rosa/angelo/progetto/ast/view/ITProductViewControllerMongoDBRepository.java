@@ -109,7 +109,7 @@ public class ITProductViewControllerMongoDBRepository extends AssertJSwingJUnitT
 		assertThat(window.label("errorMessageLabel").text())
 				.isEqualTo("Product already exists with this ID : " + product1);
 	}
-	
+
 	@Test
 	@GUITest
 	public void testDeleteProductButtonSuccess() {
@@ -119,7 +119,7 @@ public class ITProductViewControllerMongoDBRepository extends AssertJSwingJUnitT
 		window.button(JButtonMatcher.withText("Delete Product")).click();
 		assertThat(window.list().contents()).isEmpty();
 	}
-	
+
 	@Test
 	@GUITest
 	public void testDeleteProductButtonError() {

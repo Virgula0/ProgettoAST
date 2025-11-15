@@ -18,7 +18,7 @@ services:
       start_period: 5s
 
   mariadb:
-    image: mariadb:10.9
+    build: database/mariadb
     container_name: mariadb
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
@@ -53,3 +53,15 @@ services:
       - angelo-rosa-network
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix # X11 forwarding
+    command:
+      [
+        "java",
+        "-jar",
+        "/app/app.jar",
+        "--mariadb-host=mariadb",
+        "--mariadb-port=3306",
+        "--mariadb-name=testdb",
+        "--db-username=testuser",
+        "--db-password=password",
+        "--db=mariadb",
+      ]

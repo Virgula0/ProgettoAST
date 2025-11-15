@@ -46,11 +46,12 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 
 	private DefaultListModel<Product> listProductModel;
 
+	// package purposes
 	DefaultListModel<Product> getListProductModel() { // package private method used fot testing purpose only
 		return listProductModel;
 	}
 
-	public void setLoggedInUser(User loggedInUser) {
+	void setLoggedInUser(User loggedInUser) {
 		this.loggedInUser = loggedInUser;
 	}
 
@@ -63,11 +64,12 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 	}
 
 	@Override
-	public void start() {
+	public void start(User sessionUser) {
 		setVisible(true);
-		if (loggedInUser == null) {
+		if (sessionUser == null) {
 			return;
 		}
+		this.loggedInUser = sessionUser;
 		productController.allProducts(loggedInUser);
 	}
 
@@ -81,7 +83,7 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 		setTitle("ManagerView");
 		int exitOnClose = WindowConstants.EXIT_ON_CLOSE;
 		setDefaultCloseOperation(exitOnClose);
-		setBounds(100, 100, 749, 462);
+		setBounds(100, 100, 986, 462);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);

@@ -3,6 +3,9 @@ package com.rosa.angelo.progetto.ast.controller;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.RepoType;
 import com.rosa.angelo.progetto.ast.model.Product;
 import com.rosa.angelo.progetto.ast.model.User;
 import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;
@@ -13,7 +16,8 @@ public class ProductController {
 	private ProductView productView;
 	private ProductRepository productRepository;
 
-	public ProductController(ProductView productView, ProductRepository productRepository) {
+	@Inject
+	public ProductController(@Assisted ProductView productView, @RepoType ProductRepository productRepository) {
 		this.productView = productView;
 		this.productRepository = productRepository;
 	}

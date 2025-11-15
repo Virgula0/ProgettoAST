@@ -84,7 +84,7 @@ public class ITLoginViewControllerMongoDBRepository extends AssertJSwingJUnitTes
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public void start() {
+		public void start(User sessionUser) {
 			setVisible(true);
 		}
 
@@ -171,7 +171,8 @@ public class ITLoginViewControllerMongoDBRepository extends AssertJSwingJUnitTes
 		window.textBox("registrationTokenInputText").enterText(VALID_TOKEN);
 		window.button(JButtonMatcher.withText("Register")).click();
 
-		window.label("errorMessageLabel").requireText("Already existing user : " + newUser);
+		window.label("errorMessageLabel")
+				.requireText("Already existing user by id or username similarity : " + newUser);
 	}
 
 	@Test
@@ -183,9 +184,9 @@ public class ITLoginViewControllerMongoDBRepository extends AssertJSwingJUnitTes
 		window.textBox("loginPasswordInputText").enterText(user.getPassword());
 		window.button(JButtonMatcher.withText("Login")).click();
 
-		window.label("errorMessageLabel").requireText("Invalid credentials");
+		window.label("errorMessageLabel").requireText("Error : Invalid credentials");
 	}
-	
+
 	@Test
 	@GUITest
 	public void testShowErrorInvalidTokenRegistration() {
@@ -196,10 +197,10 @@ public class ITLoginViewControllerMongoDBRepository extends AssertJSwingJUnitTes
 		window.textBox("registrationPasswordInputText").enterText(user.getPassword());
 		window.textBox("registrationTokenInputText").enterText("invalid token");
 		window.button(JButtonMatcher.withText("Register")).click();
-		
-		window.label("errorMessageLabel").requireText("Invalid registration token");
+
+		window.label("errorMessageLabel").requireText("Error : Invalid registration token");
 	}
-	
+
 	@Test
 	@GUITest
 	public void testShowErrorPasswordTooShort() {
@@ -210,7 +211,7 @@ public class ITLoginViewControllerMongoDBRepository extends AssertJSwingJUnitTes
 		window.textBox("registrationPasswordInputText").enterText(user.getPassword());
 		window.textBox("registrationTokenInputText").enterText(VALID_TOKEN);
 		window.button(JButtonMatcher.withText("Register")).click();
-		
+
 		window.label("errorMessageLabel").requireText("Password must be greater or equal than 8 chars : " + user);
 	}
 }

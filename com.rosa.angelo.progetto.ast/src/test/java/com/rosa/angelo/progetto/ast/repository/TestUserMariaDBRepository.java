@@ -37,7 +37,7 @@ public class TestUserMariaDBRepository {
 	private static final String TEST_USERNAME = "TEST_USERNAME";
 	private static final String TEST_PASSWORD = "TEST_PASSWORD";
 
-	private void cleanupAndCreate() throws GenericRepositoryException{
+	private void cleanupAndCreate() throws GenericRepositoryException {
 		try {
 			try (Statement stmt = connection.createStatement()) {
 				stmt.execute("DROP DATABASE IF EXISTS " + UserMariaDBRepository.AST_DB_NAME);
@@ -63,13 +63,13 @@ public class TestUserMariaDBRepository {
 	}
 
 	@Before
-	public void setup() throws GenericRepositoryException{
+	public void setup() throws GenericRepositoryException {
 		userRepository = new UserMariaDBRepository(connection);
 		cleanupAndCreate();
 	}
 
 	@After
-	public void after() throws GenericRepositoryException{
+	public void after() throws GenericRepositoryException {
 		cleanupAndCreate();
 	}
 

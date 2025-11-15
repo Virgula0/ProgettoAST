@@ -21,11 +21,13 @@ run-all:
 .PHONY: run-all
 
 package:
-	mvn clean package dependency:go-offline -f $(POM_PATH)
+	mvn clean package dependency:go-offline -Pskip-tests -DskipCoverage=true -f $(POM_PATH)
 .PHONY: package
 
 docker-build:
-	xhost +local:docker
+	@export DISPLAY=${DISPLAY}
+	@echo "Using display ${DISPLAY}"
+	@xhost +local:docker
 	docker compose up --build
 .PHONY: docker-build
 

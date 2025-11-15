@@ -2,6 +2,9 @@ package com.rosa.angelo.progetto.ast.controller;
 
 import java.util.Objects;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.RepoType;
 import com.rosa.angelo.progetto.ast.model.User;
 import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;
 import com.rosa.angelo.progetto.ast.repository.UserRepository;
@@ -11,7 +14,8 @@ public class UserController {
 	private LoginView loginView;
 	private UserRepository userRepo;
 
-	public UserController(LoginView view, UserRepository userRepo) {
+	@Inject
+	public UserController(@Assisted LoginView view, @RepoType UserRepository userRepo) {
 		this.loginView = view;
 		this.userRepo = userRepo;
 	}
@@ -42,7 +46,7 @@ public class UserController {
 		}
 
 		if (found != null) {
-			loginView.showError("Already existing user ", found);
+			loginView.showError("Already existing user by id or username similarity ", found);
 			return;
 		}
 
@@ -55,6 +59,8 @@ public class UserController {
 		} catch (GenericRepositoryException ex) {
 			hadleRepoException(ex);
 		}
+
+		loginView.resetErrorMessage();
 	}
 
 	private void hadleRepoException(GenericRepositoryException ex) {
@@ -62,9 +68,11 @@ public class UserController {
 	}
 
 	public void login(String username, String password) {
+		User user;
 
 		try {
-			if (userRepo.findUserByUsernameAndPassword(username, password) == null) {
+			user = userRepo.findUserByUsernameAndPassword(username, password);
+			if (user == null) {
 				loginView.showError("Invalid credentials");
 				return;
 			}
@@ -73,7 +81,7 @@ public class UserController {
 			return;
 		}
 
-		loginView.switchPanel();
+		loginView.switchPanel(user);
 	}
 
 }

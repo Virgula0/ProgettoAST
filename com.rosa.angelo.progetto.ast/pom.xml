@@ -137,6 +137,17 @@
 			</build>
 		</profile>
 		<profile>
+			<id>skip-tests</id>
+			<properties>
+				<maven.test.skip>true</maven.test.skip>
+				<skipTests>true</skipTests>
+				<skipITs>true</skipITs>
+				<testcontainers.reuse.enable>false</testcontainers.reuse.enable>
+				<jacoco.skip>true</jacoco.skip>
+				<maven.test.failure.ignore>true</maven.test.failure.ignore>
+			</properties>
+		</profile>
+		<profile>
 			<id>integration-tests</id>
 			<build>
 				<plugins>

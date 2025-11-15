@@ -5,8 +5,11 @@ import java.util.stream.StreamSupport;
 
 import org.bson.Document;
 
+import com.google.inject.Inject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.UserCollectionName;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.UserDatabaseName;
 import com.rosa.angelo.progetto.ast.model.User;
 
 public class UserMongoRepository implements UserRepository {
@@ -23,7 +26,9 @@ public class UserMongoRepository implements UserRepository {
 	public static final String USERNAME_KEY = "username";
 	public static final String PASSWORD_KEY = "password";
 
-	public UserMongoRepository(MongoClient client, String databaseName, String collectionName) {
+	@Inject
+	public UserMongoRepository(MongoClient client, @UserDatabaseName String databaseName,
+			@UserCollectionName String collectionName) {
 		userCollection = client.getDatabase(databaseName).getCollection(collectionName);
 	}
 

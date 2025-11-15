@@ -47,18 +47,23 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 
 	@Override
 	public void showError(String message) {
-		errorMessageLabel.setText(message);
+		errorMessageLabel.setText("Error : " + message);
 	}
 
 	@Override
-	public void start() {
-		setVisible(true);
-	}
-
-	@Override
-	public void switchPanel() {
+	public void switchPanel(User sessionUser) {
 		this.dispose();
-		nextPanel.start();
+		nextPanel.start(sessionUser);
+	}
+
+	@Override
+	public void resetErrorMessage() {
+		errorMessageLabel.setText(" ");
+	}
+
+	@Override
+	public void start(User loggedIn) {
+		setVisible(true);
 	}
 
 	public UserController getUserController() {
@@ -78,17 +83,17 @@ public class LoginAndRegistrationSwingView extends JFrame implements LoginView, 
 		setName(viewName);
 		int exitOnClose = WindowConstants.EXIT_ON_CLOSE;
 		setDefaultCloseOperation(exitOnClose);
-		setBounds(100, 100, 450, 442);
+		setBounds(100, 100, 682, 412);
 		contentPane = new JPanel();
 		contentPane.setName(viewName);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.columnWidths = new int[] { 0, 387 };
-		gbl_contentPane.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		gbl_contentPane.columnWidths = new int[] { 80, 0 };
+		gbl_contentPane.rowHeights = new int[] { 5, 0, 10, 0, 0, 0, 0, 0, 25, 0, 10, 0, 0, 0, 0 };
 		gbl_contentPane.columnWeights = new double[] { 0.0, 1.0 };
 		gbl_contentPane.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-				0.0, 0.0, 0.0, Double.MIN_VALUE };
+				0.0, 0.0 };
 		contentPane.setLayout(gbl_contentPane);
 
 		JLabel lblNewLabel = new JLabel("Registration Form");

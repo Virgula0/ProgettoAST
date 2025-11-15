@@ -199,6 +199,10 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 	public void testProductAddedShouldAddTheProductToTheListAndResetTheErrorLabel() {
 		Product product = new Product(loggedInUser, "test", "test", "test", "test", 1);
 
+		GuiActionRunner.execute(() -> {
+			window.label("errorMessageLabel").target().setText("fake error");
+		});
+
 		GuiActionRunner.execute(() -> productView.productAdded(product));
 		String[] listContents = window.list().contents();
 		assertThat(listContents).containsExactly(product.toString());
@@ -215,6 +219,7 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		GuiActionRunner.execute(() -> {
 			productView.getListProductModel().addElement(product);
 			productView.getListProductModel().addElement(product2);
+			window.label("errorMessageLabel").target().setText("fake error");
 		});
 
 		String[] listContents = window.list().contents();
@@ -235,18 +240,14 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 	@GUITest
 	public void assertStartRunsCorrectly() throws Exception {
 		// logged in not initialized!
-		productView.setLoggedInUser(null);
-
 		SwingUtilities.invokeAndWait(() -> {
-			productView.start();
+			productView.start(null);
 		});
 
 		verify(productController, times(0)).allProducts(any());
 
-		productView.setLoggedInUser(loggedInUser);
-
 		SwingUtilities.invokeAndWait(() -> {
-			productView.start();
+			productView.start(loggedInUser);
 		});
 
 		verify(productController, times(1)).allProducts(loggedInUser);
@@ -288,6 +289,10 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		window.label("errorMessageLabel").requireText("Invalid id format");
 
 		resetInputsStatus();
+		// reset error
+		GuiActionRunner.execute(() -> {
+			window.label("errorMessageLabel").target().setText(" ");
+		});
 
 		window.textBox("productIdInputText").enterText("2.0"); // double
 		window.textBox("receiverNameInputText").enterText("test");
@@ -295,6 +300,7 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		window.textBox("receiverAddressInputText").enterText("test");
 		window.textBox("packageTypeInputText").enterText("test");
 
+		window.button(JButtonMatcher.withText("Add")).click();
 		window.label("errorMessageLabel").requireText("Invalid id format");
 	}
 

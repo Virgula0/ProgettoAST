@@ -7,8 +7,11 @@ import java.util.stream.StreamSupport;
 
 import org.bson.Document;
 
+import com.google.inject.Inject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.ProductCollectionName;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.ProductDatabaseName;
 import com.rosa.angelo.progetto.ast.model.Product;
 import com.rosa.angelo.progetto.ast.model.User;
 
@@ -21,7 +24,9 @@ public class ProductMongoRepository implements ProductRepository {
 	public static final String PRODUCT_COLLECTION_NAME = "product";
 	private MongoCollection<Document> productCollection;
 
-	public ProductMongoRepository(MongoClient client, String databaseName, String collectionName) {
+	@Inject
+	public ProductMongoRepository(MongoClient client, @ProductDatabaseName String databaseName,
+			@ProductCollectionName String collectionName) {
 		productCollection = client.getDatabase(databaseName).getCollection(collectionName);
 	}
 

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.inject.Inject;
 import com.rosa.angelo.progetto.ast.model.Product;
 import com.rosa.angelo.progetto.ast.model.User;
 
@@ -44,6 +45,7 @@ public class ProductMariaDBRepository implements ProductRepository {
 			+ "FROM %s product JOIN %s u ON product.%s=u.%s WHERE product.id=?";
 	// end of queries
 
+	@Inject
 	public ProductMariaDBRepository(Connection connection) {
 		this.connection = connection;
 	}
