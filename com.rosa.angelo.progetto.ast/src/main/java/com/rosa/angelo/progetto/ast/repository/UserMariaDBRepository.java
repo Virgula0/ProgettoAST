@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.google.inject.Inject;
 import com.rosa.angelo.progetto.ast.model.User;
 
 public class UserMariaDBRepository implements UserRepository {
@@ -24,6 +25,7 @@ public class UserMariaDBRepository implements UserRepository {
 
 	private Connection connection;
 
+	@Inject
 	public UserMariaDBRepository(Connection connection) {
 		this.connection = connection;
 	}

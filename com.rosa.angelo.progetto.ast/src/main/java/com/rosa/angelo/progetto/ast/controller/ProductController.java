@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
-import com.rosa.angelo.progetto.ast.main.MongoDefaultModule.RepoType;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.RepoType;
 import com.rosa.angelo.progetto.ast.model.Product;
 import com.rosa.angelo.progetto.ast.model.User;
 import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;

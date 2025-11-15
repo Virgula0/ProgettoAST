@@ -1,21 +1,19 @@
 package com.rosa.angelo.progetto.ast.main;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
 import com.google.inject.AbstractModule;
-import com.google.inject.BindingAnnotation;
 import com.google.inject.Provides;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.mongodb.MongoClient;
 import com.rosa.angelo.progetto.ast.controller.ControllerFactory;
 import com.rosa.angelo.progetto.ast.controller.ProductController;
 import com.rosa.angelo.progetto.ast.controller.UserController;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.MongoHost;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.MongoPort;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.ProductCollectionName;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.ProductDatabaseName;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.RepoType;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.UserCollectionName;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.UserDatabaseName;
 import com.rosa.angelo.progetto.ast.repository.ProductMongoRepository;
 import com.rosa.angelo.progetto.ast.repository.ProductRepository;
 import com.rosa.angelo.progetto.ast.repository.UserMongoRepository;
@@ -24,25 +22,6 @@ import com.rosa.angelo.progetto.ast.view.LoginAndRegistrationSwingView;
 import com.rosa.angelo.progetto.ast.view.ProductSwingView;
 
 public class MongoDefaultModule extends AbstractModule {
-
-	@BindingAnnotation
-	@Target({ FIELD, PARAMETER, METHOD })
-	@Retention(RUNTIME)
-	public @interface MongoHost {
-	}
-
-	@BindingAnnotation
-	@Target({ FIELD, PARAMETER, METHOD })
-	@Retention(RUNTIME)
-	public @interface MongoPort {
-	}
-
-	@BindingAnnotation
-	@Target({ FIELD, PARAMETER, METHOD })
-	@Retention(RUNTIME)
-	public static @interface RepoType {
-	}
-
 	private String mongoHost;
 	private int mongoPort;
 	private String databaseName;
@@ -92,15 +71,14 @@ public class MongoDefaultModule extends AbstractModule {
 		// inject user repository first
 		bind(String.class).annotatedWith(MongoHost.class).toInstance(mongoHost);
 		bind(Integer.class).annotatedWith(MongoPort.class).toInstance(mongoPort);
-		bind(String.class).annotatedWith(UserMongoRepository.UserDatabaseName.class).toInstance(databaseName);
-		bind(String.class).annotatedWith(UserMongoRepository.UserCollectionName.class).toInstance(userCollectionName);
+		bind(String.class).annotatedWith(UserDatabaseName.class).toInstance(databaseName);
+		bind(String.class).annotatedWith(UserCollectionName.class).toInstance(userCollectionName);
 
 		// inject product repository then
 		bind(String.class).annotatedWith(MongoHost.class).toInstance(mongoHost);
 		bind(Integer.class).annotatedWith(MongoPort.class).toInstance(mongoPort);
-		bind(String.class).annotatedWith(ProductMongoRepository.ProductDatabaseName.class).toInstance(databaseName);
-		bind(String.class).annotatedWith(ProductMongoRepository.ProductCollectionName.class)
-				.toInstance(productCollectionName);
+		bind(String.class).annotatedWith(ProductDatabaseName.class).toInstance(databaseName);
+		bind(String.class).annotatedWith(ProductCollectionName.class).toInstance(productCollectionName);
 
 		bind(UserRepository.class).to(UserMongoRepository.class); // Whenever something requires UserRepository, provide
 																	// a UserMongoRepository.

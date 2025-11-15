@@ -1,47 +1,18 @@
 package com.rosa.angelo.progetto.ast.repository;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
 
 import org.bson.Document;
 
-import com.google.inject.BindingAnnotation;
 import com.google.inject.Inject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.UserCollectionName;
+import com.rosa.angelo.progetto.ast.main.GuiceAnnotations.UserDatabaseName;
 import com.rosa.angelo.progetto.ast.model.User;
 
 public class UserMongoRepository implements UserRepository {
-	@BindingAnnotation
-	@Target({ FIELD, PARAMETER, METHOD })
-	@Retention(RUNTIME)
-	public @interface MongoHost {
-	}
-
-	@BindingAnnotation
-	@Target({ FIELD, PARAMETER, METHOD })
-	@Retention(RUNTIME)
-	public @interface MongoPort {
-	}
-
-	@BindingAnnotation
-	@Target({ FIELD, PARAMETER, METHOD })
-	@Retention(RUNTIME)
-	public static @interface UserDatabaseName {
-	}
-
-	@BindingAnnotation
-	@Target({ FIELD, PARAMETER, METHOD })
-	@Retention(RUNTIME)
-	public static @interface UserCollectionName {
-	}
 
 	public static final String IMAGE = System.getProperty("mongo.image", "mongo");
 	public static final String VERSION = System.getProperty("mongo.version", "4.4.3");

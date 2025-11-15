@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.rosa.angelo.progetto.ast.repository.ProductMongoRepository;
+import com.rosa.angelo.progetto.ast.repository.UserMariaDBRepository;
 import com.rosa.angelo.progetto.ast.repository.UserMongoRepository;
 import com.rosa.angelo.progetto.ast.view.LoginAndRegistrationSwingView;
 
@@ -20,18 +21,25 @@ import picocli.CommandLine.Option;
 public class Main implements Callable<Void> {
 	@Option(names = { "--mongo-host" }, description = "MongoDB host address")
 	private String mongoHost = "localhost";
-
 	@Option(names = { "--mongo-port" }, description = "MongoDB host port")
 	private int mongoPort = 27017;
-
 	@Option(names = { "--db-name" }, description = "Database name")
 	private String databaseName = "ast";
-
 	@Option(names = { "--db-user-collection" }, description = "User Collection Name")
 	private String userCollectionName = UserMongoRepository.USER_COLLECTION_NAME;
-
 	@Option(names = { "--db-product-collection" }, description = "Product Collection Name")
 	private String productCollectionName = ProductMongoRepository.PRODUCT_COLLECTION_NAME;
+
+	@Option(names = { "--mariadb-host" }, description = "MariaDB host address")
+	private String mariaDBHost = "localhost";
+	@Option(names = { "--mariadb-port" }, description = "MariaDB host port")
+	private int mariaDBPort = 3306;
+	@Option(names = { "--mariadb-name" }, description = "Database name")
+	private String mariaDBdatabaseName = UserMariaDBRepository.AST_DB_NAME;
+	@Option(names = { "--db-username" }, description = "Db Username")
+	private String dbUsername = UserMariaDBRepository.DB_USERNAME;
+	@Option(names = { "--db-password" }, description = "Db Password")
+	private String dbPassword = UserMariaDBRepository.DB_PASSWORD;
 
 	@Option(names = "--db", required = false, description = "Choose database type")
 	private String databaseTypeName = "mongodb";
@@ -46,7 +54,8 @@ public class Main implements Callable<Void> {
 		databaseModule = switch (databaseTypeName.toLowerCase()) {
 		case "mongodb" -> new MongoDefaultModule().mongoHost(mongoHost).mongoPort(mongoPort).databaseName(databaseName)
 				.userCollectionName(userCollectionName).productCollectionName(productCollectionName);
-		// case "mysql" -> new MysqlGuice();
+		case "mariadb" -> new MariaDBDefaultModule().dbHost(mariaDBHost).dbPort(mariaDBPort)
+				.databaseName(mariaDBdatabaseName).dbUsername(dbUsername).dbPassword(dbPassword);
 		default -> throw new IllegalArgumentException("Unknown DB type: " + databaseTypeName);
 		};
 
