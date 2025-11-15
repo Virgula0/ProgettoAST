@@ -25,7 +25,9 @@ package:
 .PHONY: package
 
 docker-build:
-	xhost +local:docker
+	@export DISPLAY=${DISPLAY}
+	@echo "Using display ${DISPLAY}"
+	@xhost +local:docker
 	docker compose up --build
 .PHONY: docker-build
 

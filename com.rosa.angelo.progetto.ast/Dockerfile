@@ -22,5 +22,3 @@ RUN apt update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/com.rosa.angelo.progetto.ast/target/*-jar-with-dependencies.jar /app/app.jar
-
-CMD ["java", "-jar", "/app/app.jar", "--db", "mongodb"]

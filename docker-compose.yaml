@@ -35,21 +35,33 @@ services:
     networks:
       - angelo-rosa-network
 
-  #java-app:
-  #  build:
-  #    context: .
-  #    dockerfile: com.rosa.angelo.progetto.ast/Dockerfile
-  #    args:
-  #      DISPLAY: ${DISPLAY} # Pass display variable from terminal
-  #  environment:
-  #    - DISPLAY=${DISPLAY} # Pass display variable from terminal
-  #  container_name: java-app
-  #  depends_on:
-  #    mongodb:
-  #      condition: service_healthy
-  #    mariadb:
-  #      condition: service_healthy
-  #  networks:
-  #    - angelo-rosa-network
-  #  volumes:
-  #    - /tmp/.X11-unix:/tmp/.X11-unix # X11 forwarding
+  java-app:
+    build:
+      context: .
+      dockerfile: com.rosa.angelo.progetto.ast/Dockerfile
+      args:
+        DISPLAY: ${DISPLAY} # Pass display variable from terminal
+    environment:
+      - DISPLAY=${DISPLAY} # Pass display variable from terminal
+    container_name: java-app
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      mariadb:
+        condition: service_healthy
+    networks:
+      - angelo-rosa-network
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix # X11 forwarding
+    command:
+      [
+        "java",
+        "-jar",
+        "/app/app.jar",
+        "--mariadb-host=mariadb",
+        "--mariadb-port=3306",
+        "--mariadb-name=testdb",
+        "--db-username=testuser",
+        "--db-password=password",
+        "--db=mariadb",
+      ]
