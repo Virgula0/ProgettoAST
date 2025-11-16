@@ -114,8 +114,7 @@
 		<!-- sonar automatically excludes tests -->
 		<sonar.coverage.exclusions>
 			**/model/*.*,
-			**/main/*.*,
-			**/repository/*MariaDBRepository*
+			**/main/*.*
 		</sonar.coverage.exclusions>
 
 		<sonar.junit.reportPaths>
