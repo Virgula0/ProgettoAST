@@ -129,15 +129,16 @@ public class ProductMariaDBRepository implements ProductRepository {
 	public Product findProductById(int id) throws GenericRepositoryException {
 		String statement = String.format(findProductById, USER_ID_FOREIGN_KEY, PRODUCT_TABLE_NAME,
 				UserMariaDBRepository.USER_TABLE_NAME, USER_ID_FOREIGN_KEY, UserMariaDBRepository.ID_KEY);
+		Product productToReturn = null;
 		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
 			stmt.setInt(1, id);
 			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
-				return databaseToProduct(rs);
+				productToReturn = databaseToProduct(rs);
 			}
 		} catch (SQLException ex) {
 			throw (handleDBException(ex));
 		}
-		return null;
+		return productToReturn;
 	}
 }

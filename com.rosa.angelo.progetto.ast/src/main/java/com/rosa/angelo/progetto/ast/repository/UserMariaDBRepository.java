@@ -83,16 +83,17 @@ public class UserMariaDBRepository implements UserRepository {
 	@Override
 	public User findUserById(int id) throws GenericRepositoryException {
 		String statement = String.format(userByIdQuery, USER_TABLE_NAME);
+		User userToReturn = null;
 		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
 			stmt.setInt(1, id);
 			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
-				return databaseToUser(rs);
+				userToReturn = databaseToUser(rs);
 			}
 		} catch (SQLException ex) {
 			throw (handleDBException(ex));
 		}
-		return null;
+		return userToReturn;
 	}
 
 	private User databaseToUser(ResultSet rs) throws SQLException {
@@ -102,31 +103,33 @@ public class UserMariaDBRepository implements UserRepository {
 	@Override
 	public User findUserByUsername(String username) throws GenericRepositoryException {
 		String statement = String.format(userByUsernameQuery, USER_TABLE_NAME);
+		User userToReturn = null;
 		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
 			stmt.setString(1, username);
 			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
-				return databaseToUser(rs);
+				userToReturn = databaseToUser(rs);
 			}
 		} catch (SQLException ex) {
 			throw (handleDBException(ex));
 		}
-		return null;
+		return userToReturn;
 	}
 
 	@Override
 	public User findUserByUsernameAndPassword(String username, String password) throws GenericRepositoryException {
 		String statement = String.format(userByUsernameAndPasswordQuery, USER_TABLE_NAME);
+		User userToReturn = null;
 		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
 			stmt.setString(1, username);
 			stmt.setString(2, password);
 			ResultSet rs = stmt.executeQuery();
 			if (rs.next()) {
-				return databaseToUser(rs);
+				userToReturn = databaseToUser(rs);
 			}
 		} catch (SQLException ex) {
 			throw (handleDBException(ex));
 		}
-		return null;
+		return userToReturn;
 	}
 }
