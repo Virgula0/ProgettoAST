@@ -3,6 +3,11 @@ package com.rosa.angelo.progetto.ast.e2e;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.swing.launcher.ApplicationLauncher.application;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.regex.Pattern;
 
 import javax.swing.JFrame;
@@ -14,54 +19,79 @@ import org.assertj.swing.finder.WindowFinder;
 import org.assertj.swing.fixture.FrameFixture;
 import org.assertj.swing.junit.runner.GUITestRunner;
 import org.assertj.swing.junit.testcase.AssertJSwingJUnitTestCase;
-import org.bson.Document;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.MariaDBContainer;
 
-import com.mongodb.MongoClient;
-import com.mongodb.ServerAddress;
-import com.mongodb.client.MongoDatabase;
 import com.rosa.angelo.progetto.ast.model.Product;
 import com.rosa.angelo.progetto.ast.model.User;
-import com.rosa.angelo.progetto.ast.repository.ProductMongoRepository;
-import com.rosa.angelo.progetto.ast.repository.UserMongoRepository;
+import com.rosa.angelo.progetto.ast.repository.GenericRepositoryException;
+import com.rosa.angelo.progetto.ast.repository.ProductMariaDBRepository;
+import com.rosa.angelo.progetto.ast.repository.UserMariaDBRepository;
 import com.rosa.angelo.progetto.ast.repository.UserRepository;
 
 @RunWith(GUITestRunner.class)
-public class AppUsingMongoDBE2E extends AssertJSwingJUnitTestCase {
+public class AppUsingMariaDBE2E extends AssertJSwingJUnitTestCase {
 	private FrameFixture window;
 	private FrameFixture managerWindow;
 
-	@SuppressWarnings({ "rawtypes", "resource" })
+	@SuppressWarnings({ "resource" })
 	@ClassRule
-	public static final GenericContainer mongo = new GenericContainer(
-			UserMongoRepository.IMAGE + ":" + UserMongoRepository.VERSION).withExposedPorts(UserMongoRepository.PORT);
-	private static MongoClient client;
-	private static MongoDatabase database;
+	public static final MariaDBContainer<?> mariadb = new MariaDBContainer<>(
+			UserMariaDBRepository.IMAGE + ":" + UserMariaDBRepository.VERSION)
+			.withDatabaseName(UserMariaDBRepository.AST_DB_NAME).withUsername(UserMariaDBRepository.DB_USERNAME)
+			.withPassword(UserMariaDBRepository.DB_PASSWORD).withExposedPorts(UserMariaDBRepository.PORT);
 
-	@BeforeClass
-	public static void beforeClassSetup() {
-		client = new MongoClient(new ServerAddress(mongo.getHost(), mongo.getMappedPort(UserMongoRepository.PORT)));
-		database = client.getDatabase(UserMongoRepository.AST_DB_NAME);
-	}
+	private static Connection connection;
 
-	private static final String DB_NAME = "ast";
-	private static final String USER_COLLECTION = "users";
-	private static final String PRODUCT_COLLECTION = "products";
+	private static final String DB_NAME = "testdb";
+	private static final String DB_USERNAME = "testuser";
+	private static final String DB_PASSWORD = "password";
 	private final String VALID_TOKEN = UserRepository.REGISTRATION_TOKEN;
 	private final User userFixture = new User("test1234", "password1234", 1);
 	private Product productOneFixture;
 	private Product productTwoFixture;
 
+	private void cleanupAndCreate() throws GenericRepositoryException {
+		try {
+			try (Statement stmt = connection.createStatement()) {
+				stmt.execute("DROP DATABASE IF EXISTS " + ProductMariaDBRepository.AST_DB_NAME);
+				stmt.execute("CREATE DATABASE " + ProductMariaDBRepository.AST_DB_NAME);
+				stmt.execute("USE " + ProductMariaDBRepository.AST_DB_NAME);
+
+				stmt.execute("CREATE TABLE " + UserMariaDBRepository.USER_TABLE_NAME
+						+ " (id INT PRIMARY KEY,username VARCHAR(255),password VARCHAR(255))");
+
+				stmt.execute("CREATE TABLE " + ProductMariaDBRepository.PRODUCT_TABLE_NAME
+						+ " (id INT PRIMARY KEY, sender_id int, receivername VARCHAR(255), receiverusername VARCHAR(255), "
+						+ "receiveraddress VARCHAR(255),packagetype VARCHAR(255), FOREIGN KEY (sender_id) REFERENCES "
+						+ UserMariaDBRepository.USER_TABLE_NAME + "(id))");
+			}
+		} catch (SQLException ex) {
+			throw new GenericRepositoryException(ex.getMessage());
+		}
+	}
+
+	@BeforeClass
+	public static void beforeClass() throws SQLException {
+		String host = mariadb.getHost();
+		Integer port = mariadb.getMappedPort(UserMariaDBRepository.PORT);
+		String jdbcUrl = String.format("jdbc:mariadb://%s:%d/%s", host, port, UserMariaDBRepository.AST_DB_NAME);
+		String username = mariadb.getUsername();
+		String password = mariadb.getPassword();
+		connection = DriverManager.getConnection(jdbcUrl, username, password);
+	}
+
 	@Override
 	protected void onSetUp() throws Exception {
-		database.drop();
-		String containerIpAddress = mongo.getHost();
-		Integer mappedPort = mongo.getFirstMappedPort();
+		cleanupAndCreate();
+
+		String containerIpAddress = mariadb.getHost();
+		Integer mappedPort = mariadb.getMappedPort(UserMariaDBRepository.PORT);
 
 		addTestUserToDatabase(userFixture);
 		productOneFixture = new Product(userFixture, "test1Name", "test1Surname", "test1Address", "test1Package", 1);
@@ -69,9 +99,9 @@ public class AppUsingMongoDBE2E extends AssertJSwingJUnitTestCase {
 		addTestProductToDatabase(productOneFixture);
 		addTestProductToDatabase(productTwoFixture);
 
-		application("com.rosa.angelo.progetto.ast.main.Main").withArgs("--mongo-host=" + containerIpAddress,
-				"--mongo-port=" + mappedPort.toString(), "--db-name=" + DB_NAME,
-				"--db-user-collection=" + USER_COLLECTION, "--db-product-collection=" + PRODUCT_COLLECTION).start();
+		application("com.rosa.angelo.progetto.ast.main.Main").withArgs("--mariadb-host=" + containerIpAddress,
+				"--mariadb-port=" + mappedPort, "--mariadb-name=" + DB_NAME, "--db=mariadb",
+				"--db-username=" + DB_USERNAME, "--db-password=" + DB_PASSWORD).start();
 
 		// get a reference of its JFrame
 		window = WindowFinder.findFrame(new GenericTypeMatcher<JFrame>(JFrame.class) {
@@ -82,32 +112,61 @@ public class AppUsingMongoDBE2E extends AssertJSwingJUnitTestCase {
 		}).using(robot());
 	}
 
-	@AfterClass
-	public static void afterClass() {
-		client.close();
+	@After
+	public void after() throws GenericRepositoryException {
+		cleanupAndCreate();
 	}
 
+	@AfterClass
+	public static void afterClass() throws SQLException {
+		if (connection != null)
+			connection.close();
+	}
 	// -- START OF HELPERS
 
-	private void addTestUserToDatabase(User user) {
-		client.getDatabase(DB_NAME).getCollection(USER_COLLECTION).insertOne(new Document().append("id", user.getId())
-				.append("username", user.getUsername()).append("password", user.getPassword()));
+	private void addTestUserToDatabase(User user) throws GenericRepositoryException {
+		String query = "INSERT INTO %s (username,password,id) VALUES (?,?,?)";
+		String statement = String.format(query, UserMariaDBRepository.USER_TABLE_NAME);
+		try {
+			try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+				stmt.setString(1, user.getUsername());
+				stmt.setString(2, user.getPassword());
+				stmt.setInt(3, user.getId());
+				stmt.executeUpdate();
+			}
+		} catch (SQLException ex) {
+			throw new GenericRepositoryException(ex.getMessage());
+		}
 	}
 
-	private void addTestProductToDatabase(Product p) {
-		client.getDatabase(DB_NAME).getCollection(PRODUCT_COLLECTION)
-				.insertOne(new Document().append(ProductMongoRepository.SENDER_ID_KEY, p.getSender().getId())
-						.append(ProductMongoRepository.SENDER_USERNAME_KEY, p.getSender().getUsername())
-						.append(ProductMongoRepository.PRODUCT_ID_KEY, p.getId())
-						.append(ProductMongoRepository.RECEIVER_NAME_KEY, p.getReceiverName())
-						.append(ProductMongoRepository.RECEIVER_SURNAME_KEY, p.getReceiverSurname())
-						.append(ProductMongoRepository.RECEIVER_ADDRESS_KEY, p.getReceiverAddress())
-						.append(ProductMongoRepository.RECEIVER_PACKAGETYPE_KEY, p.getPackageType()));
+	private void addTestProductToDatabase(Product p) throws GenericRepositoryException {
+		String query = "INSERT INTO %s (id,sender_id,receivername,receiverusername,receiveraddress,packagetype)"
+				+ " VALUES (?,?,?,?,?,?)";
+		String statement = String.format(query, ProductMariaDBRepository.PRODUCT_TABLE_NAME);
+		try {
+			try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+				stmt.setInt(1, p.getId());
+				stmt.setInt(2, p.getSender().getId());
+				stmt.setString(3, p.getReceiverName());
+				stmt.setString(4, p.getReceiverSurname());
+				stmt.setString(5, p.getReceiverAddress());
+				stmt.setString(6, p.getPackageType());
+				stmt.executeUpdate();
+			}
+		} catch (SQLException ex) {
+			throw new GenericRepositoryException(ex.getMessage());
+		}
 	}
 
-	private void removeTestProductFromDatabase(Product p) {
-		Document query = new Document(ProductMongoRepository.PRODUCT_ID_KEY, p.getId());
-		client.getDatabase(DB_NAME).getCollection(PRODUCT_COLLECTION).findOneAndDelete(query);
+	private void removeTestProductFromDatabase(Product p) throws GenericRepositoryException {
+		String statement = String.format("DELETE FROM %s WHERE %s=?", ProductMariaDBRepository.PRODUCT_TABLE_NAME,
+				ProductMariaDBRepository.PRODUCT_ID_KEY);
+		try (PreparedStatement stmt = connection.prepareStatement(statement)) {
+			stmt.setInt(1, p.getId());
+			stmt.execute();
+		} catch (SQLException ex) {
+			throw new GenericRepositoryException(ex.getMessage());
+		}
 	}
 
 	private void performLoginWithUserFixtureAndSwitchProductView() {
@@ -118,7 +177,7 @@ public class AppUsingMongoDBE2E extends AssertJSwingJUnitTestCase {
 	}
 
 	// -- END OF HELPERS
-	
+
 	@Test
 	@GUITest
 	public void testRegistrationWithAnotherUserIsOK() {
@@ -209,7 +268,7 @@ public class AppUsingMongoDBE2E extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testDeleteProductWhenDoesNotExist() {
+	public void testDeleteProductWhenDoesNotExist() throws GenericRepositoryException {
 		performLoginWithUserFixtureAndSwitchProductView();
 		managerWindow.list("productList")
 				.selectItem(Pattern.compile(".*" + productOneFixture.getReceiverName() + ".*"));
