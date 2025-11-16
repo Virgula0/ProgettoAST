@@ -210,7 +210,7 @@ public class AppUsingMariaDBE2E extends AssertJSwingJUnitTestCase {
 		window.textBox("loginPasswordInputText").enterText(userFixture.getPassword());
 		window.button(JButtonMatcher.withText("Login")).click();
 
-		FrameFixture managerWindow = WindowFinder.findFrame("ManagerView").using(window.robot());
+		managerWindow = WindowFinder.findFrame("ManagerView").using(window.robot());
 		managerWindow.requireVisible();
 	}
 
