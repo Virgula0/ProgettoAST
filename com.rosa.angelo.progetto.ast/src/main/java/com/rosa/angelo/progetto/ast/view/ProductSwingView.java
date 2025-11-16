@@ -80,7 +80,9 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 		listProductModel = new DefaultListModel<>();
 		productList = new JList<>(listProductModel);
 
-		setTitle("ManagerView");
+		String viewName = "ManagerView";
+		setTitle(viewName);
+		setName(viewName);
 		int exitOnClose = WindowConstants.EXIT_ON_CLOSE;
 		setDefaultCloseOperation(exitOnClose);
 		setBounds(100, 100, 986, 462);
