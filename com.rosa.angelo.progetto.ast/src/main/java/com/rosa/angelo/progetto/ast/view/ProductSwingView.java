@@ -46,8 +46,8 @@ public class ProductSwingView extends JFrame implements ProductView, PanelSwitch
 
 	private DefaultListModel<Product> listProductModel;
 
-	// package purposes
-	DefaultListModel<Product> getListProductModel() { // package private method used fot testing purpose only
+	 // package private method used fot testing purpose only
+	DefaultListModel<Product> getListProductModel() {
 		return listProductModel;
 	}
 

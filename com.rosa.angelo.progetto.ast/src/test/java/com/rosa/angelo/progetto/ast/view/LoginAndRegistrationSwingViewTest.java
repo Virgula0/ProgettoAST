@@ -130,16 +130,16 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 		window.label("registrationPasswordLabel").requireVisible();
 		window.textBox("registrationPasswordInputText").requireEnabled();
 
+		window.label("registrationTokenLabel").requireVisible();
+		window.textBox("registrationTokenInputText").requireEnabled();
+
 		window.button(JButtonMatcher.withText("Register")).requireDisabled();
 
 		window.label("loginUsernameLabel").requireVisible();
 		window.textBox("loginUsernameInputText").requireEnabled();
 
-		window.label("loginPasswordLabel").requireEnabled();
+		window.label("loginPasswordLabel").requireVisible();
 		window.textBox("loginPasswordInputText").requireEnabled();
-
-		window.label("registrationTokenLabel").requireEnabled();
-		window.textBox("registrationTokenInputText").requireEnabled();
 
 		window.button(JButtonMatcher.withText("Login")).requireDisabled();
 
@@ -148,7 +148,7 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 
 	@Test
 	@GUITest
-	public void testWhenIdAdUsernameAndPasswordAndTokenAreNonEmptyThenRegisterButtonShouldBeEnabled() {
+	public void testWhenIdAndUsernameAndPasswordAndTokenAreNonEmptyThenRegisterButtonShouldBeEnabled() {
 		window.textBox("registrationIdInputText").enterText("1");
 		window.textBox("registrationUsernameInputText").enterText("testUsername");
 		window.textBox("registrationPasswordInputText").enterText("testPassword");
@@ -245,7 +245,7 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 	}
 
 	@Test
-	public void testShowErrorWithouNameShouldShowTheMessageInTheErrorLabel() {
+	public void testShowErrorWithoutObjectShouldShowTheMessageInTheErrorLabel() {
 		window.label("errorMessageLabel").requireText(" ");
 		GuiActionRunner.execute(() -> loginView.showError("this is an error message"));
 		window.label("errorMessageLabel").requireText("Error : this is an error message");
@@ -329,7 +329,7 @@ public class LoginAndRegistrationSwingViewTest extends AssertJSwingJUnitTestCase
 	}
 
 	@Test
-	public void currentErroMustBeResetWhenRegisterButtonIsClicked() {
+	public void currentErrorMustBeResetWhenRegisterButtonIsClicked() {
 		GuiActionRunner.execute(() -> {
 			window.label("errorMessageLabel").target().setText("error set");
 		});

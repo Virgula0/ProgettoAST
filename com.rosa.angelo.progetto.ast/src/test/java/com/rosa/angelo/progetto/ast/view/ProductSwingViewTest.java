@@ -2,6 +2,7 @@ package com.rosa.angelo.progetto.ast.view;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -76,10 +77,11 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 	@Test
 	@GUITest
 	public void testControlInitialStates() {
+		window.label("productAdditionLabel").requireVisible();
+
 		window.label(JLabelMatcher.withText("id"));
 		window.textBox("productIdInputText").requireEnabled();
 
-		window.label("productAdditionLabel").requireVisible();
 		window.label("receiverNameLabel").requireVisible();
 		window.textBox("receiverNameInputText").requireEnabled();
 
@@ -94,7 +96,7 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 
 		window.button(JButtonMatcher.withText("Add")).requireDisabled();
 
-		window.list("productList");
+		window.list("productList").requireVisible();
 		window.button(JButtonMatcher.withText("Delete Product")).requireDisabled();
 
 		window.label("errorMessageLabel").requireText(" ");
@@ -113,7 +115,7 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testWhenProductInputTextAreFuzzedShouldBeDisabled() {
+	public void testWhenProductInputTextAreFuzzedAddButtonShouldBeDisabled() {
 		window.textBox("receiverNameInputText").enterText("test");
 		window.textBox("receiverSurnameInputText").enterText("test");
 		window.textBox("receiverAddressInputText").enterText("test");
@@ -287,6 +289,7 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 		window.button(JButtonMatcher.withText("Add")).click();
 
 		window.label("errorMessageLabel").requireText("Invalid id format");
+		verify(productController, never()).newProduct(any(), any());
 
 		resetInputsStatus();
 		// reset error
@@ -302,6 +305,7 @@ public class ProductSwingViewTest extends AssertJSwingJUnitTestCase {
 
 		window.button(JButtonMatcher.withText("Add")).click();
 		window.label("errorMessageLabel").requireText("Invalid id format");
+		verify(productController, never()).newProduct(any(), any());
 	}
 
 	@Test
