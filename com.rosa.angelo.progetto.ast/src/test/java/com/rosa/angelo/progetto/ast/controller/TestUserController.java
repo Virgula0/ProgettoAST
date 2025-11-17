@@ -61,6 +61,8 @@ public class TestUserController {
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(0)).save(user);
 		verify(loginView).showError("Invalid registration token");
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -72,6 +74,8 @@ public class TestUserController {
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(0)).save(user);
 		verify(loginView).showError("Invalid registration token");
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -82,6 +86,8 @@ public class TestUserController {
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(0)).save(user);
 		verify(loginView).showError("Invalid registration token");
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -98,7 +104,7 @@ public class TestUserController {
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository).save(user);
-		verify(loginView).resetErrorMessage();
+		verify(loginView, times(1)).resetErrorMessage();
 	}
 
 	@Test
@@ -108,6 +114,7 @@ public class TestUserController {
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(loginView).showError("Invalid null user passed", null);
 		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -122,6 +129,7 @@ public class TestUserController {
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(loginView).showError("Already existing user by id or username similarity ", existingUser);
 		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -137,6 +145,7 @@ public class TestUserController {
 
 		verify(loginView).showError("Password must be greater or equal than 8 chars ", userToAdd);
 		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -144,6 +153,7 @@ public class TestUserController {
 		User userToAdd = new User("test", VALID_PASSWORD, 1);
 		String exceptionMessage = "Database connection failed";
 
+		when(userRepository.findUserById(userToAdd.getId())).thenReturn(null); // not needed, just for cleareness
 		doThrow(new GenericRepositoryException(exceptionMessage)).when(userRepository).save(userToAdd);
 
 		userController.newUser(userToAdd, VALID_TOKEN);
@@ -153,6 +163,8 @@ public class TestUserController {
 		verify(userRepository, times(1)).findUserByUsername(userToAdd.getUsername());
 		verify(userRepository, times(1)).save(userToAdd);
 		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -167,6 +179,8 @@ public class TestUserController {
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository, times(1)).findUserById(userToCheck.getId());
 		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -184,6 +198,8 @@ public class TestUserController {
 		verify(userRepository, times(1)).findUserById(userToCheck.getId());
 		verify(userRepository, times(1)).findUserByUsername(userToCheck.getUsername());
 		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -200,6 +216,8 @@ public class TestUserController {
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(userToCheck.getUsername(),
 				userToCheck.getPassword());
 		verify(loginView).showError("Exception occurred in repository: " + exceptionMessage);
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -234,6 +252,7 @@ public class TestUserController {
 
 		verify(loginView).showError("Already existing user by id or username similarity ", existingUser);
 		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -244,6 +263,8 @@ public class TestUserController {
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(null, password);
 		verify(loginView, times(0)).switchPanel(any());
 		verify(loginView, times(1)).showError("Invalid credentials");
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -254,6 +275,8 @@ public class TestUserController {
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, null);
 		verify(loginView, times(0)).switchPanel(any());
 		verify(loginView, times(1)).showError("Invalid credentials");
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	// docs
@@ -263,19 +286,23 @@ public class TestUserController {
 		verify(userRepository, times(1)).findUserByUsernameAndPassword("", "");
 		verify(loginView, times(0)).switchPanel(any());
 		verify(loginView, times(1)).showError("Invalid credentials");
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
 	public void loginSuceedsWhenCredentialsAreCorrectAndUserExists() throws GenericRepositoryException {
 		String username = "test";
 		String password = VALID_PASSWORD;
+		User user = new User(username, password, 1);
+
 		// mock
 		when(userRepository.findUserByUsernameAndPassword(username, password))
 				.thenReturn(new User(username, password, 1));
 
 		userController.login(username, password);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
-		verify(loginView, times(1)).switchPanel(any());
+		verify(loginView, times(1)).switchPanel(user);
 		verify(loginView, times(0)).showError(anyString());
 		verify(loginView, times(0)).showError(anyString(), any());
 	}
@@ -289,7 +316,8 @@ public class TestUserController {
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
 		verify(loginView, times(1)).showError("Invalid credentials");
 		verify(loginView, times(0)).switchPanel(any());
-
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -305,6 +333,8 @@ public class TestUserController {
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(wrongUsername, wrongPassword);
 		verify(loginView, times(0)).switchPanel(any());
 		verify(loginView).showError("Invalid credentials");
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -319,5 +349,7 @@ public class TestUserController {
 		InOrder inOrder = inOrder(userRepository, loginView);
 		inOrder.verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
 		inOrder.verify(loginView, times(1)).switchPanel(user);
+		verifyNoMoreInteractions(ignoreStubs(userRepository));
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 }

@@ -67,7 +67,7 @@ public class UserMariaDBRepository implements UserRepository {
 			stmt.setInt(3, user.getId());
 			stmt.executeUpdate();
 		} catch (SQLException ex) {
-			throw (handleDBException(ex));
+			throw handleDBException(ex);
 		}
 	}
 
@@ -91,7 +91,7 @@ public class UserMariaDBRepository implements UserRepository {
 				userToReturn = databaseToUser(rs);
 			}
 		} catch (SQLException ex) {
-			throw (handleDBException(ex));
+			throw handleDBException(ex);
 		}
 		return userToReturn;
 	}
@@ -111,7 +111,7 @@ public class UserMariaDBRepository implements UserRepository {
 				userToReturn = databaseToUser(rs);
 			}
 		} catch (SQLException ex) {
-			throw (handleDBException(ex));
+			throw handleDBException(ex);
 		}
 		return userToReturn;
 	}
@@ -128,7 +128,7 @@ public class UserMariaDBRepository implements UserRepository {
 				userToReturn = databaseToUser(rs);
 			}
 		} catch (SQLException ex) {
-			throw (handleDBException(ex));
+			throw handleDBException(ex);
 		}
 		return userToReturn;
 	}

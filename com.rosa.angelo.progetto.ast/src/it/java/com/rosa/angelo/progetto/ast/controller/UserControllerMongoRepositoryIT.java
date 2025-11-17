@@ -1,10 +1,10 @@
 package com.rosa.angelo.progetto.ast.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.ignoreStubs;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -78,8 +78,7 @@ public class UserControllerMongoRepositoryIT {
 		userController.login(username, password);
 
 		verify(loginView, times(1)).switchPanel(user);
-		verify(loginView, times(0)).showError(anyString());
-		verify(loginView, times(0)).showError(anyString(), any());
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -92,12 +91,15 @@ public class UserControllerMongoRepositoryIT {
 		assertThat(userRepository.findUserById(1)).isEqualTo(user);
 		assertThat(userRepository.findUserByUsername(username)).isEqualTo(user);
 		assertThat(userRepository.findUserByUsernameAndPassword(username, password)).isEqualTo(user);
+		verify(loginView).resetErrorMessage();
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
 	public void testNewUserControllerWithNullUser() {
 		userController.newUser(null, validToken);
 		verify(loginView).showError("Invalid null user passed", null);
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -108,6 +110,7 @@ public class UserControllerMongoRepositoryIT {
 		userController.newUser(user, "invalid");
 
 		verify(loginView).showError("Invalid registration token");
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -119,6 +122,7 @@ public class UserControllerMongoRepositoryIT {
 		userController.newUser(user, validToken);
 
 		verify(loginView).showError("Already existing user by id or username similarity ", user);
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
@@ -129,11 +133,13 @@ public class UserControllerMongoRepositoryIT {
 		userController.newUser(user, validToken);
 
 		verify(loginView).showError("Password must be greater or equal than 8 chars ", user);
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 
 	@Test
 	public void tesLoginInvalidCredentials() {
 		userController.login("not valid", "not valid");
 		verify(loginView).showError("Invalid credentials");
+		verifyNoMoreInteractions(ignoreStubs(loginView));
 	}
 }

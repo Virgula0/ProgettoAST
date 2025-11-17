@@ -75,6 +75,7 @@ public class ProductController {
 
 		} catch (GenericRepositoryException ex) {
 			hadleRepoException(ex);
+			return;
 		}
 
 		productView.productAdded(productToInsert);
@@ -110,6 +111,7 @@ public class ProductController {
 
 		} catch (GenericRepositoryException ex) {
 			hadleRepoException(ex);
+			return;
 		}
 
 		productView.productRemoved(productToDelete);

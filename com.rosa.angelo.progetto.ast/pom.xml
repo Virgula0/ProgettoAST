@@ -106,7 +106,7 @@
 		</sonar.issue.ignore.multicriteria.e15.ruleKey>
 		<sonar.issue.ignore.multicriteria.e15.resourceKey>
 			**/*MariaDB*Repository.java</sonar.issue.ignore.multicriteria.e15.resourceKey>
-		
+
 		<!-- java:S3577: match the regular expression as class name-->
 		<sonar.issue.ignore.multicriteria.e16.ruleKey>java:S3577</sonar.issue.ignore.multicriteria.e16.ruleKey>
 		<sonar.issue.ignore.multicriteria.e16.resourceKey>**/*E2E*.java</sonar.issue.ignore.multicriteria.e16.resourceKey>
