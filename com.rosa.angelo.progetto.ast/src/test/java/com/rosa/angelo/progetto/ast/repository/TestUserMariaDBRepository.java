@@ -153,17 +153,26 @@ public class TestUserMariaDBRepository {
 	@Test
 	public void testFindUserByIdWhenUserExists() throws GenericRepositoryException {
 		addTestUserToDatabase(1, TEST_USERNAME, TEST_PASSWORD);
-		addTestUserToDatabase(2, TEST_USERNAME, TEST_PASSWORD);
+		addTestUserToDatabase(2, "anotherUser", TEST_PASSWORD);
 
 		User user = userRepository.findUserById(2);
 
-		assertThat(user).isEqualTo(new User(TEST_USERNAME, TEST_PASSWORD, 2));
+		assertThat(user).isEqualTo(new User("anotherUser", TEST_PASSWORD, 2));
 	}
 
 	@Test
 	public void testFindUserByIdWhenUserDoesNotExistsAndCollectionIsEmpty() throws GenericRepositoryException {
 		User user = userRepository.findUserById(1);
 
+		assertThat(user).isNull();
+	}
+
+	// docs
+	@Test
+	public void testFindUserByIdWhenUserDoesNotExistsAndCollectionIsNotEmpty() throws GenericRepositoryException {
+		addTestUserToDatabase(1, TEST_USERNAME, TEST_PASSWORD);
+
+		User user = userRepository.findUserById(2);
 		assertThat(user).isNull();
 	}
 

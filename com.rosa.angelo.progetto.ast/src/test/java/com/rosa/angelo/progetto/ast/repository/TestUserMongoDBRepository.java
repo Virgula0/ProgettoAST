@@ -112,17 +112,26 @@ public class TestUserMongoDBRepository {
 	@Test
 	public void testFindUserByIdWhenUserExists() {
 		addTestUserToDatabase(1, TEST_USERNAME, TEST_PASSWORD);
-		addTestUserToDatabase(2, TEST_USERNAME, TEST_PASSWORD);
+		addTestUserToDatabase(2, "anotherUser", TEST_PASSWORD);
 
 		User user = userRepository.findUserById(2);
 
-		assertThat(user).isEqualTo(new User(TEST_USERNAME, TEST_PASSWORD, 2));
+		assertThat(user).isEqualTo(new User("anotherUser", TEST_PASSWORD, 2));
 	}
 
 	@Test
 	public void testFindUserByIdWhenUserDoesNotExistsAndCollectionIsEmpty() {
 		User user = userRepository.findUserById(1);
 
+		assertThat(user).isNull();
+	}
+
+	// docs
+	@Test
+	public void testFindUserByIdWhenUserDoesNotExistsAndCollectionIsNotEmpty() {
+		addTestUserToDatabase(1, TEST_USERNAME, TEST_PASSWORD);
+
+		User user = userRepository.findUserById(2);
 		assertThat(user).isNull();
 	}
 
@@ -154,7 +163,6 @@ public class TestUserMongoDBRepository {
 		assertThat(userRepository.findUserByUsernameAndPassword("wrongusername", password2)).isNull();
 		assertThat(userRepository.findUserByUsernameAndPassword(username2, "wrongPassword")).isNull();
 		assertThat(userRepository.findUserByUsernameAndPassword("wrongUsername", "wrongPassword")).isNull();
-
 	}
 
 	@Test
