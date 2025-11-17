@@ -170,7 +170,7 @@ public class AppUsingMongoDBE2E extends AssertJSwingJUnitTestCase {
 
 	@Test
 	@GUITest
-	public void testAddProductFixtureSuccess() {
+	public void testAddProductSuccess() {
 		performLoginWithUserFixtureAndSwitchProductView();
 		managerWindow.textBox("productIdInputText").enterText("3");
 		managerWindow.textBox("receiverNameInputText").enterText("test3Name");
