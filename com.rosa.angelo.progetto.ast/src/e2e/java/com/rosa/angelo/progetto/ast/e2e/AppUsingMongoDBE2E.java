@@ -118,7 +118,7 @@ public class AppUsingMongoDBE2E extends AssertJSwingJUnitTestCase {
 	}
 
 	// -- END OF HELPERS
-	
+
 	@Test
 	@GUITest
 	public void testRegistrationWithAnotherUserIsOK() {

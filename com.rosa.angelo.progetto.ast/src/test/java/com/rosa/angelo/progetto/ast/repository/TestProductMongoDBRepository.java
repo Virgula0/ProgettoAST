@@ -133,13 +133,13 @@ public class TestProductMongoDBRepository {
 		addTestProductToDatabase(p1);
 		addTestProductToDatabase(p2);
 
-		assertThat(productCollection.find()
-				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p1, p2);
+		assertThat(productCollection.find().map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>()))
+				.containsExactly(p1, p2);
 
 		productRepository.delete(p1);
 
-		assertThat(productCollection.find()
-				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p2);
+		assertThat(productCollection.find().map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>()))
+				.containsExactly(p2);
 	}
 
 	@Test
@@ -147,13 +147,13 @@ public class TestProductMongoDBRepository {
 		Product p1 = new Product(loggedInUser, "test", "test", "testAddress", "testPackage", 1);
 		addTestProductToDatabase(p1);
 
-		assertThat(productCollection.find()
-				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p1);
+		assertThat(productCollection.find().map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>()))
+				.containsExactly(p1);
 
 		productRepository.delete(null);
 
-		assertThat(productCollection.find()
-				.map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>())).containsExactly(p1);
+		assertThat(productCollection.find().map(doc -> documentToProduct(loggedInUser, doc)).into(new ArrayList<>()))
+				.containsExactly(p1);
 	}
 
 	@Test
