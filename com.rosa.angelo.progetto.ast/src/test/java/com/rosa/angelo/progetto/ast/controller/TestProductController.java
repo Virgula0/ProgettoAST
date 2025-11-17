@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
@@ -77,7 +78,7 @@ public class TestProductController {
 	}
 
 	@Test
-	public void testNewProductWhenUserAlreadyHasOtherProducts() throws GenericRepositoryException {
+	public void testNewProductWhenUserAlreadyHasOtherDifferentProducts() throws GenericRepositoryException {
 		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
 				"packageType", 1);
 		Product productToAdd = new Product(validLoggedInUser, "receiverName2", "receiverSuername2", "receiverAddress2",
@@ -95,7 +96,7 @@ public class TestProductController {
 	}
 
 	@Test
-	public void testNewProductWhenProductAlreadyExists() throws GenericRepositoryException {
+	public void testNewProductWhenProductToAddAlreadyExists() throws GenericRepositoryException {
 		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
 				"packageType", 1);
 		Product product2SameId = new Product(validLoggedInUser, "receiverName2", "receiverSuername2",
@@ -169,7 +170,7 @@ public class TestProductController {
 
 		User user2 = new User("test12345", "password1234", 2);
 		Product productUser2 = new Product(user2, "receiverName", "receiverSurname", "receiverAddress",
-				"samePackageType", 1);
+				"samePackageType", 2);
 
 		when(productRepository.findAllProductsSentByUser(validLoggedInUser))
 				.thenReturn(Arrays.asList(notRelevantProduct, productUser1));
@@ -253,6 +254,8 @@ public class TestProductController {
 
 		productController.allProducts(validLoggedInUser);
 		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
 	}
 
 	@Test
@@ -260,12 +263,16 @@ public class TestProductController {
 		String exceptionMessage = "Database connection failed";
 		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
 				"packageType", 1);
-
+		
+		when(productRepository.findProductById(product.getId())).thenReturn(null);
 		doThrow(new GenericRepositoryException(exceptionMessage)).when(productRepository)
 				.findAllProductsSentByUser(validLoggedInUser);
 
 		productController.newProduct(product, validLoggedInUser);
 		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
+		
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
 	}
 
 	@Test
@@ -281,6 +288,8 @@ public class TestProductController {
 
 		productController.deleteProduct(productToDelete, validLoggedInUser);
 		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
 	}
 
 	@Test
@@ -289,10 +298,14 @@ public class TestProductController {
 		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
 				"packageType", 1);
 
+		when(productRepository.findProductById(product.getId())).thenReturn(null);
+		when(productRepository.findAllProductsSentByUser(validLoggedInUser)).thenReturn(Collections.emptyList());
 		doThrow(new GenericRepositoryException(exceptionMessage)).when(productRepository).save(product);
 
 		productController.newProduct(product, validLoggedInUser);
 		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
 	}
 
 	@Test
@@ -308,6 +321,8 @@ public class TestProductController {
 
 		productController.deleteProduct(productToDelete, validLoggedInUser);
 		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
 	}
 
 	@Test
@@ -321,5 +336,7 @@ public class TestProductController {
 
 		productController.newProduct(product, validLoggedInUser);
 		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
+		verifyNoMoreInteractions(ignoreStubs(productRepository));
+		verifyNoMoreInteractions(ignoreStubs(productView));
 	}
 }

@@ -98,7 +98,7 @@ public class TestUserController {
 
 		verify(userRepository, times(1)).getRegistrationToken();
 		verify(userRepository).save(user);
-		verify(loginView).resetErrorMessage();
+		verify(loginView, times(1)).resetErrorMessage();
 	}
 
 	@Test
@@ -269,13 +269,15 @@ public class TestUserController {
 	public void loginSuceedsWhenCredentialsAreCorrectAndUserExists() throws GenericRepositoryException {
 		String username = "test";
 		String password = VALID_PASSWORD;
+		User user = new User(username, password, 1);
+
 		// mock
 		when(userRepository.findUserByUsernameAndPassword(username, password))
 				.thenReturn(new User(username, password, 1));
 
 		userController.login(username, password);
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
-		verify(loginView, times(1)).switchPanel(any());
+		verify(loginView, times(1)).switchPanel(user);
 		verify(loginView, times(0)).showError(anyString());
 		verify(loginView, times(0)).showError(anyString(), any());
 	}
@@ -289,7 +291,6 @@ public class TestUserController {
 		verify(userRepository, times(1)).findUserByUsernameAndPassword(username, password);
 		verify(loginView, times(1)).showError("Invalid credentials");
 		verify(loginView, times(0)).switchPanel(any());
-
 	}
 
 	@Test
