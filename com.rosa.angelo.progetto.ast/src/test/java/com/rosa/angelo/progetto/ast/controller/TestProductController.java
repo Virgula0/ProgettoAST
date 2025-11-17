@@ -263,14 +263,14 @@ public class TestProductController {
 		String exceptionMessage = "Database connection failed";
 		Product product = new Product(validLoggedInUser, "receiverName", "receiverSuername", "receiverAddress",
 				"packageType", 1);
-		
+
 		when(productRepository.findProductById(product.getId())).thenReturn(null);
 		doThrow(new GenericRepositoryException(exceptionMessage)).when(productRepository)
 				.findAllProductsSentByUser(validLoggedInUser);
 
 		productController.newProduct(product, validLoggedInUser);
 		verify(productView).showError("Exception occurred in repository: " + exceptionMessage);
-		
+
 		verifyNoMoreInteractions(ignoreStubs(productRepository));
 		verifyNoMoreInteractions(ignoreStubs(productView));
 	}

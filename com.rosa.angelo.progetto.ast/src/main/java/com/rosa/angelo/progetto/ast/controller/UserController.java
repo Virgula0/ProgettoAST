@@ -54,10 +54,12 @@ public class UserController {
 			loginView.showError("Password must be greater or equal than 8 chars ", user);
 			return;
 		}
+
 		try {
 			userRepo.save(user);
 		} catch (GenericRepositoryException ex) {
 			hadleRepoException(ex);
+			return;
 		}
 
 		loginView.resetErrorMessage();
