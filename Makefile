@@ -36,22 +36,22 @@ docker-stop:
 	docker compose down -v
 .PHONY: docker-stop
 
-sonarcube-up:
-	docker compose -f sonarcube/docker-compose.yaml up --build
-.PHONY: sonarcube-up
+sonarqube-up:
+	docker compose -f sonarqube/docker-compose.yaml up --build
+.PHONY: sonarqube-up
 
-sonarcube-down:
-	docker compose -f sonarcube/docker-compose.yaml down -v
-.PHONY: sonarcube-down
+sonarqube-down:
+	docker compose -f sonarqube/docker-compose.yaml down -v
+.PHONY: sonarqube-down
 
-sonarcube:
+sonarqube:
 # generate SONAR_TOKEN => http://localhost:9000/account/security
 	mvn clean verify \
 		-Pjacoco sonar:sonar -Pintegration-tests -f $(POM_PATH) \
 		-Dsonar.host.url=http://localhost:9000 \
 		-Dsonar.token=$$SONAR_TOKEN -X
-.PHONY: sonarcube
+.PHONY: sonarqube
 
 build-and-run: docker-build
 test: run-all
-run-sonarcube: sonarcube-up sonarcube
+run-sonarqube: sonarqube-up sonarqube
