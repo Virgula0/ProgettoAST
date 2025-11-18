@@ -3,7 +3,7 @@
 - [Descrizione del progetto e funzionalita'](#descrizione-del-progetto-e-funzionalita)
 - [Scelte implementative](#scelte-implementative)
 - [Esecuzione dell'applicativo](#esecuzione-dellapplicativo)
-- Difficolta' riscontrate
+- [Difficolta' riscontrate](#difficolta-riscontrate)
 - Tecnologie utilizzate e build
 
 # Descrizione del progetto e funzionalita'
@@ -30,7 +30,7 @@ Contiene due classi core che rappresentano le entita' utilizzate nell'applicazio
         La classe user contiene i campi: `Username`, `Password` ed `id`. Sebbene in applicativi reali l'id venga spesso generato ed assegnato in modo automatizzato, ad esempio, attraverso l'utilizzo di `INCREMENT` in database relazionali, in questo progetto e' stato scelto l'inserimento di un `id` manuale per non creare troppe differenze concettuali tra l'implementazione con `MongoDB` e quella con `MariaDB`. Certo, anche con `MongoDB` sarebbe stato possibile automatizzare l'inserimento dell'id sia che per l'utente che per i prodotti ma la semplificazione e' stata voluta anche per eseguire qualche controllo in piu' nel controller al fine di esercitarsi il piu' possibile con il `TDD`. Inoltre da notare le password conservate in un database non sono `hashate` prima di essere salvate. Di nuovo, una mera semplificazione di quella che dovrebbe essere un applicativo reale.
   - Product \
         La classe product contiene per ogni prodotto, l'utente associato che sta manipolando il prodotto (utile in fase di salvataggio/lettura) e le informazioni reali del pacchetto da spedire. L'utente passato al prodotto, non e' da confondere con l'instanza dell'utente passata solitamente ai metodi del controller, in quanto quest'ultima effettua controlli sulla `sessione` di chi sta compiendo l'azione. Anche qui, il concetto di user session e' semplificato e mancano i controlli per effettuare il logout dopo un certo perieodo di tempo e altri cotrolli di sicurezza.
-- Controller
+- Controller \
 Il controller e' il core dell'applicativo il quale effettua diversi controlli logici attuando da "`logica di backend`".
   - UserController \
         La classe `UserController` viene utilizzata dalla view che si occupa della registrazione e del login degli utenti. Quando un login va a buon fine, il controlla richiama il metodo per chiudere il pannello attuale ed aprire il prossima panel, il tutto gestito internamente dalla view dedicata al `Login`. \
@@ -68,7 +68,8 @@ Le view come anticipato sono 2.
 Per esecuzione app su container:
 
 - Utility xhost
-  - Di solito è già installato ma disponibile nel pacchetto `x11-xserver-utils`
+  - Di solito è già installato ma disponibile nel pacchetto `x11-xserver-utils` oppure in `x11-utils`
+- Paccketto `build-essentials` per l'utility `Make`
 - Docker e Docker-compose
   - Se si vuole eseguire i test in locale, ricordarsi che la versione del test container utilizzata (1.X) è compatibile con un docker daemon < 28.
 
@@ -134,3 +135,26 @@ make run-pit
 ```
 make test
 ```
+
+# Difficolta' riscontrate
+
+Prima di proseguire con la spiegazione di due importanti problematiche riscontrate vorrei sconsigliare ai prossimi l'utilizzo di Eclipse su ambienti grafici di tipo `window-tiling managers` come ad esempio `Hyperland` (basato su Wayland) oppure `i3` (basato su xserver) entrambi utilizzati da me. Ho riscontrato diversi bug tra cui: scomparsa improvvisa del cursore senza motivo, freeze della grafica che richiedono necessariamente un restart di Eclipse, content assist che presenta vari bug nelle suggestions quando lo si invoca, finestre a comparsa che non compaiono e altri vari bug.
+
+La prima difficolta' principale e' stato un bug di `Jacoco` che ha impiegato da parte mia ore di debugging per capirne il problema.
+
+Inizialmente pensavo fosse un bug di sonarqube sulla coverage. Infatti tutti i test passavano ma la coverage non era al 100%. Molto strano dato che il threshold e' settato al 100%. Pensando fosse un allucinazione da parte di sonarqube, ho inizialmente disattivato la coverage sui repository inerenti `MariaDB` sia per lo user che per il product: https://github.com/Virgula0/ProgettoAST/pull/18/files#diff-473abd12905d7a47aa6eac3dab88e3b341719553f1c7bf143fb849cd5d827ebc
+
+Sonarqube infatti sottolineava un mancato branch coverage nel catch dell'eccezione quando un `RuleSet` viene usato.
+Inizialmente ho chiesto informazioni sul forum di sonarqube: https://community.sonarsource.com/t/sonarqube-98-2-coverage-while-jacoco-gives-100/152027/3
+
+Mi e' stato fatto pero' notare, che sonarqube si basa sulla coverage di jacoco. Dopo aver ricevuto questo suggerimento ho investigato piu' a fondo, fino ad arrivare a capire che era un bug del parser di jacoco. Infatti Jacoco dava problemi perche' non riusciva a capire che il return statement all'interno del `try-with-resource` chiudesse in automatico le risorse. Ho aperto una issue sul repo di Jacoco: https://github.com/jacoco/jacoco/issues/1993#issuecomment-3544012735 e mi e' stato riferito gentilmente di essere gia' a conoscenza dei problemi legati all'utilizzo del `try-with-resource` e che vi era gia' una issue aperta sul tema, da circa un anno. A questo punto non ho fatto altro che semplificare la vita a jacoco con il fix mostrato come esempio nella issue stessa, ma il bug nel parser ovviamente permane.
+
+Un altro problema ugualmente subdolo e' legato al recente upgrade del daemon di docker alla versione 29.
+
+Come dichiarato dalla documentazione della release stessa https://docs.docker.com/engine/release-notes/29/#2900 la versione 29 del daemon introduce numerosi breaking changes. Questo porta tutte le versioni di test containers disponibili attualmente a non riuscire a comunicare correttamente con il daemon.
+
+I maintainers di `test-container` hanno aggiornato qualche giorno fa la versione `2.0.3` alla versione `2.0.4` che risolve il problema, ma hanno detto esplicitamente che non introdurrano un fix per le versioni precedenti `1.X`: https://github.com/testcontainers/testcontainers-java/issues/11212#issuecomment-3538510070
+
+Questo solleva una problematica: la versione di testcontainers da me utilizzata nel progetto fin dall'inizio e' basata sull'`1.X`. Passare ad una major version superiore comporterebbe problemi di compatibilita' sulle annotations e toccherebbe cambiare le inizializzazioni dei test all'interno delle classi che usano attivamente test containers.
+
+Ho preferito continuare ad usare la versione `1.X`, facendo notare pero', la presenza di questa problematica e si consiglia di aggiornare i riferimenti nel libro utilizzando la versione `2.0.4` di `test-containers` (o superiore) compatibile con docker <=29.
