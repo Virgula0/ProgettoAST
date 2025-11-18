@@ -61,7 +61,7 @@ services:
         "--mariadb-host=mariadb",
         "--mariadb-port=3306",
         "--mariadb-name=testdb",
-        "--db-username=testuser",
-        "--db-password=password",
+        "--mariadb-username=testuser",
+        "--mariadb-password=password",
         "--db=mariadb",
       ]
