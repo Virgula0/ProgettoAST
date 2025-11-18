@@ -49,9 +49,9 @@ Il controller e' il core dell'applicativo il quale effettua diversi controlli lo
   - ProductController \
             La classe `ProductController` viene utilizzata dalla view che si occupa dell'inserimento e della rimozione dei vari prodotti. Nella classe si possono notare alcuni controlli quali
     - Esistenza del prodotto con lo stesso ID
-    - Se il pacchetto e' gia stato inviato allo stesso client da parte dell'utente attualmente loggato
-    - Inserimento di pacchi per conto di altri utenti
-    - Rimozione di pacchi per conto di altri utenti
+    - Evitare che il pacchetto possa essere spedito di nuovo dallo stesso utente, se e' gia' stato sepdito
+    - Evitare l'inserimento di pacchi per conto di altri utenti
+    - Evitare la rimozione di pacchi per conto di altri utenti
     - Rimozione di pacchi che non esistono
 - Repository \
 Siccome sono stati implementati due database: `MariaDB` e `MongoDB` tutti i controlli sono duplicati per entrambi i database. Infatti si puo' notare che l'interfaccia `UserRepository` (idem per i product) e' implmentata sia dal repository che si interfaccia con `MongoDB` che con `MariaDB`. Le classi dei test sono separate e testano:
@@ -78,7 +78,7 @@ Per esecuzione app su container:
   - Di solito è già installato ma disponibile nel pacchetto `x11-xserver-utils` oppure in `x11-utils`
 - Paccketto `build-essentials` per l'utility `Make`
 - Docker e Docker-compose
-  - Se si vuole eseguire i test in locale, ricordarsi che la versione del test container utilizzata (1.X) è compatibile con un docker daemon < 28.
+  - Se si vuole eseguire i test in locale, ricordarsi che la versione del test container utilizzata (1.X) è compatibile con un daemon docker < 29.
 
 ```
 make build-and-run
@@ -97,13 +97,13 @@ Tuttavia, a causa di una diversa configurazione grafica, possono verificarsi pro
 Avendo i container dei database `up and running`, si puo' avviare l’applicazione manualmente con:
 
 ```
-make package && java -jar com.rosa.angelo.progetto.ast/target/ast-1.0.0-SNAPSHOT-jar-with-dependencies.jar --db=mariadb
+make package && java -jar com.rosa.angelo.progetto.ast/target/ast-1.0.0-jar-with-dependencies.jar --db=mariadb
 ```
 
 Oppure con mongodb:
 
 ```
-make package && java -jar com.rosa.angelo.progetto.ast/target/ast-1.0.0-SNAPSHOT-jar-with-dependencies.jar --db=mongodb
+make package && java -jar com.rosa.angelo.progetto.ast/target/ast-1.0.0-jar-with-dependencies.jar --db=mongodb
 ```
 
 > [!WARNING]
@@ -145,18 +145,18 @@ make test
 
 # Difficolta' riscontrate
 
-Prima di proseguire con la spiegazione di due importanti problematiche riscontrate vorrei sconsigliare ai prossimi l'utilizzo di Eclipse su ambienti grafici di tipo `window-tiling managers` come ad esempio `Hyperland` (basato su Wayland) oppure `i3` (basato su xserver) entrambi utilizzati da me. Ho riscontrato diversi bug tra cui: scomparsa improvvisa del cursore senza motivo, freeze della grafica che richiedono necessariamente un restart di Eclipse, content assist che presenta vari bug nelle suggestions quando lo si invoca, finestre a comparsa che non compaiono e altri vari bug.
+Prima di proseguire con la spiegazione di due importanti problematiche riscontrate vorrei sconsigliare ai prossimi l'utilizzo di Eclipse su ambienti grafici di tipo `window-tiling managers` come ad esempio `Hyperland` (basato su Wayland) oppure `i3` (basato su xserver) entrambi utilizzati da me. Ho riscontrato diversi bug tra cui: scomparsa improvvisa del cursore senza motivo, freeze della grafica che richiedono necessariamente un restart di Eclipse, content assist che presenta vari bug nelle suggestions quando lo si invoca, finestre a comparsa che non compaiono e altri vari bug. Nota di "merito" per coveralls, continuamente down almeno nei giorni in cui ho lavorato sul progetto e alcune volte porta al fallimento delle actions perche' il server ritorna error `5XX` quando viene inviata la richiesta di coverage, andrebbe realizzata una action a parte solo per coveralls per non fermare le CI/CD.
 
 La prima difficolta' principale e' stato un bug di `Jacoco` che ha impiegato da parte mia ore di debugging per capirne il problema.
 
-Inizialmente pensavo fosse un bug di sonarqube sulla coverage. Infatti tutti i test passavano ma la coverage non era al 100%. Molto strano dato che il threshold e' settato al 100%. Pensando fosse un allucinazione da parte di sonarqube, ho inizialmente disattivato la coverage sui repository inerenti `MariaDB` sia per lo user che per il product: https://github.com/Virgula0/ProgettoAST/pull/18/files#diff-473abd12905d7a47aa6eac3dab88e3b341719553f1c7bf143fb849cd5d827ebc
+Inizialmente pensavo fosse un bug di sonarqube sulla coverage. Infatti tutti i test passavano ma la coverage non era al 100%. Molto strano dato che il threshold e' settato al 100%. Pensando fosse un allucinazione da parte di sonarqube, ho inizialmente disattivato la coverage da parte di sonarqube sui repositories inerenti `MariaDB` sia per lo user che per il product: https://github.com/Virgula0/ProgettoAST/pull/18/files#diff-473abd12905d7a47aa6eac3dab88e3b341719553f1c7bf143fb849cd5d827ebc
 
 Sonarqube infatti sottolineava un mancato branch coverage nel catch dell'eccezione quando un `RuleSet` viene usato.
 Inizialmente ho chiesto informazioni sul forum di sonarqube: https://community.sonarsource.com/t/sonarqube-98-2-coverage-while-jacoco-gives-100/152027/3
 
 Mi e' stato fatto pero' notare, che sonarqube si basa sulla coverage di jacoco. Dopo aver ricevuto questo suggerimento ho investigato piu' a fondo, fino ad arrivare a capire che era un bug del parser di jacoco. Infatti Jacoco dava problemi perche' non riusciva a capire che il return statement all'interno del `try-with-resource` chiudesse in automatico le risorse. Ho aperto una issue sul repo di Jacoco: https://github.com/jacoco/jacoco/issues/1993#issuecomment-3544012735 e mi e' stato riferito gentilmente di essere gia' a conoscenza dei problemi legati all'utilizzo del `try-with-resource` e che vi era gia' una issue aperta sul tema, da circa un anno. A questo punto non ho fatto altro che semplificare la vita a jacoco con il fix mostrato come esempio nella issue stessa, ma il bug nel parser ovviamente permane.
 
-Un altro problema ugualmente subdolo e' legato al recente upgrade del daemon di docker alla versione 29.
+Un altro problema ugualmente subdolo e' legato al recente upgrade del 10 novembre 2025 del daemon di docker alla versione 29.
 
 Come dichiarato dalla documentazione della release stessa https://docs.docker.com/engine/release-notes/29/#2900 la versione 29 del daemon introduce numerosi breaking changes. Questo porta tutte le versioni di test containers disponibili attualmente a non riuscire a comunicare correttamente con il daemon.
 
@@ -193,7 +193,7 @@ Le tecnologie principali utilizzate sono:
 
 ## Utilizzo MariaDB e MongoDB
 
-Come gia' discusso sono state entrambe le opportunita' di scelta tra un database e l'altro. `MariaDB` include relationships mentre `MongoDB` no. I repositories di `MariaDB` utlizzano i `PreparedStatement` per ragioni di sicurezza contro attacch di `SQL Injection` e per standard.
+Come gia' discusso sono state inserite entrambe le opportunita' di scelta tra un database e l'altro. `MariaDB` include relationships mentre `MongoDB` no. I repositories di `MariaDB` utlizzano i `PreparedStatement` per ragioni di sicurezza contro attacch di `SQL Injection` e per standard.
 
 ## Utilizzo di Guice
 

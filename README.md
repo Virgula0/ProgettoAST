@@ -48,13 +48,13 @@ However, due to a different graphical setup, it can lead to problems; in fact, t
 Having database containers up, you can start the application manually with:
 
 ```
-make package && java -jar com.rosa.angelo.progetto.ast/target/ast-1.0.0-SNAPSHOT-jar-with-dependencies.jar --db=mariadb
+make package && java -jar com.rosa.angelo.progetto.ast/target/ast-1.0.0-jar-with-dependencies.jar --db=mariadb
 ```
 
 Or with mongodb:
 
 ```
-make package && java -jar com.rosa.angelo.progetto.ast/target/ast-1.0.0-SNAPSHOT-jar-with-dependencies.jar --db=mongodb
+make package && java -jar com.rosa.angelo.progetto.ast/target/ast-1.0.0-jar-with-dependencies.jar --db=mongodb
 ```
 
 > [!WARNING]
