@@ -145,7 +145,7 @@ make test
 
 # Difficolta' riscontrate
 
-Prima di proseguire con la spiegazione di due importanti problematiche riscontrate vorrei sconsigliare ai prossimi l'utilizzo di Eclipse su ambienti grafici di tipo `window-tiling managers` come ad esempio `Hyperland` (basato su Wayland) oppure `i3` (basato su xserver) entrambi utilizzati da me. Ho riscontrato diversi bug tra cui: scomparsa improvvisa del cursore senza motivo, freeze della grafica che richiedono necessariamente un restart di Eclipse, content assist che presenta vari bug nelle suggestions quando lo si invoca, finestre a comparsa che non compaiono e altri vari bug. Nota di "merito" per coveralls, continuamente down almeno nei giorni in cui ho lavorato sul progetto e alcune volte porta al fallimento delle actions perche' il server ritorna error `5XX` quando viene inviata la richiesta di coverage, andrebbe realizzata una action a parte solo per coveralls per non fermare le CI/CD.
+Prima di proseguire con la spiegazione di due importanti problematiche riscontrate vorrei sconsigliare ai prossimi l'utilizzo di Eclipse su ambienti grafici di tipo `window-tiling managers` come ad esempio `Hyperland` (basato su Wayland) oppure `i3` (basato su xserver) entrambi utilizzati da me. Ho riscontrato diversi bug tra cui: scomparsa improvvisa del cursore senza motivo, freeze della grafica che richiedono necessariamente un restart di Eclipse, content assist che presenta vari bug nelle suggestions quando lo si invoca, finestre a comparsa che non compaiono e altri vari bug. Nota di "merito" per coveralls, continuamente down almeno nei giorni in cui ho lavorato sul progetto e alcune volte porta al fallimento delle actions perche' il server ritorna error `5XX` quando viene inviata la richiesta di build, andrebbe realizzata una action a parte solo per coveralls per non fermare le CI/CD.
 
 La prima difficolta' principale e' stato un bug di `Jacoco` che ha impiegato da parte mia ore di debugging per capirne il problema.
 
@@ -158,6 +158,11 @@ Mi e' stato fatto pero' notare, che sonarqube si basa sulla coverage di jacoco. 
 
 Un altro problema ugualmente subdolo e' legato al recente upgrade del 10 novembre 2025 del daemon di docker alla versione 29.
 
+Di seguito l'errore mostrato in Eclipse provando a runnare i test con tale versione
+
+<img width="874" height="404" alt="Image" src="https://github.com/user-attachments/assets/df918abc-215d-413f-8a0b-f6830efd55b5" />
+
+\
 Come dichiarato dalla documentazione della release stessa https://docs.docker.com/engine/release-notes/29/#2900 la versione 29 del daemon introduce numerosi breaking changes. Questo porta tutte le versioni di test containers disponibili attualmente a non riuscire a comunicare correttamente con il daemon.
 
 I maintainers di `test-container` hanno aggiornato qualche giorno fa la versione `2.0.3` alla versione `2.0.4` che risolve il problema, ma hanno detto esplicitamente che non introdurrano un fix per le versioni precedenti `1.X`: https://github.com/testcontainers/testcontainers-java/issues/11212#issuecomment-3538510070
