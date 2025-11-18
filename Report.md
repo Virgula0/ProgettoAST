@@ -17,7 +17,7 @@ Email: angelo.rosa@edu.unifi.it
 
 Lo scopo del progetto e' quella di creare una piu' che semplificata applicazione manageriale per la gestione della spedizione dei prodotti da parte di utenti. Si pensi ai singoli dipendenti di Amazon ad esempio quando devono registrare l'invio di un pacco da una sede verso una certa destinazione (cliente).
 
-L'applicativo presenta due `view` gestite completamente in moniera modulare tra di loro, dove l'unica interazione e' lo switch tra la prima finistra (quella del login) e la seconda finestra (quella della gestione dei prodotti), sotto responsabilita' dalla prima finestra. Notare, che i junit test, testano effettivamente lo switch dalla finestra di login ad un altra finestra attraverso l'implementazione di una finestra `FakePanel` di mock, nulla a che vedere con l'implementazione reale mostrata dall'applicativo ovvero `ProductSwingView`.
+L'applicativo presenta due `view` gestite completamente in maniera modulare tra di loro, dove l'unica interazione e' lo switch tra la prima finistra (quella del login) e la seconda finestra (quella della gestione dei prodotti), sotto responsabilita' dalla prima finestra. Notare, che i junit test, testano effettivamente lo switch dalla finestra di login ad un altra finestra attraverso l'implementazione di una finestra `FakePanel` di mock, nulla a che vedere con l'implementazione reale mostrata dall'applicativo ovvero `ProductSwingView`.
 
 #### LoginView
 
@@ -40,7 +40,7 @@ Contiene due classi core che rappresentano le entita' utilizzate nell'applicazio
 - Controller \
 Il controller e' il core dell'applicativo il quale effettua diversi controlli logici attuando da "`logica di backend`".
   - UserController \
-        La classe `UserController` viene utilizzata dalla view che si occupa della registrazione e del login degli utenti. Quando un login va a buon fine, il controlla richiama il metodo per chiudere il pannello attuale ed aprire il prossima panel, il tutto gestito internamente dalla view dedicata al `Login`. \
+        La classe `UserController` viene utilizzata dalla view che si occupa della registrazione e del login degli utenti. Quando un login va a buon fine, il controller richiama il metodo per chiudere il pannello attuale ed aprire il prossimo panel, il tutto gestito internamente dalla view dedicata al `Login`. \
         Tra i controlli implementati si puo' notare
     - La lunghezza della password
     - Validazione del token
@@ -62,7 +62,7 @@ Siccome sono stati implementati due database: `MariaDB` e `MongoDB` tutti i cont
 
 La logica e' fondamentalmente la stessa con differenze sintattiche nella vera implementazione delle due tecnologie.
 
-C'e' una cosa da far notare. Le tabelle, nel database relazionale, `User` e `Product` sono collegate tramite `REFERENCE KEY` sull'id dell'utente. Questo risulta comodo per effettuare queries con join e ottenere i dati in maniera semplice riguardo un utente. Dunque, ad un utente possono essere associati N prodotti spediti ma non vale il contrario, ovvero un prodotto risultera' spedito da un utente particolare. Anche se dovesse essere presente un prodotto nel database con cliente uguale ma id differente, il prodotto viene considerato diverso. Questo ha senso in realta', si pensi a questo esempio: per qualche ragione il pacco spedito da un primo utente viene perso per strada e viene rispedito da un altro utente al medesimo cliente nelle medesime condizioni. In `MongoDB` non ho notato la necessita' di dover utilizzare operazioni relazionali, in quanto tale storage di dati non e' esattamente pensato per un approccio di tale tipo.
+C'e' una cosa da far notare. Le tabelle, nel database relazionale, `User` e `Product` sono collegate tramite `REFERENCE KEY` sull'id dell'utente. Questo risulta comodo per effettuare queries con join e ottenere i dati in maniera semplice riguardo un utente. Dunque, ad un utente possono essere associati N prodotti spediti ma non vale il contrario, ovvero un prodotto risultera' spedito da un utente particolare. Anche se dovesse essere presente un prodotto nel database con cliente uguale ma id differente, il prodotto viene considerato diverso. Questo ha senso in realta', si pensi a questo esempio: per qualche ragione il pacco spedito da un primo utente viene perso per strada e viene rispedito da un altro utente al medesimo cliente nelle medesime condizioni. In `MongoDB` non ho notato la necessita' di dover utilizzare operazioni relazionali, in quanto tale storage di dati non e' esattamente pensato per un approccio di tale tipo. Il comportamento dell'applicazione ad ogni modo, non cambia in base al database utilizzato.
 
 - View \
 Le view come anticipato sono 2.
@@ -198,7 +198,7 @@ Le tecnologie principali utilizzate sono:
 
 ## Utilizzo MariaDB e MongoDB
 
-Come gia' discusso sono state inserite entrambe le opportunita' di scelta tra un database e l'altro. `MariaDB` include relationships mentre `MongoDB` no. I repositories di `MariaDB` utlizzano i `PreparedStatement` per ragioni di sicurezza contro attacch di `SQL Injection` e per standard.
+Come accennato in precedenza, è possibile scegliere la tipologia di database tra: MongoDB e MariaDB.`MariaDB` include relationships mentre `MongoDB` no. I repositories di `MariaDB` utlizzano i `PreparedStatement` per ragioni di sicurezza contro attacch di `SQL Injection` e per standard.
 
 ## Utilizzo di Guice
 
