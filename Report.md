@@ -1,10 +1,17 @@
 # Sommario
 
+- [Info](#info)
 - [Descrizione del progetto e funzionalita'](#descrizione-del-progetto-e-funzionalita)
 - [Scelte implementative](#scelte-implementative)
 - [Esecuzione dell'applicativo](#esecuzione-dellapplicativo)
 - [Difficolta' riscontrate](#difficolta-riscontrate)
-- Tecnologie utilizzate e build
+- [Tecnologie utilizzate e build](#tecnologie-utilizzate-e-build)
+
+# Info
+
+Studente: `Angelo Rosa` \
+Matricola: `7160325` \
+Email: angelo.rosa@edu.unifi.it
 
 # Descrizione del progetto e funzionalita'
 
@@ -100,7 +107,7 @@ make package && java -jar com.rosa.angelo.progetto.ast/target/ast-1.0.0-SNAPSHOT
 ```
 
 > [!WARNING]
-> Hai bisogno della token phrase "validToken" per poter effettuare registrazioni.
+> Il token valido per effettuare registrazioni e' statico ed e': `validToken`
 
 È necessario avere `>= Java 17` per eseguirla.
 
@@ -158,3 +165,88 @@ I maintainers di `test-container` hanno aggiornato qualche giorno fa la versione
 Questo solleva una problematica: la versione di testcontainers da me utilizzata nel progetto fin dall'inizio e' basata sull'`1.X`. Passare ad una major version superiore comporterebbe problemi di compatibilita' sulle annotations e toccherebbe cambiare le inizializzazioni dei test all'interno delle classi che usano attivamente test containers.
 
 Ho preferito continuare ad usare la versione `1.X`, facendo notare pero', la presenza di questa problematica e si consiglia di aggiornare i riferimenti nel libro utilizzando la versione `2.0.4` di `test-containers` (o superiore) compatibile con docker <=29.
+
+# Tecnologie utilizzate e build
+
+Le tecnologie principali utilizzate sono:
+
+- Maven
+- Git & Github
+- Github Actions
+- PIT
+- JUnit4
+- AssertJSwing
+- Mockito
+- Jacoco
+- Test-Driven Development (TDD)
+- MongoDB con Testcontainers (e non solo)
+- MariaDB con Testcontainers (e non solo)
+- Docker & docker-compose
+- Guice & dependency injection
+- Pico-cli
+- Coveralls
+- SonarCloud
+- SonarQube
+- Xhost, xserver e build nel container
+- Log4J
+
+
+## Utilizzo MariaDB e MongoDB
+
+Come gia' discusso sono state entrambe le opportunita' di scelta tra un database e l'altro. `MariaDB` include relationships mentre `MongoDB` no. I repositories di `MariaDB` utlizzano i `PreparedStatement` per ragioni di sicurezza contro attacch di `SQL Injection` e per standard.
+
+## Utilizzo di Guice
+
+Guice presenta due moduli nel package main
+
+- `MariaDBDefaultModule`
+- `MongoDefaultModule`
+
+L'utilizzo del modulo piuttosto che un altro e' scelto in base all'argomento passato da terminale `--db`
+
+- `mariadb` per scegliere di usare questo db
+- `mongodb` per scegliere di usare questo db
+
+Se l'opzione `--db` non viene specificata, di default l'applicativo parte utilizzando `mongodb`.
+
+Sono disponili altri argomenti da CLI, opzionali per configurare ogni database in modo diverso:
+
+```
+Usage: <main class> [-hV] [--db=<databaseTypeName>] [--db-name=<databaseName>]
+                    [--db-product-collection=<productCollectionName>]
+                    [--db-user-collection=<userCollectionName>]
+                    [--mariadb-host=<mariaDBHost>]
+                    [--mariadb-name=<mariaDBdatabaseName>]
+                    [--mariadb-password=<dbPassword>]
+                    [--mariadb-port=<mariaDBPort>]
+                    [--mariadb-username=<dbUsername>]
+                    [--mongo-host=<mongoHost>] [--mongo-port=<mongoPort>]
+      --db=<databaseTypeName>
+                  Choose database type
+      --db-name=<databaseName>
+                  Database name
+      --db-product-collection=<productCollectionName>
+                  Product Collection Name
+      --db-user-collection=<userCollectionName>
+                  User Collection Name
+  -h, --help      Show this help message and exit.
+      --mariadb-host=<mariaDBHost>
+                  MariaDB host address
+      --mariadb-name=<mariaDBdatabaseName>
+                  Database name
+      --mariadb-password=<dbPassword>
+                  Db Password
+      --mariadb-port=<mariaDBPort>
+                  MariaDB host port
+      --mariadb-username=<dbUsername>
+                  Db Username
+      --mongo-host=<mongoHost>
+                  MongoDB host address
+      --mongo-port=<mongoPort>
+                  MongoDB host port
+  -V, --version   Print version information and exit.
+```
+
+## TestContainers
+
+Test containers e' stato utilizzato interamente anche nei Junit tests, evitando l'utilizzo di un in-memory database ed implementando i vari repositories con TDD con un database reale up and running fornito da testcontainers. Nel progetto per `MariaDB` ho utilizzato l'artifact `mariadb` della stessa organization `test-containers` in quanto gia' pre-configurato per l'utilizzo rispetto a `generic-test-containers`.
