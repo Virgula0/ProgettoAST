@@ -16,16 +16,20 @@ Automated Software Testing Project
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=Virgula0_ProgettoAST&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=Virgula0_ProgettoAST)
 [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=Virgula0_ProgettoAST&metric=vulnerabilities)](https://sonarcloud.io/summary/new_code?id=Virgula0_ProgettoAST)
 
+# Summary
 
-# Compile and run
+- [Report ITA](Report.md)
+- [Compile and run](#requirements-for-docker-setup)
 
 
 I provided a Docker container in the repository to share an X11 server along with `mongodb` and `mariadb`.
 
-### Requirements for docker setup:
+### Requirements for docker setup
 
 - xhost utility
+    - Usually already installed but available in the package `x11-xserver-utils`
 - Docker and Docker-compose
+    - If you want to run tests locally, remember that the version of test container used (v 1.X) is compatible with docker daemon < 28
 
 ```
 make build-and-run
@@ -44,13 +48,18 @@ However, due to a different graphical setup, it can lead to problems; in fact, t
 Having database containers up, you can start the application manually with:
 
 ```
-make package && java -jar com.rosa.angelo.progetto.ast/target/ast-0.0.1-SNAPSHOT-jar-with-dependencies.jar --db=mariadb
+make package && java -jar com.rosa.angelo.progetto.ast/target/ast-1.0.0-jar-with-dependencies.jar --db=mariadb
 ```
 
 Or with mongodb:
 
 ```
-make package && java -jar com.rosa.angelo.progetto.ast/target/ast-0.0.1-SNAPSHOT-jar-with-dependencies.jar --db=mongodb
+make package && java -jar com.rosa.angelo.progetto.ast/target/ast-1.0.0-jar-with-dependencies.jar --db=mongodb
 ```
 
-You need `Java 17` to run it.
+> [!WARNING]
+> You need the token phrase `validToken` to be able to perform registrations.
+
+You need `>= Java 17` to run it.
+
+In alternative, you can download and run the latest release already pre-compiled at [Github Releases](https://github.com/Virgula0/ProgettoAST/releases/)

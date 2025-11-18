@@ -36,9 +36,9 @@ public class Main implements Callable<Void> {
 	private int mariaDBPort = 3306;
 	@Option(names = { "--mariadb-name" }, description = "Database name")
 	private String mariaDBdatabaseName = UserMariaDBRepository.AST_DB_NAME;
-	@Option(names = { "--db-username" }, description = "Db Username")
+	@Option(names = { "--mariadb-username" }, description = "Db Username")
 	private String dbUsername = UserMariaDBRepository.DB_USERNAME;
-	@Option(names = { "--db-password" }, description = "Db Password")
+	@Option(names = { "--mariadb-password" }, description = "Db Password")
 	private String dbPassword = UserMariaDBRepository.DB_PASSWORD;
 
 	@Option(names = "--db", required = false, description = "Choose database type")

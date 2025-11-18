@@ -101,7 +101,7 @@ public class AppUsingMariaDBE2E extends AssertJSwingJUnitTestCase {
 
 		application("com.rosa.angelo.progetto.ast.main.Main").withArgs("--mariadb-host=" + containerIpAddress,
 				"--mariadb-port=" + mappedPort, "--mariadb-name=" + DB_NAME, "--db=mariadb",
-				"--db-username=" + DB_USERNAME, "--db-password=" + DB_PASSWORD).start();
+				"--mariadb-username=" + DB_USERNAME, "--mariadb-password=" + DB_PASSWORD).start();
 
 		// get a reference of its JFrame
 		window = WindowFinder.findFrame(new GenericTypeMatcher<JFrame>(JFrame.class) {
