@@ -36,7 +36,7 @@ Contiene due classi core che rappresentano le entita' utilizzate nell'applicazio
   - User \
         La classe user contiene i campi: `Username`, `Password` ed `id`. Sebbene in applicativi reali l'id venga spesso generato ed assegnato in modo automatizzato, ad esempio, attraverso l'utilizzo di `INCREMENT` in database relazionali, in questo progetto e' stato scelto l'inserimento di un `id` manuale per non creare troppe differenze concettuali tra l'implementazione con `MongoDB` e quella con `MariaDB`. Certo, anche con `MongoDB` sarebbe stato possibile automatizzare l'inserimento dell'id sia che per l'utente che per i prodotti ma la semplificazione e' stata voluta anche per eseguire qualche controllo in piu' nel controller al fine di esercitarsi il piu' possibile con il `TDD`. Inoltre da notare le password conservate in un database non sono `hashate` prima di essere salvate. Di nuovo, una mera semplificazione di quella che dovrebbe essere un applicativo reale.
   - Product \
-        La classe product contiene per ogni prodotto, l'utente associato che sta manipolando il prodotto (utile in fase di salvataggio/lettura) e le informazioni reali del pacchetto da spedire. L'utente passato al prodotto, non e' da confondere con l'instanza dell'utente passata solitamente ai metodi del controller, in quanto quest'ultima effettua controlli sulla `sessione` di chi sta compiendo l'azione. Anche qui, il concetto di user session e' semplificato e mancano i controlli per effettuare il logout dopo un certo perieodo di tempo e altri cotrolli di sicurezza.
+        La classe product contiene per ogni prodotto, l'utente associato che sta manipolando il prodotto (utile in fase di salvataggio/lettura) e le informazioni reali del pacchetto da spedire. L'utente passato al prodotto, non e' da confondere con l'istanza dell'utente passata solitamente ai metodi del controller, in quanto quest'ultima effettua controlli sulla `sessione` di chi sta compiendo l'azione. Anche qui, il concetto di user session e' semplificato e mancano i controlli per effettuare il logout dopo un certo perieodo di tempo e altri cotrolli di sicurezza.
 - Controller \
 Il controller e' il core dell'applicativo il quale effettua diversi controlli logici attuando da "`logica di backend`".
   - UserController \
@@ -49,7 +49,7 @@ Il controller e' il core dell'applicativo il quale effettua diversi controlli lo
   - ProductController \
             La classe `ProductController` viene utilizzata dalla view che si occupa dell'inserimento e della rimozione dei vari prodotti. Nella classe si possono notare alcuni controlli quali
     - Esistenza del prodotto con lo stesso ID
-    - Evitare che il pacchetto possa essere spedito di nuovo dallo stesso utente, se e' gia' stato sepdito
+    - Evitare che il pacchetto possa essere spedito di nuovo dallo stesso utente, se e' gia' stato spedito
     - Evitare l'inserimento di pacchi per conto di altri utenti
     - Evitare la rimozione di pacchi per conto di altri utenti
     - Rimozione di pacchi che non esistono
@@ -184,8 +184,8 @@ Le tecnologie principali utilizzate sono:
 - Mockito
 - Jacoco
 - Test-Driven Development (TDD)
-- MongoDB con Testcontainers (e non solo)
-- MariaDB con Testcontainers (e non solo)
+- MongoDB con Testcontainers
+- MariaDB con Testcontainers
 - Docker & docker-compose
 - Guice & dependency injection
 - Pico-cli
