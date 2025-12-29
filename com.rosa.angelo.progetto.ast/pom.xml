@@ -28,7 +28,7 @@
 		<maven.failsafe.version>3.5.2</maven.failsafe.version> <!-- failsafe:
 		integration tests -->
 		<picocli.version>4.7.6</picocli.version>
-		<log4j.version>2.24.3</log4j.version>
+		<log4j.version>2.25.3</log4j.version>
 		<maven.site.version>3.9.1</maven.site.version>
 		<coveralls.version>4.3.0</coveralls.version>
 		<mongodb.version>3.12.8</mongodb.version>
